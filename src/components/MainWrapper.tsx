@@ -22,6 +22,7 @@ const Background = styled.div`
   background-size: cover;
   filter: blur(8px);
   -webkit-filter: blur(8px);
+  z-index: -100;
 `;
 
 export const MainWrapper = ({

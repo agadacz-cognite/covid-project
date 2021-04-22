@@ -1,11 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 
-const AppContext = React.createContext({});
+type ContextType = {
+  user: any;
+  setUser: (user: any) => void;
+};
+
+export const AppContext = React.createContext({} as ContextType);
 
 const AppContextProvider = ({ children }: { children: any }): JSX.Element => {
-  const defaultValue = {};
-  return (
-    <AppContext.Provider value={defaultValue}>{children}</AppContext.Provider>
-  );
+  const [user, setUser] = useState();
+  const value = {
+    user,
+    setUser,
+  };
+  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };
 export default AppContextProvider;
