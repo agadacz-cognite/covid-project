@@ -29,7 +29,7 @@ export default function Home(): JSX.Element {
       <Title level={2}>COVID test rejestration</Title>
       <Title level={4} style={{ margin: 0 }}>
         <a
-          href="https://docs.google.com/document/d/1e7H0yW2TqpwzqHT0znAUwlzUN5OS940MesE1o6uiwfI/edit"
+          href="https://docs.google.com/document/d/1e7H0yW2TqpwzqHT0znAUwlzUN5OS940MesE1o6uiwfI"
           target="_blank"
           rel="noreferrer">
           Guidelines
