@@ -1,16 +1,31 @@
 import React from 'react';
-import styled from 'styled-components';
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import AppContextProvider from '../../context';
+import Home from '../Home';
+import WeekSelection from '../WeekSelection';
+import HourSelection from '../HourSelection';
+import { MainWrapper } from '../../components';
 
-const MainWrapper = styled.div`
-  display: flex;
-  width: 100vw;
-  height: 100vh;
-  margin: 0;
-  padding: 0;
-  justify-content: center;
-  align-items: center;
-`;
+import 'antd/dist/antd.css';
 
 export default function App(): JSX.Element {
-  return <MainWrapper>(((o(*ﾟ▽ﾟ*)o)))</MainWrapper>;
+  return (
+    <AppContextProvider>
+      <MainWrapper>
+        <Router>
+          <Switch>
+            <Route exact path="/">
+              <Home />
+            </Route>
+            <Route exact path="/start">
+              <WeekSelection />
+            </Route>
+            <Route exact path="/choose">
+              <HourSelection />
+            </Route>
+          </Switch>
+        </Router>
+      </MainWrapper>
+    </AppContextProvider>
+  );
 }
