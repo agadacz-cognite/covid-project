@@ -31,7 +31,7 @@ const StyledCard = styled(Card)`
 
 export default function DaysSelection(): JSX.Element {
   const history = useHistory();
-  const { user, setUser } = useContext(AppContext);
+  const { user, setUser, setDays } = useContext(AppContext);
   const [firstHalfChecked, setFirstHalfChecked] = useState(false);
   const [secondHalfChecked, setSecondHalfChecked] = useState(false);
 
@@ -47,10 +47,11 @@ export default function DaysSelection(): JSX.Element {
     setSecondHalfChecked(event.target.checked);
   const onProceed = () => {
     if (firstHalfChecked || secondHalfChecked) {
+      setDays({ firstHalf: firstHalfChecked, secondHalf: secondHalfChecked });
       history.push('/choose');
     } else {
       notification.warning({
-        message: '>:C',
+        message: 'Forgot something?',
         description: 'You have to choose at least one option!',
       });
     }
