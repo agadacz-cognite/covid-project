@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Card, Input, Button, notification } from 'antd';
+import { Card, Input, Button, Tooltip, notification } from 'antd';
 import { AppContext } from '../../context';
 import { Flex } from '../../components';
 import { Choice, Hour, Places } from './components';
@@ -38,17 +38,22 @@ export default function HourSelection(): JSX.Element {
       const available = hour.availability > 0;
       const percentOfPlacesTaken = (hour.availability / hour.places) * 100;
       return (
-        <Choice
-          availability={percentOfPlacesTaken}
-          chosen={isChosen(hour, weekHalf)}
-          onClick={() => onHourChoose(hour, weekHalf, available)}
-          key={JSON.stringify(hour)}>
-          <Hour available={available}>{hour.hour}</Hour>
-          <Places>
-            <span style={{ fontWeight: 'bold' }}>{hour.availability}</span>{' '}
-            available
-          </Places>
-        </Choice>
+        <Tooltip
+          key={JSON.stringify(hour)}
+          title={
+            !available && 'All of the slots for this hour are already taken.'
+          }>
+          <Choice
+            availability={percentOfPlacesTaken}
+            chosen={isChosen(hour, weekHalf)}
+            onClick={() => onHourChoose(hour, weekHalf, available)}>
+            <Hour available={available}>{hour.hour}</Hour>
+            <Places>
+              <span style={{ fontWeight: 'bold' }}>{hour.availability}</span>{' '}
+              available
+            </Places>
+          </Choice>
+        </Tooltip>
       );
     });
 
@@ -80,19 +85,21 @@ export default function HourSelection(): JSX.Element {
         message: 'Hour not specified',
         description: 'You have to choose an hour.',
       });
+      return;
     }
     if (!managerName?.length) {
       notification.warning({
         message: 'Manager not specified',
         description: 'You have to share your manager name.',
       });
+      return;
     }
     const registeredUser = {
       email: user.email,
       manager: managerName,
       testHours: [chosenFirstHalfHour, chosenSecondHalfHour],
     };
-    alert(registeredUser);
+    alert(`This will be added soon: ${!!registeredUser}!`);
   };
 
   return (
