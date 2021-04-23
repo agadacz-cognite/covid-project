@@ -1,4 +1,5 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 import { Card, Input, Button, notification } from 'antd';
 import { AppContext } from '../../context';
 import { Flex } from '../../components';
@@ -7,10 +8,30 @@ import { Choice, Hour, Places } from './components';
 import mock from './mock';
 
 export default function HourSelection(): JSX.Element {
-  const { days } = useContext(AppContext);
+  const history = useHistory();
+  const { user, days } = useContext(AppContext);
   const [chosenFirstHalfHour, setChosenFirstHalfHour] = useState();
   const [chosenSecondHalfHour, setChosenSecondHalfHour] = useState();
   const [managerName, setManagerName] = useState('');
+
+  useEffect(() => {
+    if (!days) {
+      history.push('/start');
+    }
+    if (!user) {
+      history.push('/');
+    }
+  }, []);
+
+  const isChosen = (hour: any, weekHalf: 'first' | 'second') => {
+    if (weekHalf === 'first') {
+      return hour.hour === chosenFirstHalfHour;
+    }
+    if (weekHalf === 'second') {
+      return hour.hour === chosenSecondHalfHour;
+    }
+    return false;
+  };
 
   const mapHours = (weekHalf: 'first' | 'second') =>
     mock[weekHalf].map((hour: any) => {
@@ -19,15 +40,26 @@ export default function HourSelection(): JSX.Element {
       return (
         <Choice
           availability={percentOfPlacesTaken}
-          onClick={() => onHourChoose(hour, weekHalf)}
+          chosen={isChosen(hour, weekHalf)}
+          onClick={() => onHourChoose(hour, weekHalf, available)}
           key={JSON.stringify(hour)}>
           <Hour available={available}>{hour.hour}</Hour>
-          <Places available={available}>{hour.availability} available</Places>
+          <Places>
+            <span style={{ fontWeight: 'bold' }}>{hour.availability}</span>{' '}
+            available
+          </Places>
         </Choice>
       );
     });
 
-  const onHourChoose = (hour: any, weekHalf: 'first' | 'second') => {
+  const onHourChoose = (
+    hour: any,
+    weekHalf: 'first' | 'second',
+    available: boolean,
+  ) => {
+    if (!available) {
+      return;
+    }
     if (weekHalf === 'first') {
       setChosenFirstHalfHour(hour.hour);
     }
@@ -55,6 +87,12 @@ export default function HourSelection(): JSX.Element {
         description: 'You have to share your manager name.',
       });
     }
+    const registeredUser = {
+      email: user.email,
+      manager: managerName,
+      testHours: [chosenFirstHalfHour, chosenSecondHalfHour],
+    };
+    console.log(registeredUser);
   };
 
   return (
@@ -64,10 +102,14 @@ export default function HourSelection(): JSX.Element {
           <Card
             title={
               <Flex align justify>
-                Monday, Tuesday, Wednesday
+                Available test hours on Monday
               </Flex>
             }
             style={{ margin: '8px', maxWidth: '500px' }}>
+            <p>
+              After taking a COVID test during one of possible dates below, you
+              can go to the office at Monday, Tuesday and Wednesday.
+            </p>
             <Flex row align justify style={{ flexWrap: 'wrap' }}>
               {mapHours('first')}
             </Flex>
@@ -77,10 +119,14 @@ export default function HourSelection(): JSX.Element {
           <Card
             title={
               <Flex align justify>
-                Thursday, Friday
+                Available test hours on Thursday
               </Flex>
             }
             style={{ margin: '8px', maxWidth: '500px' }}>
+            <p>
+              After taking a COVID test during one of possible dates below, you
+              can go to the office at Thursday and Friday.
+            </p>
             <Flex row align justify style={{ flexWrap: 'wrap' }}>
               {mapHours('second')}
             </Flex>

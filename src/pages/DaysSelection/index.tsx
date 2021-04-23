@@ -1,15 +1,12 @@
 import React, { useState, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Checkbox, Card, notification } from 'antd';
-import { CheckCircleOutlined } from '@ant-design/icons';
+import { Checkbox, Card, Button, notification } from 'antd';
 import styled from 'styled-components';
 import firebase from 'firebase';
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
 import { AppContext } from '../../context';
 import { Flex } from '../../components';
 import { uiConfig } from '../Home';
-
-import spot from '../../shared/img/spot.jpg';
 
 const StyledFlex = styled(Flex)`
   & > * {
@@ -19,14 +16,6 @@ const StyledFlex = styled(Flex)`
 const BigText = styled.div`
   font-size: 14px;
   font-weight: bold;
-`;
-const Spot = styled.img`
-  width: 200px;
-`;
-const StyledCard = styled(Card)`
-  .ant-card-actions {
-    background-color: #ddedd1;
-  }
 `;
 
 export default function DaysSelection(): JSX.Element {
@@ -38,6 +27,8 @@ export default function DaysSelection(): JSX.Element {
   firebase.auth().onAuthStateChanged(newUser => {
     if (newUser) {
       setUser(newUser);
+    } else {
+      history.push('/');
     }
   });
 
@@ -66,23 +57,17 @@ export default function DaysSelection(): JSX.Element {
 
   if (!user) {
     return (
-      <StyledCard>
+      <Card>
         <StyledFirebaseAuth
           uiConfig={uiConfig}
           firebaseAuth={firebase.auth()}
         />
-      </StyledCard>
+      </Card>
     );
   }
   return (
-    <StyledCard
+    <Card
       title={`Hello ${getUserFirstName()}! Which days of the week you want to go to the office?`}
-      cover={
-        <Flex row align justify>
-          <Spot src={spot} alt="spot" />
-        </Flex>
-      }
-      actions={[<CheckCircleOutlined key="proceed" onClick={onProceed} />]}
       style={{ width: 'auto' }}>
       <StyledFlex column justify align>
         <Checkbox checked={firstHalfChecked} onChange={onFirstHalfChecked}>
@@ -91,7 +76,10 @@ export default function DaysSelection(): JSX.Element {
         <Checkbox checked={secondHalfChecked} onChange={onSecondHalfChecked}>
           <BigText>Thursday, Friday</BigText>
         </Checkbox>
+        <Button type="primary" onClick={onProceed}>
+          Next
+        </Button>
       </StyledFlex>
-    </StyledCard>
+    </Card>
   );
 }

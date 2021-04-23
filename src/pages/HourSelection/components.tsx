@@ -1,8 +1,11 @@
 import styled from 'styled-components';
 
 export const Choice = styled.div.attrs(
-  ({ availability }: { availability: number }) => {
+  ({ availability, chosen }: { availability: number; chosen: boolean }) => {
     const style: any = {};
+    if (chosen) {
+      style.border = '4px solid green';
+    }
     if (availability === 0) {
       style.backgroundColor = '#e0e0e0';
       style.cursor = 'not-allowed';
@@ -24,7 +27,7 @@ export const Choice = styled.div.attrs(
     }
     return { style };
   },
-)<{ availability: number }>`
+)<{ availability: number; chosen: boolean }>`
   width: 100px;
   height: 100px;
   border: 1px solid #eee;
@@ -64,16 +67,7 @@ export const Hour = styled.div.attrs(
   font-weight: bold;
 `;
 
-export const Places = styled.div.attrs(
-  ({ available }: { available: boolean }) => {
-    const style: any = {};
-    if (!available) {
-      style.textDecoration = 'line-through';
-      style.color = '#444';
-    }
-    return { style };
-  },
-)<{ available: boolean }>`
+export const Places = styled.div`
   font-size: 12px;
   color: #333;
   padding: 8px;
