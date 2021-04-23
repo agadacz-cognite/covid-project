@@ -4,9 +4,9 @@ import { Checkbox, Card, Button, notification } from 'antd';
 import styled from 'styled-components';
 import firebase from 'firebase';
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
-import { AppContext } from '../../context';
-import { Flex } from '../../components';
-import { uiConfig } from '../Home';
+import { AppContext } from '../context';
+import { Flex } from '../components';
+import { uiConfig } from './Home';
 
 const StyledFlex = styled(Flex)`
   & > * {
@@ -24,6 +24,8 @@ export default function DaysSelection(): JSX.Element {
   const [firstHalfChecked, setFirstHalfChecked] = useState(false);
   const [secondHalfChecked, setSecondHalfChecked] = useState(false);
 
+  const isAdmin = true;
+
   firebase.auth().onAuthStateChanged(newUser => {
     if (newUser) {
       setUser(newUser);
@@ -36,6 +38,7 @@ export default function DaysSelection(): JSX.Element {
     setFirstHalfChecked(event.target.checked);
   const onSecondHalfChecked = (event: any) =>
     setSecondHalfChecked(event.target.checked);
+  const onAdminPageClick = () => history.push('/admin');
   const onProceed = () => {
     if (firstHalfChecked || secondHalfChecked) {
       setDays({ firstHalf: firstHalfChecked, secondHalf: secondHalfChecked });
@@ -66,20 +69,31 @@ export default function DaysSelection(): JSX.Element {
     );
   }
   return (
-    <Card
-      title={`Hello ${getUserFirstName()}! Which days of the week you want to go to the office?`}
-      style={{ width: 'auto' }}>
-      <StyledFlex column justify align>
-        <Checkbox checked={firstHalfChecked} onChange={onFirstHalfChecked}>
-          <BigText>Monday, Tuesday, Wednesday</BigText>
-        </Checkbox>
-        <Checkbox checked={secondHalfChecked} onChange={onSecondHalfChecked}>
-          <BigText>Thursday, Friday</BigText>
-        </Checkbox>
-        <Button type="primary" onClick={onProceed}>
-          Next
-        </Button>
-      </StyledFlex>
-    </Card>
+    <Flex row>
+      <Card
+        title={`Hello ${getUserFirstName()}! Which days of the week you want to go to the office?`}
+        style={{ width: 'auto', marginRight: '16px' }}>
+        <StyledFlex column justify align>
+          <Checkbox checked={firstHalfChecked} onChange={onFirstHalfChecked}>
+            <BigText>Monday, Tuesday, Wednesday</BigText>
+          </Checkbox>
+          <Checkbox checked={secondHalfChecked} onChange={onSecondHalfChecked}>
+            <BigText>Thursday, Friday</BigText>
+          </Checkbox>
+          <Button type="primary" onClick={onProceed}>
+            Next
+          </Button>
+        </StyledFlex>
+      </Card>
+      {isAdmin && (
+        <Card title={`Hello ${getUserFirstName()}! You're an admin.`}>
+          <Flex row align justify>
+            <Button type="primary" onClick={onAdminPageClick}>
+              Go to Admin page
+            </Button>
+          </Flex>
+        </Card>
+      )}
+    </Flex>
   );
 }

@@ -1,12 +1,13 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import { Typography } from 'antd';
-import Home from '../Home';
-import NotFound from '../NotFound';
-import DaysSelection from '../DaysSelection';
-import HourSelection from '../HourSelection';
-import { MainWrapper } from '../../components';
-import { AppContext } from '../../context';
+import Home from './Home';
+import NotFound from './NotFound';
+import Admin from './Admin';
+import DaysSelection from './DaysSelection';
+import HourSelection from './HourSelection';
+import { MainWrapper } from '../components';
+import { AppContext } from '../context';
 
 import 'antd/dist/antd.css';
 
@@ -53,6 +54,11 @@ export default function App(): JSX.Element {
         <Route exact path="/choose">
           <MainWrapper>
             <HourSelection />
+          </MainWrapper>
+        </Route>
+        <Route exact path="/admin">
+          <MainWrapper>
+            <Admin />
           </MainWrapper>
         </Route>
         <Route>

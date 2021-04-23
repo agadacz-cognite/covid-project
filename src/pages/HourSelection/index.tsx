@@ -92,7 +92,7 @@ export default function HourSelection(): JSX.Element {
       manager: managerName,
       testHours: [chosenFirstHalfHour, chosenSecondHalfHour],
     };
-    console.log(registeredUser);
+    alert(registeredUser);
   };
 
   return (
