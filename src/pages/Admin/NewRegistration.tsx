@@ -2,24 +2,14 @@ import React, { useState, useContext, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { Typography, Button, notification } from 'antd';
+import { Typography, Button, Card, notification } from 'antd';
 import styled from 'styled-components';
-import { Panel, Flex } from '../../components';
+import { Flex, Header } from '../../components';
 import { AppContext, useFirebaseAuthentication } from '../../context';
 import { createActiveRegistration } from '../../firebase';
 
 const { Title } = Typography;
-const PanelGroup = styled(Flex)`
-  padding: 16px;
-  margin: 8px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  box-sizing: border-box;
 
-  & > * {
-    margin: 12px 0;
-  }
-`;
 const CustomInput = styled.input`
   border: none;
   background-color: #95abde;
@@ -86,16 +76,17 @@ export default function NewRegistration(): JSX.Element {
   const onBack = () => history.push('/admin');
 
   return (
-    <Panel>
-      <Title level={2}>New registration</Title>
-      <p style={{ margin: 0, color: '#aaa' }}>
-        Logged in as {user?.displayName ?? '-'} ({user?.email ?? '-'})
-      </p>
+    <Flex column>
+      <Header>
+        <Title level={2}>New registration</Title>
+        <p>
+          Logged in as {user?.displayName ?? '-'} ({user?.email ?? '-'})
+        </p>
+      </Header>
       <Flex row>
-        <PanelGroup column justify align>
-          <Title level={4} style={{ margin: 0 }}>
-            Select the week of the registration
-          </Title>
+        <Card
+          title="Select the week of the registration"
+          style={{ width: 'auto', height: 'auto', margin: '8px' }}>
           <DatePicker
             selected={weekStartDate}
             // @ts-ignore
@@ -107,12 +98,11 @@ export default function NewRegistration(): JSX.Element {
             selectsRange
             inline
           />
-        </PanelGroup>
+        </Card>
         <Flex column>
-          <PanelGroup column justify align>
-            <Title level={4} style={{ margin: 0 }}>
-              Select the date when registration opens
-            </Title>
+          <Card
+            title="Select time when registration opens"
+            style={{ width: 'auto', height: 'auto', margin: '8px' }}>
             <DatePicker
               selected={registrationOpenTime}
               onChange={onStartDateChange}
@@ -122,10 +112,15 @@ export default function NewRegistration(): JSX.Element {
               customInput={<CustomInput />}
               showTimeSelect
             />
-          </PanelGroup>
+          </Card>
+          <Card
+            title="Add slots for testing"
+            style={{ width: 'auto', height: 'auto', margin: '8px' }}>
+            :3c
+          </Card>
         </Flex>
       </Flex>
-      <Flex row>
+      <Flex row align justify style={{ padding: '8px', margin: '8px' }}>
         <Button type="default" onClick={onBack} style={{ marginRight: '8px' }}>
           Back to admin panel
         </Button>
@@ -133,6 +128,6 @@ export default function NewRegistration(): JSX.Element {
           Open new week!
         </Button>
       </Flex>
-    </Panel>
+    </Flex>
   );
 }
