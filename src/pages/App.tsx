@@ -4,6 +4,7 @@ import { Typography } from 'antd';
 import Home from './Home';
 import NotFound from './NotFound';
 import Admin from './Admin';
+import NewRegistration from './Admin/NewRegistration';
 import DaysSelection from './DaysSelection';
 import HourSelection from './HourSelection';
 import { MainWrapper } from '../components';
@@ -59,6 +60,11 @@ export default function App(): JSX.Element {
         <Route exact path="/admin">
           <MainWrapper>
             <Admin />
+          </MainWrapper>
+        </Route>
+        <Route exact path="/admin/newweek">
+          <MainWrapper>
+            <NewRegistration />
           </MainWrapper>
         </Route>
         <Route>
