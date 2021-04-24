@@ -26,4 +26,6 @@ const AppContextProvider = ({ children }: { children: any }): JSX.Element => {
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };
+
 export default AppContextProvider;
+export * from './hooks';

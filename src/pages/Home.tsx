@@ -4,7 +4,7 @@ import { Typography } from 'antd';
 import { Panel } from '../components';
 import firebase from 'firebase';
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
-import { AppContext } from '../context';
+import { AppContext, useFirebaseAuthentication } from '../context';
 
 const { Title } = Typography;
 
@@ -17,6 +17,8 @@ export const uiConfig = {
 export default function Home(): JSX.Element {
   const history = useHistory();
   const { user } = useContext(AppContext);
+
+  useFirebaseAuthentication();
 
   useEffect(() => {
     if (user) {

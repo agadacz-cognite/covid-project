@@ -1,12 +1,9 @@
 import React, { useState, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Checkbox, Card, Button, Typography, notification } from 'antd';
+import { Checkbox, Card, Button, Typography, Spin, notification } from 'antd';
 import styled from 'styled-components';
-import firebase from 'firebase';
-import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
-import { AppContext } from '../context';
+import { AppContext, useFirebaseAuthentication } from '../context';
 import { Flex } from '../components';
-import { uiConfig } from './Home';
 
 const { Title } = Typography;
 
@@ -22,19 +19,13 @@ const BigText = styled.div`
 
 export default function DaysSelection(): JSX.Element {
   const history = useHistory();
-  const { user, setUser, setDays } = useContext(AppContext);
+  const { user, setDays } = useContext(AppContext);
   const [firstHalfChecked, setFirstHalfChecked] = useState(false);
   const [secondHalfChecked, setSecondHalfChecked] = useState(false);
 
-  const isAdmin = true;
+  useFirebaseAuthentication();
 
-  firebase.auth().onAuthStateChanged(newUser => {
-    if (newUser) {
-      setUser(newUser);
-    } else {
-      history.push('/');
-    }
-  });
+  const isAdmin = true;
 
   const onFirstHalfChecked = (event: any) =>
     setFirstHalfChecked(event.target.checked);
@@ -61,14 +52,7 @@ export default function DaysSelection(): JSX.Element {
   };
 
   if (!user) {
-    return (
-      <Card>
-        <StyledFirebaseAuth
-          uiConfig={uiConfig}
-          firebaseAuth={firebase.auth()}
-        />
-      </Card>
-    );
+    return <Spin size="large" />;
   }
   return (
     <Flex row align justify style={{ flexWrap: 'wrap' }}>

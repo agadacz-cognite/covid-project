@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Card, Input, Button, Tooltip, notification } from 'antd';
-import { AppContext } from '../../context';
+import { AppContext, useFirebaseAuthentication } from '../../context';
 import { Flex } from '../../components';
 import { Choice, Hour, Places } from './components';
 
@@ -13,6 +13,8 @@ export default function HourSelection(): JSX.Element {
   const [chosenFirstHalfHour, setChosenFirstHalfHour] = useState();
   const [chosenSecondHalfHour, setChosenSecondHalfHour] = useState();
   const [managerName, setManagerName] = useState('');
+
+  useFirebaseAuthentication();
 
   useEffect(() => {
     if (!days) {
@@ -114,9 +116,14 @@ export default function HourSelection(): JSX.Element {
             }
             style={{ margin: '8px', maxWidth: '500px' }}>
             <p>
-              After taking a COVID test during one of possible dates below, you
-              can go to the office at Monday, Tuesday and Wednesday.
+              After taking a COVID test at Monday on one of slots below, you can
+              go to the office at:
             </p>
+            <ul>
+              <li>Monday</li>
+              <li>Tuesday</li>
+              <li>Wednesday</li>
+            </ul>
             <Flex row align justify style={{ flexWrap: 'wrap' }}>
               {mapHours('first')}
             </Flex>
@@ -131,9 +138,13 @@ export default function HourSelection(): JSX.Element {
             }
             style={{ margin: '8px', maxWidth: '500px' }}>
             <p>
-              After taking a COVID test during one of possible dates below, you
-              can go to the office at Thursday and Friday.
+              After taking a COVID test at Thursday on one of slots below, you
+              can go to the office at:
             </p>
+            <ul>
+              <li>Thursday</li>
+              <li>Friday</li>
+            </ul>
             <Flex row align justify style={{ flexWrap: 'wrap' }}>
               {mapHours('second')}
             </Flex>
