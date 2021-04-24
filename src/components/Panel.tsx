@@ -6,9 +6,9 @@ export const Panel = styled.div`
   justify-content: center;
   align-items: center;
   padding: 12px;
-  border-radius: 12px;
-  border: 3px double #ccc;
+  border: 1px solid #ccc;
   background-color: #fefefe;
+  box-shadow: 0 0 100px #000;
 
   & > * {
     margin: 12px;
