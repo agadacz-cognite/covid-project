@@ -2,7 +2,11 @@ import React, { useState, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Checkbox, Card, Button, Typography, Spin, notification } from 'antd';
 import styled from 'styled-components';
-import { AppContext, useFirebaseAuthentication } from '../context';
+import {
+  AppContext,
+  useFirebaseAuthentication,
+  useActiveRegistration,
+} from '../context';
 import { Flex } from '../components';
 
 const { Title } = Typography;
@@ -22,6 +26,9 @@ export default function DaysSelection(): JSX.Element {
   const { user, setDays } = useContext(AppContext);
   const [firstHalfChecked, setFirstHalfChecked] = useState(false);
   const [secondHalfChecked, setSecondHalfChecked] = useState(false);
+  const activeRegistration = useActiveRegistration();
+
+  console.log(activeRegistration);
 
   useFirebaseAuthentication();
 
@@ -50,6 +57,51 @@ export default function DaysSelection(): JSX.Element {
       return name[0];
     }
   };
+  const ifNoRegistration = (): JSX.Element | undefined => {
+    if (!activeRegistration) {
+      return (
+        <p>
+          There is no active registration at the moment! Please try again later.
+        </p>
+      );
+    }
+    return undefined;
+  };
+  const ifRegistrationOpen = (): JSX.Element | undefined => {
+    const registrationOpenTimestamp =
+      (activeRegistration?.registrationOpenTime?.seconds ?? 0) * 1000;
+    if (activeRegistration && registrationOpenTimestamp <= Number(new Date())) {
+      return (
+        <StyledFlex column justify align>
+          <Checkbox checked={firstHalfChecked} onChange={onFirstHalfChecked}>
+            <BigText>Monday, Tuesday, Wednesday</BigText>
+          </Checkbox>
+          <Checkbox checked={secondHalfChecked} onChange={onSecondHalfChecked}>
+            <BigText>Thursday, Friday</BigText>
+          </Checkbox>
+          <Button type="primary" onClick={onProceed}>
+            Next
+          </Button>
+        </StyledFlex>
+      );
+    }
+    return undefined;
+  };
+  const ifRegistrationPending = (): JSX.Element | undefined => {
+    const registrationOpenTimestamp =
+      (activeRegistration?.registrationOpenTime?.seconds ?? 0) * 1000;
+    if (activeRegistration && registrationOpenTimestamp > Number(new Date())) {
+      return (
+        <Flex column align justify>
+          <Title level={4}>Registration opens at:</Title>
+          <Title level={3}>
+            {new Date(registrationOpenTimestamp).toLocaleString()}
+          </Title>
+        </Flex>
+      );
+    }
+    return undefined;
+  };
 
   if (!user) {
     return <Spin size="large" />;
@@ -60,19 +112,9 @@ export default function DaysSelection(): JSX.Element {
         <Card
           title="Which days of the week you want to go to the office?"
           style={{ width: 'auto', height: 'auto', margin: '8px' }}>
-          <StyledFlex column justify align>
-            <Checkbox checked={firstHalfChecked} onChange={onFirstHalfChecked}>
-              <BigText>Monday, Tuesday, Wednesday</BigText>
-            </Checkbox>
-            <Checkbox
-              checked={secondHalfChecked}
-              onChange={onSecondHalfChecked}>
-              <BigText>Thursday, Friday</BigText>
-            </Checkbox>
-            <Button type="primary" onClick={onProceed}>
-              Next
-            </Button>
-          </StyledFlex>
+          {ifNoRegistration()}
+          {ifRegistrationPending()}
+          {ifRegistrationOpen()}
         </Card>
         {isAdmin && (
           <Card

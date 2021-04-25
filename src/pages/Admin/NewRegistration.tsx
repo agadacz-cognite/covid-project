@@ -10,7 +10,8 @@ import { v4 as uuid } from 'uuid';
 import { Flex, Header } from '../../components';
 import { AppContext, useFirebaseAuthentication } from '../../context';
 import { createActiveRegistration } from '../../firebase';
-import Slot, { SlotData } from './Slot';
+import { SlotData } from '../../shared';
+import Slot from './Slot';
 
 const { Title } = Typography;
 
@@ -34,9 +35,9 @@ const defaultSlot: SlotData = {
 export default function NewRegistration(): JSX.Element {
   const history = useHistory();
   const { user } = useContext(AppContext);
-  const [weekStartDate, setWeekStartDate] = useState<Date | undefined>();
-  const [weekEndDate, setWeekEndDate] = useState<Date | undefined>();
-  const [registrationOpenTime, setRegistrationOpenTime] = useState<Date>(
+  const [weekStartDate, setWeekStartDate] = useState<any | undefined>();
+  const [weekEndDate, setWeekEndDate] = useState<any | undefined>();
+  const [registrationOpenTime, setRegistrationOpenTime] = useState<any>(
     new Date(),
   );
   const [slots, setSlots] = useState<SlotData[]>([defaultSlot]);
@@ -86,6 +87,9 @@ export default function NewRegistration(): JSX.Element {
     const registrationData = { week, registrationOpenTime, slots };
     if (weekStartDate && weekEndDate && registrationOpenTime && slots) {
       createActiveRegistration(registrationData);
+      setTimeout(() => {
+        history.push('/admin');
+      }, 2000);
     }
   };
   const onWeekChange = (dates: Date[]) => {

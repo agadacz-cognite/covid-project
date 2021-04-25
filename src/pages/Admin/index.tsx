@@ -3,15 +3,22 @@ import { useHistory } from 'react-router-dom';
 import { Typography, Button, Card } from 'antd';
 import { ExportOutlined, WarningOutlined } from '@ant-design/icons';
 import { Flex, Header } from '../../components';
-import { AppContext, useFirebaseAuthentication } from '../../context';
+import {
+  AppContext,
+  useFirebaseAuthentication,
+  useActiveRegistration,
+} from '../../context';
 
 const { Title } = Typography;
 
 export default function Admin(): JSX.Element {
   const history = useHistory();
   const { user } = useContext(AppContext);
+  const activeRegistration = useActiveRegistration();
 
   useFirebaseAuthentication();
+
+  console.log(activeRegistration);
 
   useEffect(() => {
     if (!user) {

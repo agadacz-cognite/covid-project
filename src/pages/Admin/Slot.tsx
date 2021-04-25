@@ -5,19 +5,10 @@ import { Select, Button, Slider } from 'antd';
 import { CloseCircleOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import { Flex } from '../../components';
-
+import { SlotData } from '../../shared/types';
 import { possibleDays, possibleHours } from './dates';
 
 const { Option } = Select;
-
-type Day = 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday';
-export type SlotData = {
-  id: string;
-  testDay: Day;
-  testHours: string[];
-  slotsNr: number;
-  officeDays: Day[];
-};
 
 type Props = {
   slot: SlotData;
