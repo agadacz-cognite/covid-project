@@ -27,6 +27,7 @@ const defaultSlot: SlotData = {
     '11:00',
     '11:20',
   ],
+  slotsNr: 15,
   officeDays: ['Monday', 'Tuesday', 'Wednesday'],
 };
 
@@ -83,7 +84,7 @@ export default function NewRegistration(): JSX.Element {
     }
     const week = [weekStartDate, weekEndDate];
     const registrationData = { week, registrationOpenTime, slots };
-    if (weekStartDate && weekEndDate && registrationOpenTime) {
+    if (weekStartDate && weekEndDate && registrationOpenTime && slots) {
       createActiveRegistration(registrationData);
     }
   };
@@ -101,6 +102,7 @@ export default function NewRegistration(): JSX.Element {
       testDay: 'Monday',
       testHours: ['9:00'],
       officeDays: ['Monday'],
+      slotsNr: 15,
     };
     setSlots([...slots, newSlot]);
   };
@@ -119,6 +121,12 @@ export default function NewRegistration(): JSX.Element {
   const onOfficeDaysChange = (id: string, value: any) => {
     const fixedSlots = slots.map(slot =>
       slot.id === id ? { ...slot, officeDays: value } : slot,
+    );
+    setSlots(fixedSlots);
+  };
+  const onSlotsNrChange = (id: string, value: any) => {
+    const fixedSlots = slots.map(slot =>
+      slot.id === id ? { ...slot, slotsNr: value } : slot,
     );
     setSlots(fixedSlots);
   };
@@ -211,6 +219,7 @@ export default function NewRegistration(): JSX.Element {
                 onTestDayChange={onTestDayChange}
                 onTestHoursChange={onTestHoursChange}
                 onOfficeDaysChange={onOfficeDaysChange}
+                onSlotsNrChange={onSlotsNrChange}
                 onSlotDelete={onSlotDelete}
               />
             ))}

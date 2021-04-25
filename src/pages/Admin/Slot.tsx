@@ -1,7 +1,7 @@
 import React from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
 import 'moment/locale/en-gb';
-import { Select, Button } from 'antd';
+import { Select, Button, Slider } from 'antd';
 import { CloseCircleOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import { Flex } from '../../components';
@@ -15,6 +15,7 @@ export type SlotData = {
   id: string;
   testDay: Day;
   testHours: string[];
+  slotsNr: number;
   officeDays: Day[];
 };
 
@@ -24,15 +25,17 @@ type Props = {
   onTestDayChange: (id: string, value: any) => void;
   onTestHoursChange: (id: string, value: any) => void;
   onOfficeDaysChange: (id: string, value: any) => void;
+  onSlotsNrChange: (id: string, value: any) => void;
   onSlotDelete: (id: string) => void;
 };
 
 export default function Slot(props: Props): JSX.Element {
   const {
-    slot: { id, testDay, testHours, officeDays },
+    slot: { id, testDay, testHours, slotsNr, officeDays },
     onTestDayChange,
     onTestHoursChange,
     onOfficeDaysChange,
+    onSlotsNrChange,
     onSlotDelete,
   } = props;
 
@@ -64,17 +67,29 @@ export default function Slot(props: Props): JSX.Element {
         />
       </Flex>
       <Flex row align style={{ margin: '4px 0' }}>
-        <span style={{ fontWeight: 'bold', width: '90px' }}>Test day</span>
-        <Select
-          value={testDay}
-          onChange={value => onTestDayChange(id, value)}
-          style={{ width: '100%', marginLeft: '8px' }}>
-          {possibleDays.map((day: string) => (
-            <Option key={day} value={day}>
-              {day}
-            </Option>
-          ))}
-        </Select>
+        <Flex row align style={{ flexGrow: 1 }}>
+          <span style={{ fontWeight: 'bold', width: '73px' }}>Test day</span>
+          <Select
+            value={testDay}
+            onChange={value => onTestDayChange(id, value)}
+            style={{ marginLeft: '8px', flexGrow: 1 }}>
+            {possibleDays.map((day: string) => (
+              <Option key={day} value={day}>
+                {day}
+              </Option>
+            ))}
+          </Select>
+        </Flex>
+        <Flex row align style={{ flexGrow: 1 }}>
+          <span style={{ fontWeight: 'bold', margin: '0 8px' }}>Slots</span>
+          <Slider
+            value={slotsNr}
+            onChange={(value: number) => onSlotsNrChange(id, value)}
+            min={1}
+            max={30}
+            style={{ marginLeft: '8px', flexGrow: 1 }}
+          />
+        </Flex>
       </Flex>
       <Flex row align style={{ margin: '4px 0' }}>
         <span style={{ fontWeight: 'bold', width: '90px' }}>Test hours</span>
