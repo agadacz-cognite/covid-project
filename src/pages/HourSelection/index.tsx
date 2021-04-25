@@ -6,6 +6,7 @@ import {
   useFirebaseAuthentication,
   useActiveRegistration,
 } from '../../context';
+import { registerUserForTest } from '../../firebase';
 import { SlotData } from '../../shared';
 import { Flex } from '../../components';
 import { Choice, Hour } from './components';
@@ -61,14 +62,21 @@ export default function HourSelection(): JSX.Element {
       });
       return;
     }
+    if (!activeRegistration?.id) {
+      notification.warning({
+        message: 'Something went wrong',
+        description: 'We could not register you. Please try again later.',
+      });
+      return;
+    }
     const registeredUser = {
       email: user.email,
-      weekId: activeRegistration?.id,
+      weekId: activeRegistration.id,
       manager: managerName,
       testHours,
     };
-    console.log(registeredUser);
-    alert(`This will be added soon: ${!!registeredUser}!`);
+    console.log(':3');
+    registerUserForTest(registeredUser);
   };
   const onBack = () => history.push('/start');
 
@@ -102,11 +110,9 @@ export default function HourSelection(): JSX.Element {
     });
   };
 
-  console.log(chosenDays);
-
   return (
     <Flex column>
-      <Flex row>
+      <Flex row style={{ flexWrap: 'wrap' }}>
         {chosenDays?.map((slot: SlotData, index: number) => (
           <Card
             key={`${slot.id}-${index}`}

@@ -116,15 +116,8 @@ export default function DaysSelection(): JSX.Element {
     return <Spin size="large" />;
   }
   return (
-    <Flex row align justify style={{ flexWrap: 'wrap' }}>
+    <Flex row align justify style={{ flexWrap: 'wrap', margin: '8px' }}>
       <Flex column>
-        <Card
-          title="Which days of the week you want to go to the office?"
-          style={{ width: 'auto', height: 'auto', margin: '8px' }}>
-          {ifNoRegistration()}
-          {ifRegistrationPending()}
-          {ifRegistrationOpen()}
-        </Card>
         {isAdmin && (
           <Card
             title={`Hello ${getUserFirstName()}! You're an admin.`}
@@ -136,6 +129,13 @@ export default function DaysSelection(): JSX.Element {
             </Flex>
           </Card>
         )}
+        <Card
+          title="Which days of the week you want to go to the office?"
+          style={{ width: 'auto', height: 'auto', margin: '8px' }}>
+          {ifNoRegistration()}
+          {ifRegistrationPending()}
+          {ifRegistrationOpen()}
+        </Card>
       </Flex>
       <Card
         title={`Hello ${getUserFirstName()}!`}

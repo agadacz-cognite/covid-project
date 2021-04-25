@@ -20,8 +20,6 @@ export default function Admin(): JSX.Element {
   useFirebaseAuthentication();
   useBackIfNotAdmin();
 
-  console.log(activeRegistration);
-
   const onCreateNewRegistration = () => {
     history.push('/admin/newweek');
   };
@@ -37,14 +35,31 @@ export default function Admin(): JSX.Element {
           Logged in as {user?.displayName ?? '-'} ({user?.email ?? '-'})
         </p>
       </Header>
-      <Flex row>
+      <Flex row align justify style={{ flexWrap: 'wrap' }}>
         <Card
           title="Active registration"
           style={{ width: 'auto', height: 'auto', margin: '8px' }}>
-          <Flex column>
-            <Title level={5} style={{ margin: '0 0 16px 0' }}>
-              {new Date().toLocaleString()}
-            </Title>
+          <Flex column align justify>
+            {activeRegistration?.registrationOpenTime?.seconds && (
+              <>
+                <p>For the week:</p>
+                <Title level={5} style={{ margin: '0 0 16px 0' }}>
+                  {new Date(
+                    activeRegistration?.week[0]?.seconds * 1000,
+                  ).toLocaleDateString()}{' '}
+                  -{' '}
+                  {new Date(
+                    activeRegistration?.week[1]?.seconds * 1000,
+                  ).toLocaleDateString()}
+                </Title>
+                <p>Opens at:</p>
+                <Title level={5} style={{ margin: '0 0 16px 0' }}>
+                  {new Date(
+                    activeRegistration.registrationOpenTime.seconds * 1000,
+                  ).toLocaleString()}
+                </Title>
+              </>
+            )}
             <Button
               type="primary"
               onClick={onEditActiveRegistration}

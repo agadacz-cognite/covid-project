@@ -29,15 +29,41 @@ type RegisteredUser = {
     [weekId: string]: string;
   };
 };
-export const registerUserForTest = (registeredUser: RegisteredUser): any => {
-  return db
-    .collection('registrations')
-    .add(registeredUser)
-    .then(() => {
-      notification.success({
-        message: 'Yay!',
-        description: 'You successfully registered for a test!',
-      });
-    })
-    .catch(errorHandler);
+export const registerUserForTest = (userToRegister: RegisteredUser): any => {
+  db.collection('registrations')
+    .get()
+    .then(registeredUsersRaw => {
+      const registeredUsers = (registeredUsersRaw.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as unknown) as (RegisteredUser & { id: string })[];
+      const userWasAlreadyRegistered = registeredUsers.find(
+        (previouslyRegisteredUser: { id: string } & RegisteredUser) =>
+          userToRegister.email === previouslyRegisteredUser.email &&
+          userToRegister.weekId === previouslyRegisteredUser.weekId,
+      );
+      if (userWasAlreadyRegistered) {
+        db.collection('registrations')
+          .doc(userWasAlreadyRegistered.id)
+          .update(userToRegister)
+          .then(() => {
+            notification.success({
+              message: 'Yay!',
+              description: 'You successfully updated your selection!',
+            });
+          })
+          .catch(errorHandler);
+      } else {
+        db.collection('registrations')
+          .add(userToRegister)
+          .then(() => {
+            notification.success({
+              message: 'Yay!',
+              description: 'You successfully registered for a test!',
+            });
+          })
+          .catch(errorHandler);
+      }
+      // TODO this needs to be updated real time!
+    });
 };

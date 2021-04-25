@@ -1,5 +1,10 @@
 export type Day = 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday';
 
+export type Time = {
+  seconds: number;
+  nanoseconds: number;
+};
+
 export type SlotData = {
   id: string;
   testDay: Day;
@@ -11,9 +16,6 @@ export type SlotData = {
 export type RegistrationData = {
   id: string;
   slots: SlotData[];
-  registrationOpenTime: {
-    seconds: number;
-    nanoseconds: number;
-  };
-  week: Date[];
+  registrationOpenTime: Time;
+  week: Time[];
 };
