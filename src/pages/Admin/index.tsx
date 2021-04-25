@@ -1,8 +1,8 @@
 import React, { useContext } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Typography, Button, Card } from 'antd';
+import { Typography, Button } from 'antd';
 import { ExportOutlined, WarningOutlined } from '@ant-design/icons';
-import { Flex, Header } from '../../components';
+import { Flex, Header, Card } from '../../components';
 import {
   AppContext,
   useFirebaseAuthentication,
@@ -28,7 +28,7 @@ export default function Admin(): JSX.Element {
   const onBack = () => history.push('/start');
 
   return (
-    <Flex column>
+    <Flex column style={{ margin: 'auto' }}>
       <Header>
         <Title level={2}>Admin page</Title>
         <p>

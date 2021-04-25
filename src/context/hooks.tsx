@@ -47,11 +47,6 @@ export const useActiveRegistration = (): RegistrationData | undefined => {
           .get()
           .then(week => {
             if (!week.exists) {
-              notification.error({
-                message: 'Something went wrong.',
-                description:
-                  'Something went wrong when trying to retrieve active registration from database.',
-              });
               return undefined;
             } else {
               const fixedWeek = week.data() as RegistrationData | undefined;

@@ -4,10 +4,10 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import 'moment/locale/en-gb';
 import { v4 as uuid } from 'uuid';
-import { Typography, Button, Card, notification } from 'antd';
+import { Typography, Button, notification } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
-import { Flex, Header } from '../../components';
+import { Flex, Header, Card } from '../../components';
 import {
   AppContext,
   useFirebaseAuthentication,
@@ -140,7 +140,7 @@ export default function NewRegistration(): JSX.Element {
   const onBack = () => history.push('/admin');
 
   return (
-    <Flex column style={{ maxWidth: '1024px' }}>
+    <Flex column style={{ maxWidth: '1024px', margin: 'auto' }}>
       <Header>
         <Title level={2} style={{ marginBottom: '4px' }}>
           Open registration for new week
@@ -149,11 +149,11 @@ export default function NewRegistration(): JSX.Element {
           Logged in as {user?.displayName ?? '-'} ({user?.email ?? '-'})
         </p>
       </Header>
-      <Flex row>
+      <Flex row align justify style={{ flexWrap: 'wrap' }}>
         <Flex column>
           <Card
             title="Select the week of the registration"
-            style={{ width: 'auto', height: 'auto', margin: '8px' }}>
+            style={{ margin: '8px', maxWidth: '400px' }}>
             <Flex column align justify>
               <p>
                 Here you can choose for which week this registration will be
@@ -176,7 +176,7 @@ export default function NewRegistration(): JSX.Element {
           </Card>
           <Card
             title="Select time when people can start registering"
-            style={{ width: 'auto', height: 'auto', margin: '8px' }}>
+            style={{ margin: '8px', maxWidth: '400px' }}>
             <Flex column align justify>
               <p>
                 Date selected here will be the time from which people can start
@@ -208,7 +208,7 @@ export default function NewRegistration(): JSX.Element {
         </Flex>
         <Card
           title="Add slots for testing"
-          style={{ width: 'auto', height: 'auto', margin: '8px' }}>
+          style={{ margin: '8px', maxWidth: '500px' }}>
           <Flex column>
             <p>
               Here you can choose a day when testing is carried out, hours

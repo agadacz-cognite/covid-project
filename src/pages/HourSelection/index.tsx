@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Card, Input, Button, Tooltip, notification } from 'antd';
+import { Input, Button, Tooltip, notification } from 'antd';
 import {
   AppContext,
   useFirebaseAuthentication,
@@ -8,7 +8,7 @@ import {
 } from '../../context';
 import { registerUserForTest } from '../../firebase';
 import { SlotData } from '../../shared';
-import { Flex } from '../../components';
+import { Flex, Card } from '../../components';
 import { Choice, Hour } from './components';
 
 export default function HourSelection(): JSX.Element {
@@ -110,7 +110,7 @@ export default function HourSelection(): JSX.Element {
   };
 
   return (
-    <Flex column>
+    <Flex column style={{ margin: 'auto' }}>
       <Flex row style={{ flexWrap: 'wrap' }}>
         {chosenDays?.map((slot: SlotData, index: number) => (
           <Card
