@@ -6,6 +6,7 @@ import 'moment/locale/en-gb';
 import { Typography, Button, Card, notification } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
+import { v4 as uuid } from 'uuid';
 import { Flex, Header } from '../../components';
 import { AppContext, useFirebaseAuthentication } from '../../context';
 import { createActiveRegistration } from '../../firebase';
@@ -14,6 +15,7 @@ import Slot, { SlotData } from './Slot';
 const { Title } = Typography;
 
 const defaultSlot: SlotData = {
+  id: 'default',
   testDay: 'Monday',
   testHours: [
     '9:00',
@@ -89,6 +91,7 @@ export default function NewRegistration(): JSX.Element {
   };
   const onAddSlot = () => {
     const newSlot: SlotData = {
+      id: uuid(),
       testDay: 'Monday',
       testHours: ['9:00'],
       officeDays: ['Monday'],
@@ -96,11 +99,20 @@ export default function NewRegistration(): JSX.Element {
     setSlots([...slots, newSlot]);
   };
   const onBack = () => history.push('/admin');
+  const onTestDayChange = () => alert('');
+  const onTestHoursChange = () => alert('');
+  const onOfficeDaysChange = () => alert('');
+  const onSlotDelete = (id: string) => {
+    const fixedSlots = slots.filter(slot => slot.id !== id);
+    setSlots(fixedSlots);
+  };
 
   return (
     <Flex column style={{ maxWidth: '1024px' }}>
       <Header>
-        <Title level={2}>New registration</Title>
+        <Title level={2} style={{ marginBottom: '4px' }}>
+          Open registration for new week
+        </Title>
         <p>
           Logged in as {user?.displayName ?? '-'} ({user?.email ?? '-'})
         </p>
@@ -149,7 +161,12 @@ export default function NewRegistration(): JSX.Element {
                 locale="en-GB"
                 showTimeSelect
                 calendarContainer={({ children }) => (
-                  <Flex row style={{ backgroundColor: 'white' }}>
+                  <Flex
+                    row
+                    style={{
+                      backgroundColor: 'white',
+                      border: '1px solid grey',
+                    }}>
                     {children}
                   </Flex>
                 )}
@@ -167,7 +184,14 @@ export default function NewRegistration(): JSX.Element {
               is eligible to come to the office after test.
             </p>
             {slots?.map((slot: SlotData, index: number) => (
-              <Slot slot={slot} key={`slot-${index}`} />
+              <Slot
+                slot={slot}
+                key={`slot-${index}`}
+                onTestDayChange={onTestDayChange}
+                onTestHoursChange={onTestHoursChange}
+                onOfficeDaysChange={onOfficeDaysChange}
+                onSlotDelete={onSlotDelete}
+              />
             ))}
             <Button
               type="dashed"
