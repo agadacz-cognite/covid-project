@@ -12,7 +12,7 @@ const Wrapper = styled.div`
   align-items: center;
 `;
 const Background = styled.div`
-  position: absolute;
+  position: fixed;
   display: flex;
   width: 100vw;
   height: 100vh;
@@ -20,9 +20,18 @@ const Background = styled.div`
   padding: 0;
   background-image: url(${bg});
   background-size: cover;
-  filter: blur(8px);
-  -webkit-filter: blur(8px);
   z-index: -100;
+
+  &:before {
+    content: '';
+    position: absolute;
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    pointer-events: none;
+  }
 `;
 
 export const MainWrapper = ({
