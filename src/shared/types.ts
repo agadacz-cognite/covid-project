@@ -9,6 +9,7 @@ export type SlotData = {
 };
 
 export type RegistrationData = {
+  id: string;
   slots: SlotData[];
   registrationOpenTime: {
     seconds: number;

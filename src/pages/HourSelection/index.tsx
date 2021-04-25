@@ -26,11 +26,8 @@ export default function HourSelection(): JSX.Element {
         activeRegistration?.slots.filter(slot => days.includes(slot.id)) ?? [];
       setChosenDays(slots);
     }
-    if (!days) {
+    if (!days.length) {
       history.push('/start');
-    }
-    if (!user) {
-      history.push('/');
     }
   }, []);
 
@@ -49,10 +46,11 @@ export default function HourSelection(): JSX.Element {
   const onManagerNameChange = (event: React.ChangeEvent<HTMLInputElement>) =>
     setManagerName(event.target.value);
   const onSubmit = () => {
-    if (Object.values(testHours).length === 0) {
+    if (Object.values(testHours).length < chosenDays.length) {
       notification.warning({
         message: 'Hour not specified',
-        description: 'You have to choose an hour.',
+        description:
+          'You have to choose a testing hour for every day you specified.',
       });
       return;
     }
@@ -65,11 +63,14 @@ export default function HourSelection(): JSX.Element {
     }
     const registeredUser = {
       email: user.email,
+      weekId: activeRegistration?.id,
       manager: managerName,
       testHours,
     };
+    console.log(registeredUser);
     alert(`This will be added soon: ${!!registeredUser}!`);
   };
+  const onBack = () => history.push('/start');
 
   const mapHours = (id: string) => {
     const slotToMap = chosenDays.find((slot: SlotData) => slot.id === id);
@@ -140,6 +141,11 @@ export default function HourSelection(): JSX.Element {
         />
         <Button type="primary" onClick={onSubmit} style={{ marginTop: '8px' }}>
           Submit
+        </Button>
+      </Flex>
+      <Flex row align justify style={{ padding: '8px', margin: '8px' }}>
+        <Button type="default" onClick={onBack}>
+          Back
         </Button>
       </Flex>
     </Flex>

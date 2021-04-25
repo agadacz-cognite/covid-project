@@ -64,3 +64,40 @@ export const useActiveRegistration = (): RegistrationData | undefined => {
     })
     .catch(errorHandler);
 };
+
+export const useIsUserAdmin = (): any => {
+  const { admins, setAdmins, user } = useContext(AppContext);
+  if (admins && user?.email) {
+    if (admins.includes(user?.email)) {
+      return true;
+    }
+    return false;
+  }
+  const adminsRef = db.collection('options').doc('admins');
+  adminsRef.get().then(option => {
+    if (!option.exists) {
+      notification.error({
+        message: 'Something went wrong.',
+        description: 'Something went wrong when trying to get admins.',
+      });
+      return false;
+    } else {
+      const emails: string[] = option.data()?.emails;
+      setAdmins(emails);
+      if (emails.includes(user?.email)) {
+        return true;
+      }
+      return false;
+    }
+  });
+};
+
+export const useBackIfNotAdmin = (): void => {
+  const isAdmin = useIsUserAdmin();
+  const history = useHistory();
+  useEffect(() => {
+    if (!isAdmin) {
+      history.push('/start');
+    }
+  }, [isAdmin]);
+};

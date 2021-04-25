@@ -1,14 +1,18 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import 'moment/locale/en-gb';
+import { v4 as uuid } from 'uuid';
 import { Typography, Button, Card, notification } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
-import { v4 as uuid } from 'uuid';
 import { Flex, Header } from '../../components';
-import { AppContext, useFirebaseAuthentication } from '../../context';
+import {
+  AppContext,
+  useFirebaseAuthentication,
+  useBackIfNotAdmin,
+} from '../../context';
 import { createActiveRegistration } from '../../firebase';
 import { SlotData } from '../../shared';
 import Slot from './Slot';
@@ -16,7 +20,7 @@ import Slot from './Slot';
 const { Title } = Typography;
 
 const defaultSlot: SlotData = {
-  id: 'default',
+  id: uuid(),
   testDay: 'Monday',
   testHours: [
     '9:00',
@@ -42,15 +46,10 @@ export default function NewRegistration(): JSX.Element {
   );
   const [slots, setSlots] = useState<SlotData[]>([defaultSlot]);
 
-  const randomFarAwayDate = new Date(1934832714000);
-
   useFirebaseAuthentication();
+  useBackIfNotAdmin();
 
-  useEffect(() => {
-    if (!user) {
-      history.push('/');
-    }
-  }, []);
+  const randomFarAwayDate = new Date(1934832714000);
 
   const isWeekday = (date: Date) => {
     if (date.getDay() === 6 || date.getDay() === 0) {
@@ -84,7 +83,7 @@ export default function NewRegistration(): JSX.Element {
       return;
     }
     const week = [weekStartDate, weekEndDate];
-    const registrationData = { week, registrationOpenTime, slots };
+    const registrationData = { week, registrationOpenTime, slots, id: uuid() };
     if (weekStartDate && weekEndDate && registrationOpenTime && slots) {
       createActiveRegistration(registrationData);
       setTimeout(() => {

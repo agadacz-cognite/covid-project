@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Typography, Button, Card } from 'antd';
 import { ExportOutlined, WarningOutlined } from '@ant-design/icons';
@@ -7,6 +7,7 @@ import {
   AppContext,
   useFirebaseAuthentication,
   useActiveRegistration,
+  useBackIfNotAdmin,
 } from '../../context';
 
 const { Title } = Typography;
@@ -17,14 +18,9 @@ export default function Admin(): JSX.Element {
   const activeRegistration = useActiveRegistration();
 
   useFirebaseAuthentication();
+  useBackIfNotAdmin();
 
   console.log(activeRegistration);
-
-  useEffect(() => {
-    if (!user) {
-      history.push('/');
-    }
-  }, []);
 
   const onCreateNewRegistration = () => {
     history.push('/admin/newweek');

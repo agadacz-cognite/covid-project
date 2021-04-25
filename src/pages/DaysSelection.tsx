@@ -6,6 +6,7 @@ import {
   AppContext,
   useFirebaseAuthentication,
   useActiveRegistration,
+  useIsUserAdmin,
 } from '../context';
 import { SlotData } from '../shared';
 import { Flex } from '../components';
@@ -27,10 +28,9 @@ export default function DaysSelection(): JSX.Element {
   const { user, setDays } = useContext(AppContext);
   const [slotsChecked, setSlotsChecked] = useState<string[]>([]);
   const activeRegistration = useActiveRegistration();
+  const isAdmin = useIsUserAdmin();
 
   useFirebaseAuthentication();
-
-  const isAdmin = true;
 
   const onSlotChecked = (event: any, id: string) => {
     const checked = event.target.checked;
