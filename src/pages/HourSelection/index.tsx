@@ -75,7 +75,6 @@ export default function HourSelection(): JSX.Element {
       manager: managerName,
       testHours,
     };
-    console.log(':3');
     registerUserForTest(registeredUser);
   };
   const onBack = () => history.push('/start');
