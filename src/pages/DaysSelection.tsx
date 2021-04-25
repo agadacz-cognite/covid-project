@@ -7,6 +7,7 @@ import {
   useFirebaseAuthentication,
   useActiveRegistration,
 } from '../context';
+import { SlotData } from '../shared';
 import { Flex } from '../components';
 
 const { Title } = Typography;
@@ -24,24 +25,27 @@ const BigText = styled.div`
 export default function DaysSelection(): JSX.Element {
   const history = useHistory();
   const { user, setDays } = useContext(AppContext);
-  const [firstHalfChecked, setFirstHalfChecked] = useState(false);
-  const [secondHalfChecked, setSecondHalfChecked] = useState(false);
+  const [slotsChecked, setSlotsChecked] = useState<string[]>([]);
   const activeRegistration = useActiveRegistration();
-
-  console.log(activeRegistration);
 
   useFirebaseAuthentication();
 
   const isAdmin = true;
 
-  const onFirstHalfChecked = (event: any) =>
-    setFirstHalfChecked(event.target.checked);
-  const onSecondHalfChecked = (event: any) =>
-    setSecondHalfChecked(event.target.checked);
+  const onSlotChecked = (event: any, id: string) => {
+    const checked = event.target.checked;
+    if (!checked) {
+      const fixedSlots = slotsChecked.filter(slot => slot !== id);
+      setSlotsChecked(fixedSlots);
+    } else {
+      const fixedSlots = [...slotsChecked, id];
+      setSlotsChecked(fixedSlots);
+    }
+  };
   const onAdminPageClick = () => history.push('/admin');
   const onProceed = () => {
-    if (firstHalfChecked || secondHalfChecked) {
-      setDays({ firstHalf: firstHalfChecked, secondHalf: secondHalfChecked });
+    if (slotsChecked?.length) {
+      setDays(slotsChecked);
       history.push('/choose');
     } else {
       notification.warning({
@@ -73,12 +77,17 @@ export default function DaysSelection(): JSX.Element {
     if (activeRegistration && registrationOpenTimestamp <= Number(new Date())) {
       return (
         <StyledFlex column justify align>
-          <Checkbox checked={firstHalfChecked} onChange={onFirstHalfChecked}>
-            <BigText>Monday, Tuesday, Wednesday</BigText>
-          </Checkbox>
-          <Checkbox checked={secondHalfChecked} onChange={onSecondHalfChecked}>
-            <BigText>Thursday, Friday</BigText>
-          </Checkbox>
+          {activeRegistration.slots.map((slot: SlotData, index: number) => {
+            const isChecked = slotsChecked.includes(slot.id);
+            return (
+              <Checkbox
+                key={`slot-user-${index}`}
+                checked={isChecked}
+                onChange={event => onSlotChecked(event, slot.id)}>
+                <BigText>{slot.officeDays.join(', ')}</BigText>
+              </Checkbox>
+            );
+          })}
           <Button type="primary" onClick={onProceed}>
             Next
           </Button>
