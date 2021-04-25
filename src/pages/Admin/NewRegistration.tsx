@@ -74,9 +74,15 @@ export default function NewRegistration(): JSX.Element {
       });
       return;
     }
-    const dates: any[] = [];
+    if (!slots?.length) {
+      notification.warning({
+        message: 'Incomplete data',
+        description: 'You must provide at least one slot for registration!',
+      });
+      return;
+    }
     const week = [weekStartDate, weekEndDate];
-    const registrationData = { week, registrationOpenTime, dates };
+    const registrationData = { week, registrationOpenTime, slots };
     if (weekStartDate && weekEndDate && registrationOpenTime) {
       createActiveRegistration(registrationData);
     }
@@ -98,14 +104,29 @@ export default function NewRegistration(): JSX.Element {
     };
     setSlots([...slots, newSlot]);
   };
-  const onBack = () => history.push('/admin');
-  const onTestDayChange = () => alert('');
-  const onTestHoursChange = () => alert('');
-  const onOfficeDaysChange = () => alert('');
+  const onTestDayChange = (id: string, value: any) => {
+    const fixedSlots = slots.map(slot =>
+      slot.id === id ? { ...slot, testDay: value } : slot,
+    );
+    setSlots(fixedSlots);
+  };
+  const onTestHoursChange = (id: string, value: any) => {
+    const fixedSlots = slots.map(slot =>
+      slot.id === id ? { ...slot, testHours: value } : slot,
+    );
+    setSlots(fixedSlots);
+  };
+  const onOfficeDaysChange = (id: string, value: any) => {
+    const fixedSlots = slots.map(slot =>
+      slot.id === id ? { ...slot, officeDays: value } : slot,
+    );
+    setSlots(fixedSlots);
+  };
   const onSlotDelete = (id: string) => {
     const fixedSlots = slots.filter(slot => slot.id !== id);
     setSlots(fixedSlots);
   };
+  const onBack = () => history.push('/admin');
 
   return (
     <Flex column style={{ maxWidth: '1024px' }}>

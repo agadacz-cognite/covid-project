@@ -1,9 +1,11 @@
 import { db } from '.';
+import { notification } from 'antd';
+import { SlotData } from '../pages/Admin/Slot';
 
 type RegistrationData = {
   week: Date[];
   registrationOpenTime: Date;
-  dates: any[];
+  slots: SlotData[];
 };
 
 export const createActiveRegistration = (
@@ -12,7 +14,11 @@ export const createActiveRegistration = (
   return db
     .collection('registrations')
     .add(registrationData)
-    .catch(error => {
-      alert(error);
-    });
+    .then(() =>
+      notification.success({
+        message: 'Yay!',
+        description: 'You successfully opened a new registration!',
+      }),
+    )
+    .catch(error => notification.error({ message: ':(', description: error }));
 };

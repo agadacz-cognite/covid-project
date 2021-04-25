@@ -21,9 +21,9 @@ export type SlotData = {
 type Props = {
   slot: SlotData;
 } & {
-  onTestDayChange: () => void;
-  onTestHoursChange: () => void;
-  onOfficeDaysChange: () => void;
+  onTestDayChange: (id: string, value: any) => void;
+  onTestHoursChange: (id: string, value: any) => void;
+  onOfficeDaysChange: (id: string, value: any) => void;
   onSlotDelete: (id: string) => void;
 };
 
@@ -67,7 +67,7 @@ export default function Slot(props: Props): JSX.Element {
         <span style={{ fontWeight: 'bold', width: '90px' }}>Test day</span>
         <Select
           value={testDay}
-          onChange={onTestDayChange}
+          onChange={value => onTestDayChange(id, value)}
           style={{ width: '100%', marginLeft: '8px' }}>
           {possibleDays.map((day: string) => (
             <Option key={day} value={day}>
@@ -80,7 +80,7 @@ export default function Slot(props: Props): JSX.Element {
         <span style={{ fontWeight: 'bold', width: '90px' }}>Test hours</span>
         <Select
           value={testHours}
-          onChange={onTestHoursChange}
+          onChange={value => onTestHoursChange(id, value)}
           mode="tags"
           style={{ width: '100%', marginLeft: '8px' }}>
           {hoursOptions}
@@ -90,7 +90,7 @@ export default function Slot(props: Props): JSX.Element {
         <span style={{ fontWeight: 'bold', width: '90px' }}>Office days</span>
         <Select
           value={officeDays}
-          onChange={onOfficeDaysChange}
+          onChange={value => onOfficeDaysChange(id, value)}
           mode="tags"
           style={{ width: '100%', marginLeft: '8px' }}>
           {daysOptions}
