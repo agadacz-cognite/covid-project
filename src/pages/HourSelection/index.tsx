@@ -14,17 +14,17 @@ import { Choice, Hour, Places } from './components';
 
 export default function HourSelection(): JSX.Element {
   const history = useHistory();
-  const { user, days, slotsData } = useContext(AppContext);
+  const { user, days, slotsData, activeRegistration } = useContext(AppContext);
   const [managerName, setManagerName] = useState('');
   const [chosenDays, setChosenDays] = useState<SlotData[]>([]);
   const [testHours, setTestHours] = useState<any>({});
-  const activeRegistration = useActiveRegistration();
 
+  useActiveRegistration();
   useAvailablePlacesForSlots(activeRegistration?.id);
   useFirebaseAuthentication();
 
   useEffect(() => {
-    if (days) {
+    if (days.length) {
       const slots: SlotData[] =
         activeRegistration?.slots.filter(slot => days.includes(slot.id)) ?? [];
       setChosenDays(slots);
@@ -84,20 +84,20 @@ export default function HourSelection(): JSX.Element {
   const mapHours = (id: string) => {
     const slotToMap = chosenDays.find((slot: SlotData) => slot.id === id);
     if (!slotToMap) {
-      return undefined;
+      return 'no slots to map';
     }
     return slotToMap.testHours.map((hour: any) => {
       const slotData = slotsData.find(
         (fixedSlot: FixedSlotData) => fixedSlot.id === id,
       );
       if (!slotData) {
-        return undefined;
+        return 'no slot data';
       }
       const fixedTestHour = slotData.testHours.find(
         (testHour: any) => testHour.time === hour,
       );
       if (!fixedTestHour) {
-        return undefined;
+        return 'no fixed test houts';
       }
       const available = fixedTestHour.takenPlaces < fixedTestHour.totalPlaces;
       const percentOfPlacesTaken =

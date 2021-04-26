@@ -1,8 +1,9 @@
 import { useEffect, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
+import { notification } from 'antd';
+import deepEqual from 'deep-equal';
 import { AppContext } from '.';
 import { db } from '../firebase';
-import { notification } from 'antd';
 import {
   errorHandler,
   RegistrationData,
@@ -18,7 +19,7 @@ export const useFirebaseAuthentication = (): any => {
   const { setUser } = useContext(AppContext);
 
   useEffect(() => {
-    firebase.auth().onAuthStateChanged((newUser: any) => {
+    const unsubscribe = firebase.auth().onAuthStateChanged((newUser: any) => {
       if (newUser) {
         setUser(newUser);
       } else {
@@ -26,44 +27,52 @@ export const useFirebaseAuthentication = (): any => {
         history.push('/');
       }
     });
+    return () => unsubscribe();
   }, []);
 };
 
-export const useActiveRegistration = (): RegistrationData | undefined => {
+export const useActiveRegistration = (): void => {
   const { activeRegistration, setActiveRegistration } = useContext(AppContext);
-  if (activeRegistration) {
-    return activeRegistration;
-  }
-  const docRef = db.collection('options').doc('activeRegistration');
-  docRef
-    .get()
-    .then(option => {
-      if (!option.exists) {
-        notification.error({
-          message: 'Something went wrong.',
-          description:
-            'Something went wrong when trying to retrieve data of the active registration from database.',
-        });
-        return undefined;
-      } else {
-        const activeRegistration = option.data();
-        const id = activeRegistration?.id;
-        const weekRef = db.collection('weeks').doc(id);
-        weekRef
-          .get()
-          .then(week => {
-            if (!week.exists) {
-              return undefined;
-            } else {
-              const fixedWeek = week.data() as RegistrationData | undefined;
-              setActiveRegistration(fixedWeek);
-              return fixedWeek;
-            }
-          })
-          .catch(errorHandler);
-      }
-    })
-    .catch(errorHandler);
+
+  useEffect(() => {
+    const activeRegistrationRef = db
+      .collection('options')
+      .doc('activeRegistration');
+    let unsubscribeWeeks: any;
+    const unsubscribeActiveRegistration = activeRegistrationRef.onSnapshot(
+      option => {
+        if (!option.exists) {
+          notification.error({
+            message: 'Something went wrong.',
+            description:
+              'Something went wrong when trying to retrieve data of the active registration from database.',
+          });
+          return;
+        } else {
+          const freshActiveRegistration = option.data();
+          const id = freshActiveRegistration?.id;
+          unsubscribeWeeks = db
+            .collection('weeks')
+            .doc(id)
+            .onSnapshot(week => {
+              if (!week.exists) {
+                return undefined;
+              } else {
+                const fixedWeek = week.data() as RegistrationData | undefined;
+                if (!deepEqual(activeRegistration, fixedWeek)) {
+                  setActiveRegistration(fixedWeek);
+                }
+              }
+            }, errorHandler);
+        }
+      },
+      errorHandler,
+    );
+    return () => {
+      unsubscribeActiveRegistration && unsubscribeActiveRegistration();
+      unsubscribeWeeks && unsubscribeWeeks();
+    };
+  }, []);
 };
 
 export const useIsUserAdmin = (): any => {
@@ -74,6 +83,7 @@ export const useIsUserAdmin = (): any => {
     }
     return false;
   }
+
   const adminsRef = db.collection('options').doc('admins');
   adminsRef.get().then(option => {
     if (!option.exists) {
@@ -107,29 +117,39 @@ export const useAvailablePlacesForSlots = async (
   weekId: string | undefined,
 ): Promise<any> => {
   const { slotsData, setSlotsData } = useContext(AppContext);
-  if (!weekId || slotsData?.length) {
+  if (!weekId) {
     return;
   }
-  const weeksRaw = await db.collection('weeks').doc(weekId).get();
-  const registrationsRaw = await db.collection('registrations').get();
-  const registrations = (registrationsRaw.docs.map(doc => ({
-    id: doc.id,
-    ...doc.data(),
-  })) as unknown) as (RegisteredUser & { id: string })[];
-  const slots: FixedSlotData[] = weeksRaw
-    .data()
-    ?.slots.map((slot: SlotData) => ({
-      id: slot.id,
-      testHours: slot.testHours.map((testHour: string) => ({
-        time: testHour,
-        totalPlaces: slot.slotsNr,
-        takenPlaces: registrations.filter(
-          (registeredUser: RegisteredUser) =>
-            registeredUser.weekId === weekId &&
-            registeredUser.testHours[slot.id] === testHour,
-        ).length,
-      })),
-    }));
-
-  setSlotsData(slots);
+  const weeksDoc = await db.collection('weeks').doc(weekId).get();
+  if (!weeksDoc.exists) {
+    return;
+  }
+  const weeksRaw = weeksDoc.data();
+  // const registrationsUnsubscribe =
+  db.collection('registrations')
+    .where('weekId', '==', weekId)
+    .onSnapshot((registrationsDocs: any) => {
+      const registrations: RegisteredUser[] = [];
+      registrationsDocs.forEach((registrationDoc: any) => {
+        registrations.push({
+          id: registrationDoc.id,
+          ...registrationDoc.data(),
+        });
+      });
+      const slots: FixedSlotData[] = weeksRaw?.slots.map((slot: SlotData) => ({
+        id: slot.id,
+        testHours: slot.testHours.map((testHour: string) => ({
+          time: testHour,
+          totalPlaces: slot.slotsNr,
+          takenPlaces: registrations.filter(
+            (registeredUser: RegisteredUser) =>
+              registeredUser.weekId === weekId &&
+              registeredUser.testHours[slot.id] === testHour,
+          ).length,
+        })),
+      }));
+      if (!deepEqual(slots, slotsData)) {
+        setSlotsData(slots);
+      }
+    }, errorHandler);
 };

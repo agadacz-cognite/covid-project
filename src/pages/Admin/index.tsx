@@ -14,9 +14,9 @@ const { Title } = Typography;
 
 export default function Admin(): JSX.Element {
   const history = useHistory();
-  const { user } = useContext(AppContext);
-  const activeRegistration = useActiveRegistration();
+  const { user, activeRegistration } = useContext(AppContext);
 
+  useActiveRegistration();
   useFirebaseAuthentication();
   useBackIfNotAdmin();
 

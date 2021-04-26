@@ -25,12 +25,12 @@ const BigText = styled.div`
 
 export default function DaysSelection(): JSX.Element {
   const history = useHistory();
-  const { user, setDays } = useContext(AppContext);
+  const { user, setDays, activeRegistration } = useContext(AppContext);
   const [slotsChecked, setSlotsChecked] = useState<string[]>([]);
-  const activeRegistration = useActiveRegistration();
   const isAdmin = useIsUserAdmin();
 
   useFirebaseAuthentication();
+  useActiveRegistration();
 
   const onSlotChecked = (event: any, id: string) => {
     const checked = event.target.checked;
