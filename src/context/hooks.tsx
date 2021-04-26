@@ -3,7 +3,13 @@ import { useHistory } from 'react-router-dom';
 import { AppContext } from '.';
 import { db } from '../firebase';
 import { notification } from 'antd';
-import { errorHandler, RegistrationData } from '../shared';
+import {
+  errorHandler,
+  RegistrationData,
+  RegisteredUser,
+  SlotData,
+  FixedSlotData,
+} from '../shared';
 
 import firebase from '../firebase';
 
@@ -95,4 +101,35 @@ export const useBackIfNotAdmin = (): void => {
       history.push('/start');
     }
   }, [isAdmin]);
+};
+
+export const useAvailablePlacesForSlots = async (
+  weekId: string | undefined,
+): Promise<any> => {
+  const { slotsData, setSlotsData } = useContext(AppContext);
+  if (!weekId || slotsData?.length) {
+    return;
+  }
+  const weeksRaw = await db.collection('weeks').doc(weekId).get();
+  const registrationsRaw = await db.collection('registrations').get();
+  const registrations = (registrationsRaw.docs.map(doc => ({
+    id: doc.id,
+    ...doc.data(),
+  })) as unknown) as (RegisteredUser & { id: string })[];
+  const slots: FixedSlotData[] = weeksRaw
+    .data()
+    ?.slots.map((slot: SlotData) => ({
+      id: slot.id,
+      testHours: slot.testHours.map((testHour: string) => ({
+        time: testHour,
+        totalPlaces: slot.slotsNr,
+        takenPlaces: registrations.filter(
+          (registeredUser: RegisteredUser) =>
+            registeredUser.weekId === weekId &&
+            registeredUser.testHours[slot.id] === testHour,
+        ).length,
+      })),
+    }));
+
+  setSlotsData(slots);
 };

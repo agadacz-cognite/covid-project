@@ -13,9 +13,30 @@ export type SlotData = {
   officeDays: Day[];
 };
 
+export type TestHours = {
+  time: string;
+  totalPlaces: number;
+  takenPlaces: number;
+};
+
+export type FixedSlotData = {
+  id: string;
+  testHours: TestHours[];
+};
+
 export type RegistrationData = {
   id: string;
   slots: SlotData[];
   registrationOpenTime: Time;
   week: Time[];
+};
+
+export type RegisteredUser = {
+  id?: string;
+  email: string;
+  weekId: string;
+  manager: string;
+  testHours: {
+    [weekId: string]: string;
+  };
 };

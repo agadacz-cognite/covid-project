@@ -28,7 +28,7 @@ export default function Home(): JSX.Element {
 
   return (
     <Panel style={{ maxWidth: '500px' }}>
-      <Title level={2}>COVID test rejestration</Title>
+      <Title level={2}>COVID test registration</Title>
       <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={firebase.auth()} />
     </Panel>
   );

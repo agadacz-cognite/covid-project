@@ -23,8 +23,10 @@ export default function Admin(): JSX.Element {
   const onCreateNewRegistration = () => {
     history.push('/admin/newweek');
   };
-  const onEditActiveRegistration = () => alert('edit?');
-  const onDownloadRegisteredUsers = () => alert('download?');
+  const onEditActiveRegistration = () =>
+    alert('Editing active registration - coming soon!');
+  const onDownloadRegisteredUsers = () =>
+    alert('Exporting registration data - coming soon!');
   const onBack = () => history.push('/start');
 
   return (
@@ -40,6 +42,11 @@ export default function Admin(): JSX.Element {
           title="Active registration"
           style={{ width: 'auto', height: 'auto', margin: '8px' }}>
           <Flex column align justify>
+            {!activeRegistration && (
+              <Title level={5}>
+                There is no open registration at the moment!
+              </Title>
+            )}
             {activeRegistration?.registrationOpenTime?.seconds && (
               <>
                 <p>For the week:</p>
@@ -63,10 +70,14 @@ export default function Admin(): JSX.Element {
             <Button
               type="primary"
               onClick={onEditActiveRegistration}
+              disabled={!activeRegistration}
               style={{ marginBottom: '8px' }}>
               Edit
             </Button>
-            <Button type="primary" onClick={onDownloadRegisteredUsers}>
+            <Button
+              type="primary"
+              onClick={onDownloadRegisteredUsers}
+              disabled={!activeRegistration}>
               Export to Google Sheets <ExportOutlined />
             </Button>
           </Flex>
@@ -76,8 +87,8 @@ export default function Admin(): JSX.Element {
           style={{ width: 'auto', height: 'auto', margin: '8px' }}>
           <Flex column>
             <p>
-              <WarningOutlined />
-              Creating new registration will close the old one
+              <WarningOutlined /> Creating new registration will close the old
+              one
             </p>
             <Button type="primary" danger onClick={onCreateNewRegistration}>
               Create

@@ -5,20 +5,22 @@ import {
   AppContext,
   useFirebaseAuthentication,
   useActiveRegistration,
+  useAvailablePlacesForSlots,
 } from '../../context';
 import { registerUserForTest } from '../../firebase';
-import { SlotData } from '../../shared';
+import { FixedSlotData, SlotData } from '../../shared';
 import { Flex, Card } from '../../components';
-import { Choice, Hour } from './components';
+import { Choice, Hour, Places } from './components';
 
 export default function HourSelection(): JSX.Element {
   const history = useHistory();
-  const { user, days } = useContext(AppContext);
+  const { user, days, slotsData } = useContext(AppContext);
   const [managerName, setManagerName] = useState('');
   const [chosenDays, setChosenDays] = useState<SlotData[]>([]);
   const [testHours, setTestHours] = useState<any>({});
   const activeRegistration = useActiveRegistration();
 
+  useAvailablePlacesForSlots(activeRegistration?.id);
   useFirebaseAuthentication();
 
   useEffect(() => {
@@ -85,9 +87,23 @@ export default function HourSelection(): JSX.Element {
       return undefined;
     }
     return slotToMap.testHours.map((hour: any) => {
-      const available = true;
-      //   const available = hour.availability > 0;
-      //   const percentOfPlacesTaken = (hour.availability / hour.places) * 100;
+      const slotData = slotsData.find(
+        (fixedSlot: FixedSlotData) => fixedSlot.id === id,
+      );
+      if (!slotData) {
+        return undefined;
+      }
+      const fixedTestHour = slotData.testHours.find(
+        (testHour: any) => testHour.time === hour,
+      );
+      if (!fixedTestHour) {
+        return undefined;
+      }
+      const available = fixedTestHour.takenPlaces < fixedTestHour.totalPlaces;
+      const percentOfPlacesTaken =
+        ((fixedTestHour.totalPlaces - fixedTestHour.takenPlaces) /
+          fixedTestHour.totalPlaces) *
+        100;
       return (
         <Tooltip
           key={JSON.stringify(hour)}
@@ -95,14 +111,16 @@ export default function HourSelection(): JSX.Element {
             !available && 'All of the slots for this hour are already taken.'
           }>
           <Choice
-            availability={100}
+            availability={percentOfPlacesTaken}
             chosen={isChosen(id, hour)}
             onClick={() => onHourChoose(id, hour, available)}>
             <Hour available={available}>{hour}</Hour>
-            {/* <Places>
-               <span style={{ fontWeight: 'bold' }}>{hour.availability}</span>{' '}
-               available
-             </Places> */}
+            <Places>
+              <span style={{ fontWeight: 'bold' }}>
+                {fixedTestHour.totalPlaces - fixedTestHour.takenPlaces}
+              </span>{' '}
+              available
+            </Places>
           </Choice>
         </Tooltip>
       );

@@ -1,17 +1,17 @@
 import { db } from '.';
 import { notification } from 'antd';
-import { errorHandler, RegistrationData } from '../shared';
+import { errorHandler, RegistrationData, RegisteredUser } from '../shared';
 
 export const createActiveRegistration = (
   registrationData: RegistrationData,
 ): any => {
   return db
     .collection('weeks')
-    .add(registrationData)
-    .then(docRef => {
-      const id = docRef.id;
+    .doc(registrationData.id)
+    .set(registrationData)
+    .then(() => {
       db.collection('options').doc('activeRegistration').update({
-        id,
+        id: registrationData.id,
       });
       notification.success({
         message: 'Yay!',
@@ -21,14 +21,6 @@ export const createActiveRegistration = (
     .catch(errorHandler);
 };
 
-type RegisteredUser = {
-  email: string;
-  weekId: string;
-  manager: string;
-  testHours: {
-    [weekId: string]: string;
-  };
-};
 export const registerUserForTest = (userToRegister: RegisteredUser): any => {
   db.collection('registrations')
     .get()
