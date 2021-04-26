@@ -1,30 +1,14 @@
 import styled from 'styled-components';
+import interpolate from 'color-interpolate';
 
 export const Choice = styled.div.attrs(
   ({ availability, chosen }: { availability: number; chosen: boolean }) => {
+    const colormap = interpolate(['#e0e0e0', '#ffeccf', '#d1ffd4']);
     const style: any = {};
     if (chosen) {
       style.border = '4px solid green';
     }
-    if (availability === 0) {
-      style.backgroundColor = '#e0e0e0';
-      style.cursor = 'not-allowed';
-    }
-    if (availability > 0 && availability <= 20) {
-      style.backgroundColor = '#ffd4d1';
-    }
-    if (availability > 20 && availability <= 40) {
-      style.backgroundColor = '#ffeccf';
-    }
-    if (availability > 40 && availability <= 60) {
-      style.backgroundColor = '#ffffcf';
-    }
-    if (availability > 60 && availability <= 80) {
-      style.backgroundColor = '#f2ffcf';
-    }
-    if (availability > 80) {
-      style.backgroundColor = '#d1ffd4';
-    }
+    style.backgroundColor = availability > 0 ? colormap(availability) : '#ccc';
     return { style };
   },
 )<{ availability: number; chosen: boolean }>`

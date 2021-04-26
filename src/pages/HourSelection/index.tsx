@@ -101,9 +101,8 @@ export default function HourSelection(): JSX.Element {
       }
       const available = fixedTestHour.takenPlaces < fixedTestHour.totalPlaces;
       const percentOfPlacesTaken =
-        ((fixedTestHour.totalPlaces - fixedTestHour.takenPlaces) /
-          fixedTestHour.totalPlaces) *
-        100;
+        (fixedTestHour.totalPlaces - fixedTestHour.takenPlaces) /
+        fixedTestHour.totalPlaces;
       return (
         <Tooltip
           key={JSON.stringify(hour)}
