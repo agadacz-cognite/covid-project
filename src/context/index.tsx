@@ -3,13 +3,11 @@ import { RegistrationData, FixedSlotData, RegisteredUser } from '../shared';
 
 type ContextType = {
   user: any;
-  days: string[];
   admins: string[];
   activeRegistration: RegistrationData | undefined;
   usersRegistration: RegisteredUser | undefined;
   slotsData: FixedSlotData[];
   setUser: (user: any) => void;
-  setDays: (days: string[]) => void;
   setAdmins: (admins: string[]) => void;
   setActiveRegistration: (week: RegistrationData | undefined) => void;
   setUsersRegistration: (user: RegisteredUser | undefined) => void;

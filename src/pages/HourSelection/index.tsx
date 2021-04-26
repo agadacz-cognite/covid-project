@@ -14,7 +14,7 @@ import { Choice, Hour, Places } from './components';
 
 export default function HourSelection(): JSX.Element {
   const history = useHistory();
-  const { user, days, slotsData, activeRegistration } = useContext(AppContext);
+  const { user, slotsData, activeRegistration } = useContext(AppContext);
   const [managerName, setManagerName] = useState('');
   const [chosenDays, setChosenDays] = useState<SlotData[]>([]);
   const [testHours, setTestHours] = useState<any>({});
@@ -24,12 +24,10 @@ export default function HourSelection(): JSX.Element {
   useFirebaseAuthentication();
 
   useEffect(() => {
-    if (days.length) {
-      const slots: SlotData[] =
-        activeRegistration?.slots.filter(slot => days.includes(slot.id)) ?? [];
+    if (activeRegistration?.slots) {
+      const slots: SlotData[] = activeRegistration?.slots;
       setChosenDays(slots);
-    }
-    if (!days.length) {
+    } else {
       history.push('/start');
     }
   }, []);
@@ -49,14 +47,6 @@ export default function HourSelection(): JSX.Element {
   const onManagerNameChange = (event: React.ChangeEvent<HTMLInputElement>) =>
     setManagerName(event.target.value);
   const onSubmit = () => {
-    if (Object.values(testHours).length < chosenDays.length) {
-      notification.warning({
-        message: 'Hour not specified',
-        description:
-          'You have to choose a testing hour for every day you specified.',
-      });
-      return;
-    }
     if (!managerName?.length) {
       notification.warning({
         message: 'Manager not specified',

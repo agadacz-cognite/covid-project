@@ -1,6 +1,6 @@
-import React, { useState, useContext } from 'react';
+import React, { useContext } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Checkbox, Button, Typography, Spin, notification } from 'antd';
+import { Button, Typography, Spin } from 'antd';
 import styled from 'styled-components';
 import {
   AppContext,
@@ -9,7 +9,6 @@ import {
   useUsersRegistration,
   useIsUserAdmin,
 } from '../context';
-import { SlotData } from '../shared';
 import { Flex, Card, Header } from '../components';
 
 const { Title } = Typography;
@@ -19,17 +18,22 @@ const StyledFlex = styled(Flex)`
     margin: 12px 0;
   }
 `;
-const BigText = styled.div`
-  font-size: 14px;
-  font-weight: bold;
+const PanelPending = styled(Flex)`
+  padding: 8px 16px;
+  margin-bottom: 16px;
+  background-color: #f2efda;
+`;
+const PanelDone = styled(Flex)`
+  padding: 8px 16px;
+  margin-bottom: 16px;
+  background-color: #e0edd8;
 `;
 
 export default function DaysSelection(): JSX.Element {
   const history = useHistory();
-  const { user, setDays, activeRegistration, usersRegistration } = useContext(
+  const { user, activeRegistration, usersRegistration } = useContext(
     AppContext,
   );
-  const [slotsChecked, setSlotsChecked] = useState<string[]>([]);
   const isAdmin = useIsUserAdmin();
 
   useFirebaseAuthentication();
@@ -40,27 +44,9 @@ export default function DaysSelection(): JSX.Element {
     usersRegistration?.weekId &&
     usersRegistration?.weekId === activeRegistration?.id;
 
-  const onSlotChecked = (event: any, id: string) => {
-    const checked = event.target.checked;
-    if (!checked) {
-      const fixedSlots = slotsChecked.filter(slot => slot !== id);
-      setSlotsChecked(fixedSlots);
-    } else {
-      const fixedSlots = [...slotsChecked, id];
-      setSlotsChecked(fixedSlots);
-    }
-  };
   const onAdminPageClick = () => history.push('/admin');
   const onProceed = () => {
-    if (slotsChecked?.length) {
-      setDays(slotsChecked);
-      history.push('/choose');
-    } else {
-      notification.warning({
-        message: 'Forgot something?',
-        description: 'You have to choose at least one option!',
-      });
-    }
+    history.push('/choose');
   };
 
   const getUserFirstName = () => {
@@ -70,6 +56,7 @@ export default function DaysSelection(): JSX.Element {
     }
     return 'unknown entity';
   };
+
   const ifNoRegistration = (): JSX.Element | undefined => {
     if (!activeRegistration) {
       return (
@@ -80,45 +67,85 @@ export default function DaysSelection(): JSX.Element {
     }
     return undefined;
   };
+
+  const ifNotRegisteredYet = (): JSX.Element | undefined => {
+    const registrationOpenTimestamp =
+      (activeRegistration?.registrationOpenTime?.seconds ?? 0) * 1000;
+    if (
+      !isUserRegistered &&
+      activeRegistration &&
+      registrationOpenTimestamp <= Number(new Date())
+    ) {
+      return (
+        <Title level={5}>You didn&apos;t register for this week yet!</Title>
+      );
+    }
+  };
+
   const ifRegistrationOpen = (): JSX.Element | undefined => {
     const registrationOpenTimestamp =
       (activeRegistration?.registrationOpenTime?.seconds ?? 0) * 1000;
     if (activeRegistration && registrationOpenTimestamp <= Number(new Date())) {
       return (
         <StyledFlex column justify align>
-          {activeRegistration.slots.map((slot: SlotData, index: number) => {
-            const isChecked = slotsChecked.includes(slot.id);
-            return (
-              <Checkbox
-                key={`slot-user-${index}`}
-                checked={isChecked}
-                onChange={event => onSlotChecked(event, slot.id)}>
-                <BigText>{slot.officeDays.join(', ')}</BigText>
-              </Checkbox>
-            );
-          })}
           <Button type="primary" onClick={onProceed}>
-            Next
+            {isUserRegistered ? 'Change your choice' : 'Register'}
           </Button>
         </StyledFlex>
       );
     }
     return undefined;
   };
+
   const ifRegistrationPending = (): JSX.Element | undefined => {
     const registrationOpenTimestamp =
       (activeRegistration?.registrationOpenTime?.seconds ?? 0) * 1000;
     if (activeRegistration && registrationOpenTimestamp > Number(new Date())) {
       return (
-        <Flex column align justify>
-          <Title level={4}>Registration opens at:</Title>
-          <Title level={3}>
+        <PanelPending column align justify>
+          <Title level={4} style={{ margin: '4px' }}>
+            Registration opens at:
+          </Title>
+          <Title level={3} style={{ margin: '4px' }}>
             {new Date(registrationOpenTimestamp).toLocaleString()}
           </Title>
-        </Flex>
+        </PanelPending>
       );
     }
     return undefined;
+  };
+
+  const ifAlreadyRegistered = (): JSX.Element | undefined => {
+    if (isUserRegistered) {
+      return (
+        <PanelDone column align justify>
+          <Title level={4}>
+            {new Date(
+              (activeRegistration?.week[0]?.seconds ?? 0) * 1000,
+            ).toLocaleDateString()}{' '}
+            -{' '}
+            {new Date(
+              (activeRegistration?.week[1]?.seconds ?? 0) * 1000,
+            ).toLocaleDateString()}
+          </Title>
+          {Object.entries(usersRegistration?.testHours ?? {}).map(
+            (testHour: any, index: number) => {
+              const week = activeRegistration?.slots.find(
+                slot => slot.id === testHour[0],
+              );
+              return (
+                <Flex column align justify key={`your-slot-${index}`}>
+                  <Title level={5}>
+                    {week?.testDay ?? '<unknown>'} -{' '}
+                    {testHour?.[1] ?? '<unknown>'}
+                  </Title>
+                </Flex>
+              );
+            },
+          )}
+        </PanelDone>
+      );
+    }
   };
 
   if (!user) {
@@ -145,44 +172,16 @@ export default function DaysSelection(): JSX.Element {
               </Flex>
             </Card>
           )}
-          {isUserRegistered && (
-            <Card
-              title="Your current selection"
-              style={{ width: 'auto', height: 'auto', margin: '8px' }}>
-              <Flex column align justify>
-                <Title level={4}>
-                  {new Date(
-                    (activeRegistration?.week[0]?.seconds ?? 0) * 1000,
-                  ).toLocaleDateString()}{' '}
-                  -{' '}
-                  {new Date(
-                    (activeRegistration?.week[1]?.seconds ?? 0) * 1000,
-                  ).toLocaleDateString()}
-                </Title>
-                {Object.entries(usersRegistration?.testHours ?? {}).map(
-                  (testHour: any, index: number) => {
-                    const week = activeRegistration?.slots.find(
-                      slot => slot.id === testHour[0],
-                    );
-                    return (
-                      <Flex column align justify key={`your-slot-${index}`}>
-                        <Title level={5}>
-                          {week?.testDay ?? '<unknown>'} -{' '}
-                          {testHour?.[1] ?? '<unknown>'}
-                        </Title>
-                      </Flex>
-                    );
-                  },
-                )}
-              </Flex>
-            </Card>
-          )}
           <Card
-            title="Which days of the week you want to go to the office?"
+            title="Your current selection"
             style={{ width: 'auto', height: 'auto', margin: '8px' }}>
-            {ifNoRegistration()}
-            {ifRegistrationPending()}
-            {ifRegistrationOpen()}
+            <Flex column align justify>
+              {ifRegistrationPending()}
+              {ifAlreadyRegistered()}
+              {ifNotRegisteredYet()}
+              {ifNoRegistration()}
+              {ifRegistrationOpen()}
+            </Flex>
           </Card>
         </Flex>
         <Card
