@@ -25,12 +25,18 @@ const BigText = styled.div`
 
 export default function DaysSelection(): JSX.Element {
   const history = useHistory();
-  const { user, setDays, activeRegistration } = useContext(AppContext);
+  const { user, setDays, activeRegistration, usersRegistration } = useContext(
+    AppContext,
+  );
   const [slotsChecked, setSlotsChecked] = useState<string[]>([]);
   const isAdmin = useIsUserAdmin();
 
   useFirebaseAuthentication();
   useActiveRegistration();
+
+  const isUserRegistered =
+    usersRegistration?.weekId &&
+    usersRegistration?.weekId === activeRegistration?.id;
 
   const onSlotChecked = (event: any, id: string) => {
     const checked = event.target.checked;
@@ -134,6 +140,38 @@ export default function DaysSelection(): JSX.Element {
                 <Button type="primary" danger onClick={onAdminPageClick}>
                   Go to Admin page
                 </Button>
+              </Flex>
+            </Card>
+          )}
+          {isUserRegistered && (
+            <Card
+              title="Your current selection"
+              style={{ width: 'auto', height: 'auto', margin: '8px' }}>
+              <Flex column align justify>
+                <Title level={4}>
+                  {new Date(
+                    (activeRegistration?.week[0]?.seconds ?? 0) * 1000,
+                  ).toLocaleDateString()}{' '}
+                  -{' '}
+                  {new Date(
+                    (activeRegistration?.week[1]?.seconds ?? 0) * 1000,
+                  ).toLocaleDateString()}
+                </Title>
+                {Object.entries(usersRegistration?.testHours ?? {}).map(
+                  (testHour: any, index: number) => {
+                    const week = activeRegistration?.slots.find(
+                      slot => slot.id === testHour[0],
+                    );
+                    return (
+                      <Flex column align justify key={`your-slot-${index}`}>
+                        <Title level={5}>
+                          {week?.testDay ?? '<unknown>'} -{' '}
+                          {testHour?.[1] ?? '<unknown>'}
+                        </Title>
+                      </Flex>
+                    );
+                  },
+                )}
               </Flex>
             </Card>
           )}

@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
-import { RegistrationData, FixedSlotData } from '../shared';
+import { RegistrationData, FixedSlotData, RegisteredUser } from '../shared';
 
 type ContextType = {
   user: any;
   days: string[];
   admins: string[];
   activeRegistration: RegistrationData | undefined;
+  usersRegistration: RegisteredUser | undefined;
   slotsData: FixedSlotData[];
   setUser: (user: any) => void;
   setDays: (days: string[]) => void;
   setAdmins: (admins: string[]) => void;
   setActiveRegistration: (week: RegistrationData | undefined) => void;
+  setUsersRegistration: (user: RegisteredUser | undefined) => void;
   setSlotsData: (slots: FixedSlotData[]) => void;
 };
 
@@ -21,6 +23,9 @@ const AppContextProvider = ({ children }: { children: any }): JSX.Element => {
   const [admins, setAdmins] = useState<string[]>([]);
   const [days, setDays] = useState<string[]>([]);
   const [slotsData, setSlotsData] = useState<any[]>([]);
+  const [usersRegistration, setUsersRegistration] = useState<
+    RegisteredUser | undefined
+  >();
   const [activeRegistration, setActiveRegistration] = useState<
     RegistrationData | undefined
   >();
@@ -34,6 +39,8 @@ const AppContextProvider = ({ children }: { children: any }): JSX.Element => {
     setAdmins,
     activeRegistration,
     setActiveRegistration,
+    usersRegistration,
+    setUsersRegistration,
     slotsData,
     setSlotsData,
   };

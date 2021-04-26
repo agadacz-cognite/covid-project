@@ -56,6 +56,5 @@ export const registerUserForTest = (userToRegister: RegisteredUser): any => {
           })
           .catch(errorHandler);
       }
-      // TODO this needs to be updated real time!
     });
 };
