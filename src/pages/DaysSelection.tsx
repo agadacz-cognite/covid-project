@@ -6,6 +6,7 @@ import {
   AppContext,
   useFirebaseAuthentication,
   useActiveRegistration,
+  useUsersRegistration,
   useIsUserAdmin,
 } from '../context';
 import { SlotData } from '../shared';
@@ -33,6 +34,7 @@ export default function DaysSelection(): JSX.Element {
 
   useFirebaseAuthentication();
   useActiveRegistration();
+  useUsersRegistration(user?.email, activeRegistration?.id);
 
   const isUserRegistered =
     usersRegistration?.weekId &&

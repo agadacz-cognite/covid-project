@@ -14,13 +14,7 @@ import { Choice, Hour, Places } from './components';
 
 export default function HourSelection(): JSX.Element {
   const history = useHistory();
-  const {
-    user,
-    days,
-    slotsData,
-    setUsersRegistration,
-    activeRegistration,
-  } = useContext(AppContext);
+  const { user, days, slotsData, activeRegistration } = useContext(AppContext);
   const [managerName, setManagerName] = useState('');
   const [chosenDays, setChosenDays] = useState<SlotData[]>([]);
   const [testHours, setTestHours] = useState<any>({});
@@ -84,7 +78,6 @@ export default function HourSelection(): JSX.Element {
       testHours,
     };
     registerUserForTest(registeredUser);
-    setUsersRegistration(registeredUser);
   };
   const onBack = () => history.push('/start');
 

@@ -12,7 +12,6 @@ export const getRegistrationsForThisWeek = async (
     .collection('registrations')
     .where('weekId', '==', weekId);
   const registrations = await registrationsRef.get();
-  console.log(registrations);
   const registrationsFixed: RegisteredUser[] = [];
   registrations.forEach((registrationDoc: any) => {
     registrationsFixed.push({
@@ -20,6 +19,5 @@ export const getRegistrationsForThisWeek = async (
       ...registrationDoc.data(),
     });
   });
-  console.log(registrationsFixed);
   return registrationsFixed;
 };
