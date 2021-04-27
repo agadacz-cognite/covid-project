@@ -2,13 +2,13 @@ import React from 'react';
 import styled from 'styled-components';
 import { Spin } from 'antd';
 
-const Wrapper = styled.div.attrs((props: { loading?: boolean }) => {
+const Wrapper = styled.div.attrs((props: { $loading?: boolean }) => {
   return {
     style: {
-      display: props.loading ? 'flex' : 'none',
+      display: props.$loading ? 'flex' : 'none',
     },
   };
-})<{ loading?: boolean }>`
+})<{ $loading?: boolean }>`
   position: absolute;
   top: 0;
   left: 0;
@@ -21,9 +21,9 @@ const Wrapper = styled.div.attrs((props: { loading?: boolean }) => {
   z-index: 100;
 `;
 
-export const Loader = ({ loading }: { loading: boolean }): JSX.Element => {
+export const Loader = ({ $loading }: { $loading: boolean }): JSX.Element => {
   return (
-    <Wrapper loading={loading}>
+    <Wrapper $loading={$loading}>
       <Spin size="large" />
     </Wrapper>
   );

@@ -41,31 +41,31 @@ export default function App(): JSX.Element {
       <Switch>
         <Route exact path="/">
           <Wrapper>
-            <Loader loading={loading} />
+            <Loader $loading={loading} />
             <Home />
           </Wrapper>
         </Route>
         <Route exact path="/start">
           <Wrapper>
-            <Loader loading={loading} />
+            <Loader $loading={loading} />
             <DaysSelection />
           </Wrapper>
         </Route>
         <Route exact path="/choose">
           <Wrapper>
-            <Loader loading={loading} />
+            <Loader $loading={loading} />
             <HourSelection />
           </Wrapper>
         </Route>
         <Route exact path="/admin">
           <Wrapper>
-            <Loader loading={loading} />
+            <Loader $loading={loading} />
             <Admin />
           </Wrapper>
         </Route>
         <Route exact path="/admin/newweek">
           <Wrapper>
-            <Loader loading={loading} />
+            <Loader $loading={loading} />
             <NewRegistration />
           </Wrapper>
         </Route>
