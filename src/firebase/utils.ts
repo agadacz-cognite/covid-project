@@ -1,6 +1,12 @@
 import { db } from '.';
 import { notification } from 'antd';
-import { errorHandler, RegistrationData, RegisteredUser } from '../shared';
+import {
+  errorHandler,
+  RegistrationData,
+  RegisteredUser,
+  TestHours,
+} from '../shared';
+import { FixedSlotData } from '../shared';
 
 export const createActiveRegistration = (
   registrationData: RegistrationData,
@@ -24,10 +30,46 @@ export const createActiveRegistration = (
     .catch(errorHandler);
 };
 
-export const registerUserForTest = (userToRegister: RegisteredUser): any => {
+export const registerUserForTest = (
+  userToRegister: RegisteredUser,
+  slotsData: FixedSlotData[],
+): any => {
   if (!db) {
     return;
   }
+  const userSlotsAreAvailableArray = Object.entries(
+    userToRegister.testHours,
+  ).map((testHour: string[]) => {
+    const slot = slotsData.find(
+      (slotData: FixedSlotData) => slotData.id === testHour[0],
+    );
+    if (!slot) {
+      return false;
+    }
+    const hour = slot?.testHours.find(
+      (hour: TestHours) => hour.time === testHour[1],
+    );
+    if (!hour) {
+      return false;
+    }
+    const available = hour.takenPlaces < hour?.totalPlaces;
+    if (available) {
+      return true;
+    }
+    return false;
+  });
+  const userSlotsAreAvailable = userSlotsAreAvailableArray.reduce(
+    (sum, next) => sum && next,
+  );
+  if (!userSlotsAreAvailable) {
+    notification.error({
+      message: 'Someone stole your place',
+      description:
+        'One of the hours you selected are no longer available. Please choose a different one.',
+    });
+    return;
+  }
+
   db.collection('registrations')
     .get()
     .then(registeredUsersRaw => {
@@ -62,6 +104,5 @@ export const registerUserForTest = (userToRegister: RegisteredUser): any => {
           })
           .catch(errorHandler);
       }
-      // TODO this needs to be updated real time!
     });
 };

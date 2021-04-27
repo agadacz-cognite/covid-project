@@ -68,27 +68,27 @@ export default function HourSelection(): JSX.Element {
       manager: managerName,
       testHours,
     };
-    registerUserForTest(registeredUser);
+    registerUserForTest(registeredUser, slotsData);
   };
   const onBack = () => history.push('/start');
 
   const mapHours = (id: string) => {
     const slotToMap = chosenDays.find((slot: SlotData) => slot.id === id);
     if (!slotToMap) {
-      return 'no slots to map';
+      return 'There are no slots to map :C';
     }
     return slotToMap.testHours.map((hour: any) => {
       const slotData = slotsData.find(
         (fixedSlot: FixedSlotData) => fixedSlot.id === id,
       );
       if (!slotData) {
-        return 'no slot data';
+        return 'There is no slot data :C';
       }
       const fixedTestHour = slotData.testHours.find(
         (testHour: any) => testHour.time === hour,
       );
       if (!fixedTestHour) {
-        return 'no fixed test houts';
+        return 'There is no fixed test hours :C';
       }
       const available = fixedTestHour.takenPlaces < fixedTestHour.totalPlaces;
       const percentOfPlacesTaken =
@@ -98,7 +98,7 @@ export default function HourSelection(): JSX.Element {
         <Tooltip
           key={JSON.stringify(hour)}
           title={
-            !available && 'All of the slots for this hour are already taken.'
+            !available && 'All of the slots for this hour are already taken :C'
           }>
           <Choice
             availability={percentOfPlacesTaken}
