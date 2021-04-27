@@ -12,25 +12,6 @@ import {
   FixedSlotData,
 } from '../shared';
 
-import firebase from '../firebase';
-
-export const useFirebaseAuthentication = (): any => {
-  const history = useHistory();
-  const { setUser } = useContext(AppContext);
-
-  useEffect(() => {
-    const unsubscribe = firebase.auth().onAuthStateChanged((newUser: any) => {
-      if (newUser) {
-        setUser(newUser);
-      } else {
-        setUser(null);
-        history.push('/');
-      }
-    });
-    return () => unsubscribe();
-  }, []);
-};
-
 export const useActiveRegistration = (): void => {
   const { activeRegistration, setActiveRegistration } = useContext(AppContext);
 
@@ -77,7 +58,7 @@ export const useActiveRegistration = (): void => {
 
 export const useIsUserAdmin = (): any => {
   const { admins, setAdmins, user } = useContext(AppContext);
-  if (admins && user?.email) {
+  if (admins?.length && user?.email) {
     if (admins.includes(user?.email)) {
       return true;
     }
@@ -111,6 +92,16 @@ export const useBackIfNotAdmin = (): void => {
       history.push('/start');
     }
   }, [isAdmin]);
+};
+
+export const useBackIfNotLogged = (): void => {
+  const { user } = useContext(AppContext);
+  const history = useHistory();
+  useEffect(() => {
+    if (!user) {
+      history.push('/');
+    }
+  }, [user]);
 };
 
 export const useAvailablePlacesForSlots = async (

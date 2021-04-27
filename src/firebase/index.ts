@@ -1,11 +1,11 @@
-import firebase from 'firebase';
+import firebase from 'firebase/app';
 import 'firebase/firestore';
+import { errorHandler } from '../shared';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyArHLsiOxDy3Mgtr012VlBLKQ8dcaKtRmo',
   authDomain: 'covid-project-a32a4.firebaseapp.com',
-  databaseURL:
-    'https://covid-project-a32a4-default-rtdb.europe-west1.firebasedatabase.app',
+  databaseURL: 'https://covid-project-a32a4.europe-west1.firebasedatabase.app',
   projectId: 'covid-project-a32a4',
   storageBucket: 'covid-project-a32a4.appspot.com',
   messagingSenderId: '1044325618990',
@@ -13,9 +13,17 @@ const firebaseConfig = {
 };
 
 if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
+  try {
+    firebase.initializeApp(firebaseConfig);
+  } catch (error) {
+    errorHandler;
+  }
 } else {
-  firebase.app();
+  try {
+    firebase.app();
+  } catch (error) {
+    errorHandler;
+  }
 }
 
 export const db = firebase.firestore();

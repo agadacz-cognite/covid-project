@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom';
 import { Input, Button, Tooltip, notification } from 'antd';
 import {
   AppContext,
-  useFirebaseAuthentication,
+  useBackIfNotLogged,
   useActiveRegistration,
   useAvailablePlacesForSlots,
 } from '../../context';
@@ -19,9 +19,9 @@ export default function HourSelection(): JSX.Element {
   const [chosenDays, setChosenDays] = useState<SlotData[]>([]);
   const [testHours, setTestHours] = useState<any>({});
 
+  useBackIfNotLogged();
   useActiveRegistration();
   useAvailablePlacesForSlots(activeRegistration?.id);
-  useFirebaseAuthentication();
 
   useEffect(() => {
     if (activeRegistration?.slots) {

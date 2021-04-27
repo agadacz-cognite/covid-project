@@ -3,13 +3,12 @@ import { useHistory } from 'react-router-dom';
 import { Typography, Button } from 'antd';
 import { ExportOutlined, WarningOutlined } from '@ant-design/icons';
 import XLSX from 'xlsx';
-// import { saveAs } from 'file-saver';
 import { Flex, Header, Card } from '../../components';
 import {
   AppContext,
-  useFirebaseAuthentication,
   useActiveRegistration,
   useBackIfNotAdmin,
+  useBackIfNotLogged,
 } from '../../context';
 import { getRegistrationsForThisWeek } from './utils';
 
@@ -20,8 +19,8 @@ export default function Admin(): JSX.Element {
   const { user, activeRegistration } = useContext(AppContext);
 
   useActiveRegistration();
-  useFirebaseAuthentication();
   useBackIfNotAdmin();
+  useBackIfNotLogged();
 
   const onDownloadRegisteredUsers = async () => {
     const registrations = await getRegistrationsForThisWeek(activeRegistration);

@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { RegistrationData, FixedSlotData, RegisteredUser } from '../shared';
 
 type ContextType = {
+  gapiLoaded: boolean;
   user: any;
   admins: string[];
   activeRegistration: RegistrationData | undefined;
   usersRegistration: RegisteredUser | undefined;
   slotsData: FixedSlotData[];
+  setGapiLoaded: (gapi: boolean) => void;
   setUser: (user: any) => void;
   setAdmins: (admins: string[]) => void;
   setActiveRegistration: (week: RegistrationData | undefined) => void;
@@ -17,6 +19,7 @@ type ContextType = {
 export const AppContext = React.createContext({} as ContextType);
 
 const AppContextProvider = ({ children }: { children: any }): JSX.Element => {
+  const [gapiLoaded, setGapiLoaded] = useState(false);
   const [user, setUser] = useState();
   const [admins, setAdmins] = useState<string[]>([]);
   const [days, setDays] = useState<string[]>([]);
@@ -29,6 +32,8 @@ const AppContextProvider = ({ children }: { children: any }): JSX.Element => {
   >();
 
   const value = {
+    gapiLoaded,
+    setGapiLoaded,
     user,
     setUser,
     days,

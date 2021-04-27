@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect, useContext } from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import styled from 'styled-components';
+import { AppContext } from '../context';
 import Home from './Home';
 import NotFound from './NotFound';
 import Admin from './Admin';
@@ -20,6 +21,20 @@ const Wrapper = styled.div`
 `;
 
 export default function App(): JSX.Element {
+  const { setGapiLoaded } = useContext(AppContext);
+
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://apis.google.com/js/platform.js';
+
+    script.onload = () => {
+      (window as any).gapi.load('client', () => {
+        setGapiLoaded(true);
+      });
+    };
+    document.body.appendChild(script);
+  }, []);
+
   return (
     <Router>
       <Switch>

@@ -4,10 +4,10 @@ import { Button, Typography, Spin } from 'antd';
 import styled from 'styled-components';
 import {
   AppContext,
-  useFirebaseAuthentication,
   useActiveRegistration,
   useUsersRegistration,
   useIsUserAdmin,
+  useBackIfNotLogged,
 } from '../context';
 import { Flex, Card, Header } from '../components';
 
@@ -36,7 +36,7 @@ export default function DaysSelection(): JSX.Element {
   );
   const isAdmin = useIsUserAdmin();
 
-  useFirebaseAuthentication();
+  useBackIfNotLogged();
   useActiveRegistration();
   useUsersRegistration(user?.email, activeRegistration?.id);
 
@@ -77,7 +77,18 @@ export default function DaysSelection(): JSX.Element {
       registrationOpenTimestamp <= Number(new Date())
     ) {
       return (
-        <Title level={5}>You didn&apos;t register for this week yet!</Title>
+        <StyledFlex column justify align>
+          <Title level={4}>
+            {new Date(
+              (activeRegistration?.week[0]?.seconds ?? 0) * 1000,
+            ).toLocaleDateString()}{' '}
+            -{' '}
+            {new Date(
+              (activeRegistration?.week[1]?.seconds ?? 0) * 1000,
+            ).toLocaleDateString()}
+          </Title>
+          <Title level={5}>You didn&apos;t register for this week yet!</Title>
+        </StyledFlex>
       );
     }
   };

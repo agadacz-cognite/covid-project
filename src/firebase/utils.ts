@@ -5,6 +5,9 @@ import { errorHandler, RegistrationData, RegisteredUser } from '../shared';
 export const createActiveRegistration = (
   registrationData: RegistrationData,
 ): any => {
+  if (!db) {
+    return;
+  }
   return db
     .collection('weeks')
     .doc(registrationData.id)
@@ -22,6 +25,9 @@ export const createActiveRegistration = (
 };
 
 export const registerUserForTest = (userToRegister: RegisteredUser): any => {
+  if (!db) {
+    return;
+  }
   db.collection('registrations')
     .get()
     .then(registeredUsersRaw => {

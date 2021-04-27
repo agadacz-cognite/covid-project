@@ -10,8 +10,8 @@ import styled from 'styled-components';
 import { Flex, Header, Card } from '../../components';
 import {
   AppContext,
-  useFirebaseAuthentication,
   useBackIfNotAdmin,
+  useBackIfNotLogged,
 } from '../../context';
 import { createActiveRegistration } from '../../firebase';
 import { SlotData } from '../../shared';
@@ -46,7 +46,7 @@ export default function NewRegistration(): JSX.Element {
   );
   const [slots, setSlots] = useState<SlotData[]>([defaultSlot]);
 
-  useFirebaseAuthentication();
+  useBackIfNotLogged();
   useBackIfNotAdmin();
 
   const randomFarAwayDate = new Date(1934832714000);
