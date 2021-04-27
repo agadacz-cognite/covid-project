@@ -9,7 +9,7 @@ import { AppContext, useFirebaseAuthentication } from '../context';
 const { Title } = Typography;
 
 export const uiConfig = {
-  signInFlow: 'popup',
+  signInFlow: 'redirect',
   signInSuccessUrl: '/start',
   signInOptions: [firebase.auth.GoogleAuthProvider.PROVIDER_ID],
 };
@@ -29,6 +29,7 @@ export default function Home(): JSX.Element {
   return (
     <Panel style={{ maxWidth: '500px' }}>
       <Title level={2}>COVID test registration</Title>
+      <Title level={5}>Please log in with your Cognite account.</Title>
       <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={firebase.auth()} />
     </Panel>
   );
