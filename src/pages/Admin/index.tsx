@@ -23,11 +23,15 @@ export default function Admin(): JSX.Element {
   useBackIfNotLogged();
 
   const onDownloadRegisteredUsers = async () => {
-    const registrations = await getRegistrationsForThisWeek(activeRegistration);
+    const {
+      final: registrations,
+      weekDate,
+    } = await getRegistrationsForThisWeek(activeRegistration);
+    const fileTitle = weekDate.replace(' ', '');
     const workbook = XLSX.utils.book_new();
     const sheet = XLSX.utils.aoa_to_sheet(registrations);
     XLSX.utils.book_append_sheet(workbook, sheet, 'data');
-    XLSX.writeFile(workbook, 'data.xlsx');
+    XLSX.writeFile(workbook, `${fileTitle}.xlsx`);
   };
   const onCreateNewRegistration = () => history.push('/admin/newweek');
   const onBack = () => history.push('/start');
