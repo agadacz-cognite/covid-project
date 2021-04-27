@@ -1,7 +1,9 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Button, Typography, Spin } from 'antd';
 import styled from 'styled-components';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
 import {
   AppContext,
   useActiveRegistration,
@@ -10,6 +12,8 @@ import {
   useBackIfNotLogged,
 } from '../context';
 import { Flex, Card, Header } from '../components';
+
+dayjs.extend(relativeTime);
 
 const { Title } = Typography;
 
@@ -31,6 +35,7 @@ const PanelDone = styled(Flex)`
 
 export default function DaysSelection(): JSX.Element {
   const history = useHistory();
+  const [remainingTime, setRemainingTime] = useState<string | undefined>();
   const { user, activeRegistration, usersRegistration } = useContext(
     AppContext,
   );
@@ -109,16 +114,32 @@ export default function DaysSelection(): JSX.Element {
   };
 
   const ifRegistrationPending = (): JSX.Element | undefined => {
+    setInterval(() => {
+      const registrationSeconds =
+        activeRegistration?.registrationOpenTime?.seconds ?? 0;
+      if (!registrationSeconds) {
+        return;
+      }
+      const dateOfRegistrationOpen = dayjs.unix(registrationSeconds);
+      const remaining =
+        dayjs().to(dateOfRegistrationOpen) ?? 'I dont know when';
+      setRemainingTime(remaining);
+    }, 1000);
+
     const registrationOpenTimestamp =
       (activeRegistration?.registrationOpenTime?.seconds ?? 0) * 1000;
+
     if (activeRegistration && registrationOpenTimestamp > Number(new Date())) {
       return (
         <PanelPending column align justify>
           <Title level={4} style={{ margin: '4px' }}>
-            Registration opens at:
+            Registration opens:
           </Title>
           <Title level={3} style={{ margin: '4px' }}>
-            {new Date(registrationOpenTimestamp).toLocaleString()}
+            {remainingTime ?? '-'}
+          </Title>
+          <Title level={5} style={{ margin: '4px' }}>
+            ({new Date(registrationOpenTimestamp).toLocaleString()})
           </Title>
         </PanelPending>
       );

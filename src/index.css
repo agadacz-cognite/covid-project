@@ -12,6 +12,7 @@ body {
   background-repeat: no-repeat;
   background-attachment: fixed;
   background-size: cover;
+  backdrop-filter: blur(8px);
 }
 
 code {
