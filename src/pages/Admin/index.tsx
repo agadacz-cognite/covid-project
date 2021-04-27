@@ -97,7 +97,11 @@ export default function Admin(): JSX.Element {
         </Card>
       </Flex>
       <Flex row align justify style={{ padding: '8px', margin: '8px' }}>
-        <Button type="default" onClick={onBack}>
+        <Button
+          type="default"
+          size="large"
+          style={{ boxShadow: '0 0 20px #000' }}
+          onClick={onBack}>
           Back
         </Button>
       </Flex>
