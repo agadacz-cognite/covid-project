@@ -2,6 +2,7 @@ import React, { useEffect, useContext } from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import styled from 'styled-components';
 import { AppContext } from '../context';
+import { Loader } from '../components';
 import Home from './Home';
 import NotFound from './NotFound';
 import Admin from './Admin';
@@ -21,7 +22,7 @@ const Wrapper = styled.div`
 `;
 
 export default function App(): JSX.Element {
-  const { setGapiLoaded } = useContext(AppContext);
+  const { loading, setGapiLoaded } = useContext(AppContext);
 
   useEffect(() => {
     const script = document.createElement('script');
@@ -40,26 +41,31 @@ export default function App(): JSX.Element {
       <Switch>
         <Route exact path="/">
           <Wrapper>
+            <Loader loading={loading} />
             <Home />
           </Wrapper>
         </Route>
         <Route exact path="/start">
           <Wrapper>
+            <Loader loading={loading} />
             <DaysSelection />
           </Wrapper>
         </Route>
         <Route exact path="/choose">
           <Wrapper>
+            <Loader loading={loading} />
             <HourSelection />
           </Wrapper>
         </Route>
         <Route exact path="/admin">
           <Wrapper>
+            <Loader loading={loading} />
             <Admin />
           </Wrapper>
         </Route>
         <Route exact path="/admin/newweek">
           <Wrapper>
+            <Loader loading={loading} />
             <NewRegistration />
           </Wrapper>
         </Route>

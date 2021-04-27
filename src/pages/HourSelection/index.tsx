@@ -14,7 +14,9 @@ import { Choice, Hour, Places } from './components';
 
 export default function HourSelection(): JSX.Element {
   const history = useHistory();
-  const { user, slotsData, activeRegistration } = useContext(AppContext);
+  const { user, slotsData, setLoading, activeRegistration } = useContext(
+    AppContext,
+  );
   const [managerName, setManagerName] = useState('');
   const [chosenDays, setChosenDays] = useState<SlotData[]>([]);
   const [testHours, setTestHours] = useState<any>({});
@@ -46,7 +48,7 @@ export default function HourSelection(): JSX.Element {
   };
   const onManagerNameChange = (event: React.ChangeEvent<HTMLInputElement>) =>
     setManagerName(event.target.value);
-  const onSubmit = () => {
+  const onSubmit = async () => {
     if (!managerName?.length) {
       notification.warning({
         message: 'Manager not specified',
@@ -68,7 +70,9 @@ export default function HourSelection(): JSX.Element {
       manager: managerName,
       testHours,
     };
-    registerUserForTest(registeredUser, slotsData);
+    setLoading(true);
+    await registerUserForTest(registeredUser, slotsData);
+    setLoading(false);
   };
   const onBack = () => history.push('/start');
 

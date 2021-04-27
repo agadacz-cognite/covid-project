@@ -38,7 +38,7 @@ const defaultSlot: SlotData = {
 
 export default function NewRegistration(): JSX.Element {
   const history = useHistory();
-  const { user } = useContext(AppContext);
+  const { user, setLoading } = useContext(AppContext);
   const [weekStartDate, setWeekStartDate] = useState<any | undefined>();
   const [weekEndDate, setWeekEndDate] = useState<any | undefined>();
   const [registrationOpenTime, setRegistrationOpenTime] = useState<any>(
@@ -82,12 +82,14 @@ export default function NewRegistration(): JSX.Element {
       });
       return;
     }
+    setLoading(true);
     const week = [weekStartDate, weekEndDate];
     const registrationData = { week, registrationOpenTime, slots, id: uuid() };
     if (weekStartDate && weekEndDate && registrationOpenTime && slots) {
       createActiveRegistration(registrationData);
       setTimeout(() => {
         history.push('/admin');
+        setLoading(false);
       }, 2000);
     }
   };
