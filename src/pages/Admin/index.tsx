@@ -1,6 +1,6 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Typography, Button } from 'antd';
+import { Typography, Button, Select } from 'antd';
 import { ExportOutlined, WarningOutlined } from '@ant-design/icons';
 import XLSX from 'xlsx';
 import { Flex, Header, Card } from '../../components';
@@ -17,6 +17,9 @@ const { Title } = Typography;
 export default function Admin(): JSX.Element {
   const history = useHistory();
   const { user, activeRegistration } = useContext(AppContext);
+  const [preregistrationEmails, setPreregistrationEmails] = useState<
+    string[]
+  >();
 
   useActiveRegistration();
   useBackIfNotAdmin();
@@ -33,6 +36,9 @@ export default function Admin(): JSX.Element {
     XLSX.utils.book_append_sheet(workbook, sheet, 'data');
     XLSX.writeFile(workbook, `${fileTitle}.xlsx`);
   };
+  const onPreregistrationEmailsChange = (value: any) =>
+    setPreregistrationEmails(value);
+  const onPreregistrationEmailsSave = () => alert('Under development!');
   const onCreateNewRegistration = () => history.push('/admin/newweek');
   const onBack = () => history.push('/start');
 
@@ -82,19 +88,46 @@ export default function Admin(): JSX.Element {
             </Button>
           </Flex>
         </Card>
-        <Card
-          title="New registration"
-          style={{ width: 'auto', height: 'auto', margin: '8px' }}>
-          <Flex column>
-            <p>
-              <WarningOutlined /> Creating new registration will close the old
-              one
-            </p>
-            <Button type="primary" danger onClick={onCreateNewRegistration}>
-              Create
-            </Button>
-          </Flex>
-        </Card>
+        <Flex column>
+          <Card
+            title="Who can preregister?"
+            style={{ margin: '8px', maxWidth: '500px' }}>
+            <p>You can paste a list of emails here separated with a comma.</p>
+            <Flex row align>
+              <span style={{ fontWeight: 'bold', marginRight: '4px' }}>
+                Emails
+              </span>
+              <Select
+                value={preregistrationEmails}
+                onChange={onPreregistrationEmailsChange}
+                mode="tags"
+                tokenSeparators={[',']}
+                style={{ width: '100%', marginLeft: '8px' }}
+              />
+            </Flex>
+            <Flex
+              row
+              align
+              style={{ justifyContent: 'flex-end', marginTop: '8px' }}>
+              <Button type="primary" onClick={onPreregistrationEmailsSave}>
+                Save
+              </Button>
+            </Flex>
+          </Card>
+          <Card
+            title="New registration"
+            style={{ width: 'auto', height: 'auto', margin: '8px' }}>
+            <Flex column>
+              <p>
+                <WarningOutlined /> Creating new registration will close the old
+                one
+              </p>
+              <Button type="primary" danger onClick={onCreateNewRegistration}>
+                Start new registration
+              </Button>
+            </Flex>
+          </Card>
+        </Flex>
       </Flex>
       <Flex row align justify style={{ padding: '8px', margin: '8px' }}>
         <Button

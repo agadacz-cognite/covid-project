@@ -139,6 +139,7 @@ export default function NewRegistration(): JSX.Element {
     const fixedSlots = slots.filter(slot => slot.id !== id);
     setSlots(fixedSlots);
   };
+
   const onBack = () => history.push('/admin');
 
   return (
