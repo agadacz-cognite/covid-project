@@ -63,6 +63,7 @@ export default function HourSelection(): JSX.Element {
     }
     const registeredUser = {
       email: user.email,
+      name: user.displayName,
       weekId: activeRegistration.id,
       manager: managerName,
       testHours,

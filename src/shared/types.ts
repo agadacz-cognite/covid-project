@@ -34,6 +34,7 @@ export type RegistrationData = {
 export type RegisteredUser = {
   id?: string;
   email: string;
+  name: string;
   weekId: string;
   manager: string;
   testHours: {

@@ -23,11 +23,6 @@ export default function Admin(): JSX.Element {
   useFirebaseAuthentication();
   useBackIfNotAdmin();
 
-  const onCreateNewRegistration = () => {
-    history.push('/admin/newweek');
-  };
-  const onEditActiveRegistration = () =>
-    alert('Editing active registration - coming soon!');
   const onDownloadRegisteredUsers = async () => {
     const registrations = await getRegistrationsForThisWeek(activeRegistration);
     const workbook = XLSX.utils.book_new();
@@ -35,6 +30,7 @@ export default function Admin(): JSX.Element {
     XLSX.utils.book_append_sheet(workbook, sheet, 'data');
     XLSX.writeFile(workbook, 'data.xlsx');
   };
+  const onCreateNewRegistration = () => history.push('/admin/newweek');
   const onBack = () => history.push('/start');
 
   return (
@@ -75,13 +71,6 @@ export default function Admin(): JSX.Element {
                 </Title>
               </>
             )}
-            <Button
-              type="primary"
-              onClick={onEditActiveRegistration}
-              disabled={!activeRegistration}
-              style={{ marginBottom: '8px' }}>
-              Edit
-            </Button>
             <Button
               type="primary"
               onClick={onDownloadRegisteredUsers}
