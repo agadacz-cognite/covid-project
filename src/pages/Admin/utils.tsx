@@ -61,9 +61,10 @@ export const getRegistrationsForThisWeek = async (
     return users;
   });
 
-  const mergedUsers = usersMappedToSlots.map((_, i) => {
+  const mergedUsers: any[] = [];
+  usersMappedToSlots[0].forEach((_, i) => {
     const otherSlotsForUser = usersMappedToSlots.map(user => user[i]);
-    return otherSlotsForUser.flat();
+    mergedUsers.push(otherSlotsForUser.flat());
   });
 
   const headers = [
