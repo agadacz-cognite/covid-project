@@ -16,13 +16,13 @@ if (!firebase.apps.length) {
   try {
     firebase.initializeApp(firebaseConfig);
   } catch (error) {
-    errorHandler;
+    errorHandler(error);
   }
 } else {
   try {
     firebase.app();
   } catch (error) {
-    errorHandler;
+    errorHandler(error);
   }
 }
 
