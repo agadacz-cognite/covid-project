@@ -8,7 +8,7 @@ import {
   useAvailablePlacesForSlots,
 } from '../../context';
 import { registerUserForTest } from '../../firebase';
-import { FixedSlotData, SlotData } from '../../shared';
+import { FixedSlotData, RegisteredUser, SlotData } from '../../shared';
 import { Flex, Card } from '../../components';
 import { Choice, Hour, Places } from './components';
 
@@ -63,6 +63,13 @@ export default function HourSelection(): JSX.Element {
       });
       return;
     }
+    if (!Object.keys(testHours)?.length) {
+      notification.warning({
+        message: 'Hours not specified',
+        description: 'Choose at least one time slot.',
+      });
+      return;
+    }
     const registeredUser = {
       email: user.email,
       name: user.displayName,
@@ -72,9 +79,39 @@ export default function HourSelection(): JSX.Element {
     };
     setLoading(true);
     await registerUserForTest(registeredUser, slotsData);
+    sendEmail(registeredUser);
     setLoading(false);
   };
   const onBack = () => history.push('/start');
+
+  const sendEmail = (registeredUser: RegisteredUser) => {
+    const week = `${new Date(
+      (activeRegistration?.week[0]?.seconds ?? 0) * 1000,
+    ).toLocaleDateString()} - ${new Date(
+      (activeRegistration?.week[1]?.seconds ?? 0) * 1000,
+    ).toLocaleDateString()}`;
+    const userHours = Object.entries(registeredUser?.testHours ?? {})
+      .map((testHour: any) => {
+        const week = activeRegistration?.slots.find(
+          slot => slot.id === testHour[0],
+        );
+        return `${week?.testDay ?? '<unknown>'} - ${
+          testHour?.[1] ?? '<unknown>'
+        }`;
+      })
+      .join(', ');
+    const userFirstName = user.displayName.split(' ')[0];
+    const content = `Hello ${userFirstName}!\r\n\r\nYou just registered for the COVID test for the week ${week}.\r\nYour testing dates: ${userHours}.`;
+
+    (window as any).Email.send({
+      SecureToken: 'd92b5171-f9c5-4573-b866-b87c4d392dd6',
+      Username: 'Cognite COVID Test Bot',
+      To: user.email,
+      From: 'cogcovidtest@gmail.com',
+      Subject: `💉 You have registered to a COVID test! Week ${week}`,
+      Body: content,
+    });
+  };
 
   const mapHours = (id: string) => {
     const slotToMap = chosenDays.find((slot: SlotData) => slot.id === id);
@@ -123,7 +160,7 @@ export default function HourSelection(): JSX.Element {
 
   return (
     <Flex column style={{ margin: 'auto' }}>
-      <Flex row style={{ flexWrap: 'wrap' }}>
+      <Flex row align justify style={{ flexWrap: 'wrap' }}>
         {chosenDays?.map((slot: SlotData, index: number) => (
           <Card
             key={`${slot.id}-${index}`}
