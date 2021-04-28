@@ -1,5 +1,11 @@
 import { db } from '../../firebase';
-import { RegisteredUser, RegistrationData, SlotData } from '../../shared';
+import { notification } from 'antd';
+import {
+  RegisteredUser,
+  RegistrationData,
+  SlotData,
+  errorHandler,
+} from '../../shared';
 
 export const getRegistrationsForThisWeek = async (
   activeRegistration: RegistrationData | undefined,
@@ -40,7 +46,7 @@ export const getRegistrationsForThisWeek = async (
     const users = registrations.map((registeredUser: RegisteredUser) => {
       const userInThisSlot = registeredUser.testHours[slotId];
       if (!userInThisSlot) {
-        return ['', '', '', '', ''];
+        return ['', '', '', '', '', ''];
       }
       const field = [
         '', //
@@ -48,6 +54,7 @@ export const getRegistrationsForThisWeek = async (
         registeredUser.name ?? registeredUser.email,
         registeredUser.manager,
         userInThisSlot, // this is the hour when user has the test
+        registeredUser.vaccinated ? 'X' : '',
       ];
       return field;
     });
@@ -66,10 +73,36 @@ export const getRegistrationsForThisWeek = async (
       'Name',
       'Manager',
       'Hour',
+      'Vaccinated?',
       '',
     ]),
   ];
 
   const final = [headers.flat(), ...mergedUsers];
   return { final, weekDate };
+};
+
+export const savePreregistrationEmails = (emails: string[]): Promise<void> => {
+  return new Promise(resolve => {
+    if (!db) {
+      resolve();
+      return;
+    }
+    db.collection('options')
+      .doc('preregistration')
+      .set({
+        emails,
+      })
+      .then(() => {
+        notification.success({
+          message: 'Yay!',
+          description: 'You successfully added emails to preregistration list!',
+        });
+        resolve();
+      })
+      .catch(error => {
+        errorHandler(error);
+        resolve();
+      });
+  });
 };

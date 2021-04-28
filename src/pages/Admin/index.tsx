@@ -1,6 +1,6 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Typography, Button, Select } from 'antd';
+import { Typography, Button, Select, notification } from 'antd';
 import { ExportOutlined, WarningOutlined } from '@ant-design/icons';
 import XLSX from 'xlsx';
 import { Flex, Header, Card } from '../../components';
@@ -9,21 +9,36 @@ import {
   useActiveRegistration,
   useBackIfNotAdmin,
   useBackIfNotLogged,
+  usePreregisteredEmails,
 } from '../../context';
-import { getRegistrationsForThisWeek } from './utils';
+import {
+  getRegistrationsForThisWeek,
+  savePreregistrationEmails,
+} from './utils';
 
 const { Title } = Typography;
 
 export default function Admin(): JSX.Element {
   const history = useHistory();
-  const { user, activeRegistration } = useContext(AppContext);
-  const [preregistrationEmails, setPreregistrationEmails] = useState<
-    string[]
-  >();
+  const {
+    user,
+    activeRegistration,
+    setLoading,
+    preregistrationEmails,
+  } = useContext(AppContext);
+  const [
+    currentPreregistrationEmails,
+    setCurrentPreregistrationEmails,
+  ] = useState<string[]>(preregistrationEmails ?? []);
 
   useActiveRegistration();
   useBackIfNotAdmin();
   useBackIfNotLogged();
+  usePreregisteredEmails();
+
+  useEffect(() => {
+    setCurrentPreregistrationEmails(preregistrationEmails);
+  }, [preregistrationEmails]);
 
   const onDownloadRegisteredUsers = async () => {
     const {
@@ -37,8 +52,19 @@ export default function Admin(): JSX.Element {
     XLSX.writeFile(workbook, `${fileTitle}.xlsx`);
   };
   const onPreregistrationEmailsChange = (value: any) =>
-    setPreregistrationEmails(value);
-  const onPreregistrationEmailsSave = () => alert('Under development!');
+    setCurrentPreregistrationEmails(value);
+  const onPreregistrationEmailsSave = async () => {
+    if (currentPreregistrationEmails?.length) {
+      setLoading(true);
+      await savePreregistrationEmails(currentPreregistrationEmails);
+      setLoading(false);
+    } else {
+      notification.warning({
+        message: 'No emails set',
+        description: 'You havent set any emails to preregister!',
+      });
+    }
+  };
   const onCreateNewRegistration = () => history.push('/admin/newweek');
   const onBack = () => history.push('/start');
 
@@ -92,13 +118,18 @@ export default function Admin(): JSX.Element {
           <Card
             title="Who can preregister?"
             style={{ margin: '8px', maxWidth: '500px' }}>
+            <p>
+              People using those emails will be allowed to register instantly
+              after the new registration is created, even if it&apos;s not
+              officially open yet.
+            </p>
             <p>You can paste a list of emails here separated with a comma.</p>
             <Flex row align>
               <span style={{ fontWeight: 'bold', marginRight: '4px' }}>
                 Emails
               </span>
               <Select
-                value={preregistrationEmails}
+                value={currentPreregistrationEmails}
                 onChange={onPreregistrationEmailsChange}
                 mode="tags"
                 tokenSeparators={[',']}

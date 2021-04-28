@@ -37,6 +37,8 @@ export type RegisteredUser = {
   name: string;
   weekId: string;
   manager: string;
+  registeredTimestamp: number;
+  vaccinated: boolean;
   testHours: {
     [weekId: string]: string;
   };

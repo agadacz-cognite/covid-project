@@ -9,6 +9,8 @@ type ContextType = {
   activeRegistration: RegistrationData | undefined;
   usersRegistration: RegisteredUser | undefined;
   slotsData: FixedSlotData[];
+  preregistrationEmails: string[];
+  canPreregister: boolean;
   setLoading: (loading: boolean) => void;
   setGapiLoaded: (gapi: boolean) => void;
   setUser: (user: any) => void;
@@ -16,6 +18,8 @@ type ContextType = {
   setActiveRegistration: (week: RegistrationData | undefined) => void;
   setUsersRegistration: (user: RegisteredUser | undefined) => void;
   setSlotsData: (slots: FixedSlotData[]) => void;
+  setPreregistrationEmails: (emails: string[]) => void;
+  setCanPreregister: (canPreregister: boolean) => void;
 };
 
 export const AppContext = React.createContext({} as ContextType);
@@ -33,6 +37,10 @@ const AppContextProvider = ({ children }: { children: any }): JSX.Element => {
   const [activeRegistration, setActiveRegistration] = useState<
     RegistrationData | undefined
   >();
+  const [preregistrationEmails, setPreregistrationEmails] = useState<string[]>(
+    [],
+  );
+  const [canPreregister, setCanPreregister] = useState(false);
 
   const value = {
     loading,
@@ -51,6 +59,10 @@ const AppContextProvider = ({ children }: { children: any }): JSX.Element => {
     setUsersRegistration,
     slotsData,
     setSlotsData,
+    preregistrationEmails,
+    setPreregistrationEmails,
+    canPreregister,
+    setCanPreregister,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

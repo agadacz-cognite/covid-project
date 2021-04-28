@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Input, Button, Tooltip, notification } from 'antd';
+import { Input, Button, Tooltip, Switch, Spin, notification } from 'antd';
 import {
   AppContext,
   useBackIfNotLogged,
@@ -20,6 +20,7 @@ export default function HourSelection(): JSX.Element {
   const [managerName, setManagerName] = useState('');
   const [chosenDays, setChosenDays] = useState<SlotData[]>([]);
   const [testHours, setTestHours] = useState<any>({});
+  const [vaccinated, setVaccinated] = useState(false);
 
   useBackIfNotLogged();
   useActiveRegistration();
@@ -75,6 +76,8 @@ export default function HourSelection(): JSX.Element {
       name: user.displayName,
       weekId: activeRegistration.id,
       manager: managerName,
+      vaccinated,
+      registeredTimestamp: Date.now(),
       testHours,
     };
     setLoading(true);
@@ -116,20 +119,32 @@ export default function HourSelection(): JSX.Element {
   const mapHours = (id: string) => {
     const slotToMap = chosenDays.find((slot: SlotData) => slot.id === id);
     if (!slotToMap) {
-      return 'There are no slots to map :C';
+      return (
+        <Choice>
+          <Spin />
+        </Choice>
+      );
     }
     return slotToMap.testHours.map((hour: any) => {
       const slotData = slotsData.find(
         (fixedSlot: FixedSlotData) => fixedSlot.id === id,
       );
       if (!slotData) {
-        return 'There is no slot data :C';
+        return (
+          <Choice>
+            <Spin />
+          </Choice>
+        );
       }
       const fixedTestHour = slotData.testHours.find(
         (testHour: any) => testHour.time === hour,
       );
       if (!fixedTestHour) {
-        return 'There is no fixed test hours :C';
+        return (
+          <Choice>
+            <Spin />
+          </Choice>
+        );
       }
       const available = fixedTestHour.takenPlaces < fixedTestHour.totalPlaces;
       const percentOfPlacesTaken =
@@ -193,7 +208,16 @@ export default function HourSelection(): JSX.Element {
           value={managerName}
           onChange={onManagerNameChange}
         />
-        <Button type="primary" onClick={onSubmit} style={{ marginTop: '8px' }}>
+        <Flex row align style={{ margin: '8px' }}>
+          <p style={{ margin: '0 8px 0 0', padding: 0 }}>Are you vaccinated?</p>
+          <Switch
+            checkedChildren="Yes"
+            unCheckedChildren="No"
+            checked={vaccinated}
+            onChange={setVaccinated}
+          />
+        </Flex>
+        <Button type="primary" onClick={onSubmit}>
           Submit
         </Button>
       </Flex>

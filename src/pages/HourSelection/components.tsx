@@ -2,16 +2,17 @@ import styled from 'styled-components';
 import interpolate from 'color-interpolate';
 
 export const Choice = styled.div.attrs(
-  ({ availability, chosen }: { availability: number; chosen: boolean }) => {
+  ({ availability, chosen }: { availability?: number; chosen?: boolean }) => {
     const colormap = interpolate(['#e0e0e0', '#ffeccf', '#d1ffd4']);
     const style: any = {};
     if (chosen) {
       style.border = '4px solid green';
     }
-    style.backgroundColor = availability > 0 ? colormap(availability) : '#ccc';
+    style.backgroundColor =
+      Number(availability) > 0 ? colormap(Number(availability)) : '#ccc';
     return { style };
   },
-)<{ availability: number; chosen: boolean }>`
+)<{ availability?: number; chosen?: boolean }>`
   width: 100px;
   height: 100px;
   border: 1px solid #eee;
@@ -28,7 +29,7 @@ export const Choice = styled.div.attrs(
 
   &:hover {
     box-shadow: ${({ availability }) =>
-      availability > 0 ? '0 0 3px #666' : 'none'};
+      Number(availability) > 0 ? '0 0 3px #666' : 'none'};
   }
 `;
 

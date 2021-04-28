@@ -1,6 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Button, Typography, Spin } from 'antd';
+import { InfoCircleOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
@@ -10,6 +11,7 @@ import {
   useUsersRegistration,
   useIsUserAdmin,
   useBackIfNotLogged,
+  useCanUserPreregister,
 } from '../context';
 import { Flex, Card, Header } from '../components';
 
@@ -36,13 +38,17 @@ const PanelDone = styled(Flex)`
 export default function DaysSelection(): JSX.Element {
   const history = useHistory();
   const [remainingTime, setRemainingTime] = useState<string | undefined>();
-  const { user, activeRegistration, usersRegistration } = useContext(
-    AppContext,
-  );
+  const {
+    user,
+    activeRegistration,
+    usersRegistration,
+    canPreregister,
+  } = useContext(AppContext);
   const isAdmin = useIsUserAdmin();
 
   useBackIfNotLogged();
   useActiveRegistration();
+  useCanUserPreregister();
   useUsersRegistration(user?.email, activeRegistration?.id);
 
   const isUserRegistered =
@@ -79,20 +85,33 @@ export default function DaysSelection(): JSX.Element {
     if (
       !isUserRegistered &&
       activeRegistration &&
-      registrationOpenTimestamp <= Number(new Date())
+      (registrationOpenTimestamp <= Number(new Date()) || canPreregister)
     ) {
       return (
         <StyledFlex column justify align>
-          <Title level={4}>
-            {new Date(
-              (activeRegistration?.week[0]?.seconds ?? 0) * 1000,
-            ).toLocaleDateString()}{' '}
-            -{' '}
-            {new Date(
-              (activeRegistration?.week[1]?.seconds ?? 0) * 1000,
-            ).toLocaleDateString()}
-          </Title>
-          <Title level={5}>You didn&apos;t register for this week yet!</Title>
+          {canPreregister ? (
+            <Flex
+              row
+              align
+              justify
+              style={{ backgroundColor: '#e6e7f7', padding: '8px 16px' }}>
+              <InfoCircleOutlined />
+              <Title level={5} style={{ margin: '0 0 0 8px', padding: 0 }}>
+                You can preregister!
+              </Title>
+            </Flex>
+          ) : (
+            <Title level={4}>
+              {new Date(
+                (activeRegistration?.week[0]?.seconds ?? 0) * 1000,
+              ).toLocaleDateString()}
+              -
+              {new Date(
+                (activeRegistration?.week[1]?.seconds ?? 0) * 1000,
+              ).toLocaleDateString()}
+            </Title>
+          )}
+          <Title level={5}>You didn&apos;t register for this week yet.</Title>
         </StyledFlex>
       );
     }
@@ -101,7 +120,10 @@ export default function DaysSelection(): JSX.Element {
   const ifRegistrationOpen = (): JSX.Element | undefined => {
     const registrationOpenTimestamp =
       (activeRegistration?.registrationOpenTime?.seconds ?? 0) * 1000;
-    if (activeRegistration && registrationOpenTimestamp <= Number(new Date())) {
+    if (
+      activeRegistration &&
+      (registrationOpenTimestamp <= Number(new Date()) || canPreregister)
+    ) {
       return (
         <StyledFlex column justify align>
           <Button type="primary" onClick={onProceed}>

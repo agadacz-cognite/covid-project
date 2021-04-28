@@ -179,3 +179,47 @@ export const useUsersRegistration = async (
     };
   }, [weekId, email]);
 };
+
+export const usePreregisteredEmails = (): void => {
+  const { setPreregistrationEmails } = useContext(AppContext);
+  const isAdmin = useIsUserAdmin();
+
+  useEffect(() => {
+    if (!isAdmin) {
+      return;
+    }
+    const docRef = db.collection('options').doc('preregistration');
+    docRef
+      .get()
+      .then(preregistrationDoc => {
+        if (!preregistrationDoc.exists) {
+          return;
+        }
+        const preregistration = preregistrationDoc.data();
+        setPreregistrationEmails(preregistration?.emails ?? []);
+      })
+      .catch(errorHandler);
+  }, []);
+};
+
+export const useCanUserPreregister = (): void => {
+  const { user, setCanPreregister } = useContext(AppContext);
+
+  useEffect(() => {
+    const docRef = db.collection('options').doc('preregistration');
+    docRef
+      .get()
+      .then(preregistrationDoc => {
+        if (!preregistrationDoc.exists) {
+          return;
+        }
+        const preregistration = preregistrationDoc.data();
+        if (preregistration?.emails.includes(user.email)) {
+          setCanPreregister(true);
+        } else {
+          setCanPreregister(false);
+        }
+      })
+      .catch(errorHandler);
+  }, []);
+};
