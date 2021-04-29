@@ -3,7 +3,7 @@ import interpolate from 'color-interpolate';
 
 export const Choice = styled.div.attrs(
   ({ availability, chosen }: { availability?: number; chosen?: boolean }) => {
-    const colormap = interpolate(['#e0e0e0', '#ffeccf', '#d1ffd4']);
+    const colormap = interpolate(['#fcd2d2', '#ffeccf', '#d1ffd4']);
     const style: any = {};
     if (chosen) {
       style.border = '4px solid green';
