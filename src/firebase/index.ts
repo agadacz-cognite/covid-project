@@ -26,7 +26,7 @@ if (!firebase.apps.length) {
   }
 }
 
-export const db = firebase.firestore();
+export const db: any = '';
 
 export * from './utils';
 export default firebase;

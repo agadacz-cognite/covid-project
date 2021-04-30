@@ -74,8 +74,8 @@ export const registerUserForTest = (
     try {
       db.collection('registrations')
         .get()
-        .then(registeredUsersRaw => {
-          const registeredUsers = (registeredUsersRaw.docs.map(doc => ({
+        .then((registeredUsersRaw: any) => {
+          const registeredUsers = (registeredUsersRaw.docs.map((doc: any) => ({
             id: doc.id,
             ...doc.data(),
           })) as unknown) as (RegisteredUser & { id: string })[];
@@ -95,7 +95,7 @@ export const registerUserForTest = (
                 });
                 return resolve();
               })
-              .catch(error => {
+              .catch((error: any) => {
                 errorHandler(error);
                 return resolve();
               });
@@ -109,7 +109,7 @@ export const registerUserForTest = (
                 });
                 return resolve();
               })
-              .catch(error => {
+              .catch((error: any) => {
                 errorHandler(error);
                 return resolve();
               });

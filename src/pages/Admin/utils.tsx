@@ -46,13 +46,16 @@ export const getRegistrationsForThisWeek = async (
     const users = registrations.map((registeredUser: RegisteredUser) => {
       const userInThisSlot = registeredUser.testHours[slotId];
       if (!userInThisSlot) {
-        return ['', '', '', '', '', ''];
+        return ['', '', '', '', '', '', ''];
       }
       const field = [
         '', //
         '',
-        registeredUser.name ?? registeredUser.email,
-        registeredUser.manager,
+        registeredUser.registeredTimestamp
+          ? new Date(registeredUser.registeredTimestamp).toLocaleString()
+          : 0,
+        registeredUser.name ?? registeredUser.email ?? '',
+        registeredUser.manager ?? '',
         userInThisSlot, // this is the hour when user has the test
         registeredUser.vaccinated ? 'X' : '',
       ];
@@ -71,6 +74,7 @@ export const getRegistrationsForThisWeek = async (
     weekDate,
     ...week.slots.map((slot: SlotData) => [
       slot.testDay.toUpperCase(),
+      'Registered at',
       'Name',
       'Manager',
       'Hour',
@@ -101,7 +105,7 @@ export const savePreregistrationEmails = (emails: string[]): Promise<void> => {
         });
         resolve();
       })
-      .catch(error => {
+      .catch((error: any) => {
         errorHandler(error);
         resolve();
       });

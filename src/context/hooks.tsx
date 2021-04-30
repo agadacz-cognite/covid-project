@@ -21,7 +21,7 @@ export const useActiveRegistration = (): void => {
       .doc('activeRegistration');
     let unsubscribeWeeks: any;
     const unsubscribeActiveRegistration = activeRegistrationRef.onSnapshot(
-      option => {
+      (option: any) => {
         if (!option.exists) {
           notification.error({
             message: 'Something went wrong.',
@@ -35,7 +35,7 @@ export const useActiveRegistration = (): void => {
           unsubscribeWeeks = db
             .collection('weeks')
             .doc(id)
-            .onSnapshot(week => {
+            .onSnapshot((week: any) => {
               if (!week.exists) {
                 return undefined;
               } else {
@@ -66,7 +66,7 @@ export const useIsUserAdmin = (): any => {
   }
 
   const adminsRef = db.collection('options').doc('admins');
-  adminsRef.get().then(option => {
+  adminsRef.get().then((option: any) => {
     if (!option.exists) {
       notification.error({
         message: 'Something went wrong.',
@@ -191,7 +191,7 @@ export const usePreregisteredEmails = (): void => {
     const docRef = db.collection('options').doc('preregistration');
     docRef
       .get()
-      .then(preregistrationDoc => {
+      .then((preregistrationDoc: any) => {
         if (!preregistrationDoc.exists) {
           return;
         }
@@ -209,7 +209,7 @@ export const useCanUserPreregister = (): void => {
     const docRef = db.collection('options').doc('preregistration');
     docRef
       .get()
-      .then(preregistrationDoc => {
+      .then((preregistrationDoc: any) => {
         if (!preregistrationDoc.exists) {
           return;
         }
