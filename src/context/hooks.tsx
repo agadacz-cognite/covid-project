@@ -108,40 +108,56 @@ export const useAvailablePlacesForSlots = async (
   weekId: string | undefined,
 ): Promise<any> => {
   const { slotsData, setSlotsData } = useContext(AppContext);
-  if (!weekId) {
-    return;
-  }
-  const weeksDoc = await db.collection('weeks').doc(weekId).get();
-  if (!weeksDoc.exists) {
-    return;
-  }
-  const weeksRaw = weeksDoc.data();
-  db.collection('registrations')
-    .where('weekId', '==', weekId)
-    .onSnapshot((registrationsDocs: any) => {
-      const registrations: RegisteredUser[] = [];
-      registrationsDocs.forEach((registrationDoc: any) => {
-        registrations.push({
-          id: registrationDoc.id,
-          ...registrationDoc.data(),
-        });
+
+  useEffect(() => {
+    if (!weekId) {
+      return;
+    }
+    db.collection('weeks')
+      .doc(weekId)
+      .get()
+      .then((weeksDoc: any) => {
+        if (!weeksDoc.exists) {
+          return;
+        }
+        const weeksRaw = weeksDoc.data();
+        const registrationsRef = db
+          .collection('registrations')
+          .where('weekId', '==', weekId);
+        const unsubscribe = registrationsRef.onSnapshot(
+          (registrationsDocs: any) => {
+            const registrations: RegisteredUser[] = [];
+            registrationsDocs.forEach((registrationDoc: any) => {
+              registrations.push({
+                id: registrationDoc.id,
+                ...registrationDoc.data(),
+              });
+            });
+            const slots: FixedSlotData[] = weeksRaw?.slots.map(
+              (slot: SlotData) => ({
+                id: slot.id,
+                testHours: slot.testHours.map((testHour: string) => ({
+                  time: testHour,
+                  totalPlaces: slot.slotsNr,
+                  takenPlaces: registrations.filter(
+                    (registeredUser: RegisteredUser) =>
+                      registeredUser.weekId === weekId &&
+                      registeredUser.testHours[slot.id] === testHour,
+                  ).length,
+                })),
+              }),
+            );
+            if (!deepEqual(slots, slotsData)) {
+              setSlotsData(slots);
+            }
+          },
+          errorHandler,
+        );
+        return () => {
+          unsubscribe();
+        };
       });
-      const slots: FixedSlotData[] = weeksRaw?.slots.map((slot: SlotData) => ({
-        id: slot.id,
-        testHours: slot.testHours.map((testHour: string) => ({
-          time: testHour,
-          totalPlaces: slot.slotsNr,
-          takenPlaces: registrations.filter(
-            (registeredUser: RegisteredUser) =>
-              registeredUser.weekId === weekId &&
-              registeredUser.testHours[slot.id] === testHour,
-          ).length,
-        })),
-      }));
-      if (!deepEqual(slots, slotsData)) {
-        setSlotsData(slots);
-      }
-    }, errorHandler);
+  }, []);
 };
 
 export const useUsersRegistration = async (
@@ -184,10 +200,11 @@ export const usePreregisteredEmails = (): void => {
   const { setPreregistrationEmails } = useContext(AppContext);
   const isAdmin = useIsUserAdmin();
 
+  if (!isAdmin) {
+    return;
+  }
+
   useEffect(() => {
-    if (!isAdmin) {
-      return;
-    }
     const docRef = db.collection('options').doc('preregistration');
     docRef
       .get()
@@ -206,6 +223,9 @@ export const useCanUserPreregister = (): void => {
   const { user, setCanPreregister } = useContext(AppContext);
 
   useEffect(() => {
+    if (!user?.email) {
+      return;
+    }
     const docRef = db.collection('options').doc('preregistration');
     docRef
       .get()
@@ -221,5 +241,5 @@ export const useCanUserPreregister = (): void => {
         }
       })
       .catch(errorHandler);
-  }, []);
+  }, [user]);
 };

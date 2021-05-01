@@ -47,7 +47,7 @@ export const getRegistrationsForThisWeek = async (
     const users = registrations.map((registeredUser: RegisteredUser) => {
       const userInThisSlot = registeredUser.testHours[slotId];
       if (!userInThisSlot) {
-        return ['', '', '', '', '', ''];
+        return ['', '', '', '', '', '', ''];
       }
       const usersRegisteredHour =
         !userInThisSlot.startsWith('0') && userInThisSlot.length === 4
@@ -56,6 +56,14 @@ export const getRegistrationsForThisWeek = async (
       const field = [
         '', //
         '',
+        registeredUser.registeredTimestamp
+          ? new Date(registeredUser.registeredTimestamp).toLocaleString(
+              'no-NO',
+              {
+                hour12: false,
+              },
+            )
+          : 0,
         registeredUser.name ?? registeredUser.email,
         registeredUser.manager,
         usersRegisteredHour,
@@ -84,6 +92,7 @@ export const getRegistrationsForThisWeek = async (
     weekDate,
     ...week.slots.map((slot: SlotData) => [
       slot.testDay.toUpperCase(),
+      'Registered at',
       'Name',
       'Manager',
       'Hour',

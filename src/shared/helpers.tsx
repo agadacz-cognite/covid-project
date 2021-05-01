@@ -3,15 +3,24 @@ import { notification } from 'antd';
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const errorHandler = (error: any): void => {
-  const mail = (
-    <a
-      href={`mailto:anna.gadacz@cognite.com?subject=COVID Project issue&body=${error}`}>
-      Anna
-    </a>
-  );
   notification.error({
     message: 'Something went wrong.',
-    description: `${error} Please contact ${mail}!`,
+    description: (
+      <div>
+        <p>Don&apos;t worry, you probably just need to refresh the page!</p>
+        <p>
+          Click{' '}
+          <a
+            href={`mailto:anna.gadacz@cognite.com?subject=COVID Project issue, fix fast pls&body=${String(
+              error,
+            )}`}>
+            HERE{' '}
+          </a>
+          to send an email to Anna.
+        </p>
+        <span></span>
+      </div>
+    ),
   });
 };
 
