@@ -45,6 +45,13 @@ export default function Home(): JSX.Element {
       <Title level={2}>COVID test registration</Title>
       <Title level={5}>Please log in with your Cognite account.</Title>
       <div id={GOOGLE_BUTTON_ID}></div>
+      <p style={{ color: '#aaa' }}>
+        If anything goes wrong, please{' '}
+        <a href="mailto:anna.gadacz@cognite.com?subject=COVID Project issue, fix fast pls">
+          inform Anna
+        </a>
+        !
+      </p>
     </Panel>
   );
 }
