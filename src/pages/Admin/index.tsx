@@ -44,7 +44,7 @@ export default function Admin(): JSX.Element {
     const {
       final: registrations,
       weekDate,
-    } = await getRegistrationsForThisWeek(activeRegistration);
+    } = await getRegistrationsForThisWeek(activeRegistration, true);
     const fileTitle = weekDate.replace(' ', '');
     const workbook = XLSX.utils.book_new();
     const sheet = XLSX.utils.aoa_to_sheet(registrations);
@@ -65,6 +65,7 @@ export default function Admin(): JSX.Element {
       });
     }
   };
+  const onPreviewRegisteredUsers = () => history.push('/admin/preview');
   const onCreateNewRegistration = () => history.push('/admin/newweek');
   const onBack = () => history.push('/start');
 
@@ -106,6 +107,13 @@ export default function Admin(): JSX.Element {
                 </Title>
               </>
             )}
+            <Button
+              type="primary"
+              onClick={onPreviewRegisteredUsers}
+              disabled={!activeRegistration}
+              style={{ marginBottom: '8px' }}>
+              View registered users
+            </Button>
             <Button
               type="primary"
               onClick={onDownloadRegisteredUsers}

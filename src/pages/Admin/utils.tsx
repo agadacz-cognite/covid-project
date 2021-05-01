@@ -9,6 +9,7 @@ import {
 
 export const getRegistrationsForThisWeek = async (
   activeRegistration: RegistrationData | undefined,
+  preparedForExcel?: boolean,
 ): Promise<any> => {
   if (!activeRegistration) {
     return;
@@ -48,18 +49,30 @@ export const getRegistrationsForThisWeek = async (
       if (!userInThisSlot) {
         return ['', '', '', '', '', ''];
       }
+      const usersRegisteredHour =
+        !userInThisSlot.startsWith('0') && userInThisSlot.length === 4
+          ? `0${userInThisSlot}`
+          : userInThisSlot;
       const field = [
         '', //
         '',
         registeredUser.name ?? registeredUser.email,
         registeredUser.manager,
-        userInThisSlot, // this is the hour when user has the test
+        usersRegisteredHour,
         registeredUser.vaccinated ? 'X' : '',
       ];
       return field;
     });
     return users;
   });
+
+  if (!preparedForExcel) {
+    return {
+      final: usersMappedToSlots,
+      weekDate,
+      ...week.slots.map((slot: SlotData) => [slot.testDay.toUpperCase()]),
+    };
+  }
 
   const mergedUsers: any[] = [];
   usersMappedToSlots[0].forEach((_, i) => {
