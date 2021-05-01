@@ -70,7 +70,7 @@ export const getRegistrationsForThisWeek = async (
     return {
       final: usersMappedToSlots,
       weekDate,
-      ...week.slots.map((slot: SlotData) => [slot.testDay.toUpperCase()]),
+      weeks: week.slots.map((slot: SlotData) => slot.testDay),
     };
   }
 

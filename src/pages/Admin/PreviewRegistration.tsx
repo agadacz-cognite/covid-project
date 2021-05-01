@@ -18,6 +18,7 @@ export default function PreviewRegistration(): JSX.Element {
   const { activeRegistration, user } = useContext(AppContext);
   const [registeredUsersData, setRegisteredUsersData] = useState([]);
   const [weekDate, setWeekDate] = useState('');
+  const [weekDays, setWeekDays] = useState([]);
 
   useActiveRegistration();
   useBackIfNotLogged();
@@ -27,6 +28,7 @@ export default function PreviewRegistration(): JSX.Element {
     const {
       final: registrations,
       weekDate: rawWeekDate,
+      weeks,
     } = await getRegistrationsForThisWeek(activeRegistration);
     const sanitizedRegistrations = registrations
       .map((registration: string[][]) =>
@@ -39,6 +41,7 @@ export default function PreviewRegistration(): JSX.Element {
       );
     setRegisteredUsersData(sanitizedRegistrations);
     setWeekDate(rawWeekDate);
+    setWeekDays(weeks);
   };
   const onBack = () => history.push('/admin');
 
@@ -61,7 +64,14 @@ export default function PreviewRegistration(): JSX.Element {
         {registeredUsersData &&
           registeredUsersData.map((oneSlot: string[][], index: number) => (
             <Flex column key={`users-table-${index}`}>
-              <Header>Monday</Header>
+              <Header>
+                <Title level={4} style={{ margin: 0 }}>
+                  {weekDays[index]}
+                </Title>
+                <Title level={5} style={{ margin: 0 }}>
+                  {oneSlot?.length ?? '<?>'} registered employees
+                </Title>
+              </Header>
               <Table
                 columns={columns}
                 dataSource={oneSlot}
@@ -108,7 +118,7 @@ const columns = [
     title: 'Vaccinated',
     key: 'vaccinated',
     width: '100px',
-    render: (item: string[]) => <div>{item[3] === 'X' ? 'yes' : 'no'}</div>,
+    render: (item: string[]) => <div>{item[3] === 'X' ? 'yes' : ''}</div>,
     sorter: (a: any, b: any) => stringCompare(a?.[3], b?.[3]),
   },
 ];
