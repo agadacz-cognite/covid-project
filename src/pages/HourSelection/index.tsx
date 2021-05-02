@@ -8,7 +8,7 @@ import {
   useAvailablePlacesForSlots,
 } from '../../context';
 import { registerUserForTest } from '../../firebase';
-import { RegisteredUser, SlotData } from '../../shared';
+import { RegisteredUser, SlotData, sendEmail } from '../../shared';
 import { Flex, Card } from '../../components';
 import MappedHours from './MappedHours';
 
@@ -82,12 +82,12 @@ export default function HourSelection(): JSX.Element {
     };
     setLoading(true);
     await registerUserForTest(registeredUser, slotsData);
-    sendEmail(registeredUser);
+    sendEmailToUser(registeredUser);
     setLoading(false);
   };
   const onBack = () => history.push('/start');
 
-  const sendEmail = (registeredUser: RegisteredUser) => {
+  const sendEmailToUser = (registeredUser: RegisteredUser) => {
     const week = `${new Date(
       (activeRegistration?.week[0]?.seconds ?? 0) * 1000,
     ).toLocaleDateString()} - ${new Date(
@@ -103,16 +103,15 @@ export default function HourSelection(): JSX.Element {
         }`;
       })
       .join(', ');
-    const userFirstName = user.displayName.split(' ')[0];
+    const userFirstName =
+      user?.displayName?.split(' ')?.[0] ?? 'Unknown Person';
+    const subject = `💉 You have registered to a COVID test! Week ${week}`;
     const content = `Hello ${userFirstName}! You just registered for the COVID test for the week ${week}. Your testing dates: ${userHours}.`;
 
-    (window as any).Email.send({
-      SecureToken: 'd92b5171-f9c5-4573-b866-b87c4d392dd6',
-      Username: 'Cognite COVID Test Bot',
-      To: user.email,
-      From: 'cogcovidtest@gmail.com',
-      Subject: `💉 You have registered to a COVID test! Week ${week}`,
-      Body: content,
+    sendEmail({
+      email: user.email,
+      subject,
+      content,
     });
   };
 

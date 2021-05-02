@@ -14,6 +14,7 @@ import {
   useCanUserPreregister,
 } from '../context';
 import { removeUserRegistration } from '../firebase/utils';
+import { sendEmail } from '../shared/helpers';
 import { Flex, Card, Header } from '../components';
 
 dayjs.extend(relativeTime);
@@ -44,6 +45,7 @@ export default function DaysSelection(): JSX.Element {
     activeRegistration,
     usersRegistration,
     canPreregister,
+    setLoading,
   } = useContext(AppContext);
   const isAdmin = useIsUserAdmin();
 
@@ -60,11 +62,37 @@ export default function DaysSelection(): JSX.Element {
   const onProceed = () => {
     history.push('/choose');
   };
-  const onDelete = () => {
+  const onDelete = async () => {
     const weekId = usersRegistration?.weekId;
     const email = usersRegistration?.email;
     if (isUserRegistered && weekId && email) {
-      removeUserRegistration(weekId, email);
+      const week = `${new Date(
+        (activeRegistration?.week[0]?.seconds ?? 0) * 1000,
+      ).toLocaleDateString()} - ${new Date(
+        (activeRegistration?.week[1]?.seconds ?? 0) * 1000,
+      ).toLocaleDateString()}`;
+      const userHours = Object.entries(usersRegistration?.testHours ?? {})
+        .map((testHour: any) => {
+          const week = activeRegistration?.slots.find(
+            slot => slot.id === testHour[0],
+          );
+          return `${week?.testDay ?? '<unknown>'} - ${
+            testHour?.[1] ?? '<unknown>'
+          }`;
+        })
+        .join(', ');
+      const userFirstName =
+        usersRegistration?.name?.split(' ')?.[0] ?? 'Unknown Person';
+      const subject = `💉 You have deleted your COVID test registration - week ${week}`;
+      const content = `Hello ${userFirstName}! You just removed your apponitnment for the COVID test for the week ${week}. Removed testing dates: ${userHours}.`;
+      setLoading(true);
+      await removeUserRegistration(weekId, email);
+      sendEmail({
+        email: user.email,
+        subject,
+        content,
+      });
+      setLoading(false);
     }
   };
 
@@ -148,7 +176,7 @@ export default function DaysSelection(): JSX.Element {
                   </div>
                 </>
               }
-              onConfirm={() => onDelete()}
+              onConfirm={onDelete}
               okText="Delete"
               okButtonProps={{ danger: true }}
               cancelButtonProps={{ type: 'primary' }}

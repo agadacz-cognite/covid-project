@@ -43,3 +43,9 @@ export type RegisteredUser = {
     [weekId: string]: string;
   };
 };
+
+export type SendEmailProps = {
+  email: string;
+  subject: string;
+  content: string;
+};

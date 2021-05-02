@@ -96,6 +96,7 @@ export default function Slot(props: Props): JSX.Element {
         <span style={{ fontWeight: 'bold', width: '90px' }}>Test hours</span>
         <Select
           value={testHours}
+          mode="tags"
           onChange={value => onTestHoursChange(id, value)}
           style={{ width: '100%', marginLeft: '8px' }}>
           {hoursOptions}

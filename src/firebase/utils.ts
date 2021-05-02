@@ -135,7 +135,7 @@ export const removeUserRegistration = (
   weekId: string,
   email: string,
 ): Promise<void> => {
-  return new Promise(resolve => {
+  return new Promise((resolve: any) => {
     if (!db) {
       return resolve();
     }
@@ -146,7 +146,25 @@ export const removeUserRegistration = (
     userRef
       .get()
       .then(userSnapshot =>
-        userSnapshot.forEach(user => user.ref.delete().catch(errorHandler)),
-      );
+        userSnapshot.forEach(user =>
+          user.ref
+            .delete()
+            .then(() => {
+              notification.success({
+                message: 'Yay!',
+                description: 'You successfully deleted your selection!',
+              });
+              return resolve();
+            })
+            .catch(error => {
+              errorHandler(error);
+              return resolve();
+            }),
+        ),
+      )
+      .catch(error => {
+        errorHandler(error);
+        return resolve();
+      });
   });
 };
