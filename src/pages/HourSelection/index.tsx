@@ -14,9 +14,13 @@ import { Choice, Hour, Places } from './components';
 
 export default function HourSelection(): JSX.Element {
   const history = useHistory();
-  const { user, slotsData, setLoading, activeRegistration } = useContext(
-    AppContext,
-  );
+  const {
+    user,
+    slotsData,
+    setLoading,
+    usersRegistration,
+    activeRegistration,
+  } = useContext(AppContext);
   const [managerName, setManagerName] = useState('');
   const [chosenDays, setChosenDays] = useState<SlotData[]>([]);
   const [testHours, setTestHours] = useState<any>({});
@@ -32,6 +36,14 @@ export default function HourSelection(): JSX.Element {
       setChosenDays(slots);
     } else {
       history.push('/start');
+    }
+  }, []);
+
+  useEffect(() => {
+    if (usersRegistration) {
+      setTestHours(usersRegistration.testHours);
+      setVaccinated(usersRegistration.vaccinated);
+      setManagerName(usersRegistration.manager);
     }
   }, []);
 
