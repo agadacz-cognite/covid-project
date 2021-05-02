@@ -12,6 +12,9 @@ import {
   FixedSlotData,
 } from '../shared';
 
+/**
+ * Retrieves fresh data about active registration straight from database.
+ */
 export const useActiveRegistration = (): void => {
   const { activeRegistration, setActiveRegistration } = useContext(AppContext);
 
@@ -56,6 +59,10 @@ export const useActiveRegistration = (): void => {
   }, []);
 };
 
+/**
+ * Checks if the user has admin permissions.
+ * @returns boolean
+ */
 export const useIsUserAdmin = (): any => {
   const { admins, setAdmins, user } = useContext(AppContext);
   if (admins?.length && user?.email) {
@@ -84,6 +91,9 @@ export const useIsUserAdmin = (): any => {
   });
 };
 
+/**
+ * Redirects user to the main page if they do not have admin permissions.
+ */
 export const useBackIfNotAdmin = (): void => {
   const isAdmin = useIsUserAdmin();
   const history = useHistory();
@@ -94,6 +104,9 @@ export const useBackIfNotAdmin = (): void => {
   }, [isAdmin]);
 };
 
+/**
+ * Redirects user to login page if they are not logged in.
+ */
 export const useBackIfNotLogged = (): void => {
   const { user } = useContext(AppContext);
   const history = useHistory();
@@ -104,46 +117,71 @@ export const useBackIfNotLogged = (): void => {
   }, [user]);
 };
 
+/**
+ * Prepares the information about the availability of the slots for the passed week.
+ * @param weekId string|undefined
+ */
 export const useAvailablePlacesForSlots = async (
   weekId: string | undefined,
 ): Promise<any> => {
   const { slotsData, setSlotsData } = useContext(AppContext);
-  if (!weekId) {
-    return;
-  }
-  const weeksDoc = await db.collection('weeks').doc(weekId).get();
-  if (!weeksDoc.exists) {
-    return;
-  }
-  const weeksRaw = weeksDoc.data();
-  db.collection('registrations')
-    .where('weekId', '==', weekId)
-    .onSnapshot((registrationsDocs: any) => {
-      const registrations: RegisteredUser[] = [];
-      registrationsDocs.forEach((registrationDoc: any) => {
-        registrations.push({
-          id: registrationDoc.id,
-          ...registrationDoc.data(),
-        });
+
+  useEffect(() => {
+    if (!weekId) {
+      return;
+    }
+    db.collection('weeks')
+      .doc(weekId)
+      .get()
+      .then((weeksDoc: any) => {
+        if (!weeksDoc.exists) {
+          return;
+        }
+        const weeksRaw = weeksDoc.data();
+        const registrationsRef = db
+          .collection('registrations')
+          .where('weekId', '==', weekId);
+        const unsubscribe = registrationsRef.onSnapshot(
+          (registrationsDocs: any) => {
+            const registrations: RegisteredUser[] = [];
+            registrationsDocs.forEach((registrationDoc: any) => {
+              registrations.push({
+                id: registrationDoc.id,
+                ...registrationDoc.data(),
+              });
+            });
+            const slots: FixedSlotData[] = weeksRaw?.slots.map(
+              (slot: SlotData) => ({
+                id: slot.id,
+                testHours: slot.testHours.map((testHour: string) => ({
+                  time: testHour,
+                  totalPlaces: slot.slotsNr,
+                  takenPlaces: registrations.filter(
+                    (registeredUser: RegisteredUser) =>
+                      registeredUser.weekId === weekId &&
+                      registeredUser.testHours[slot.id] === testHour,
+                  ).length,
+                })),
+              }),
+            );
+            if (!deepEqual(slots, slotsData)) {
+              setSlotsData(slots);
+            }
+          },
+          errorHandler,
+        );
+        return () => {
+          unsubscribe();
+        };
       });
-      const slots: FixedSlotData[] = weeksRaw?.slots.map((slot: SlotData) => ({
-        id: slot.id,
-        testHours: slot.testHours.map((testHour: string) => ({
-          time: testHour,
-          totalPlaces: slot.slotsNr,
-          takenPlaces: registrations.filter(
-            (registeredUser: RegisteredUser) =>
-              registeredUser.weekId === weekId &&
-              registeredUser.testHours[slot.id] === testHour,
-          ).length,
-        })),
-      }));
-      if (!deepEqual(slots, slotsData)) {
-        setSlotsData(slots);
-      }
-    }, errorHandler);
+  }, []);
 };
 
+/**
+ * Prepares information about the logged user's rejestration.
+ * @param email
+ * @param weekId
+ */
 export const useUsersRegistration = async (
   email: string | undefined,
   weekId: string | undefined,
@@ -180,14 +218,19 @@ export const useUsersRegistration = async (
   }, [weekId, email]);
 };
 
+/**
+ * Prepares list of the emails which are allowed to preregister.
+ * @returns
+ */
 export const usePreregisteredEmails = (): void => {
   const { setPreregistrationEmails } = useContext(AppContext);
   const isAdmin = useIsUserAdmin();
 
+  if (!isAdmin) {
+    return;
+  }
+
   useEffect(() => {
-    if (!isAdmin) {
-      return;
-    }
     const docRef = db.collection('options').doc('preregistration');
     docRef
       .get()
@@ -202,10 +245,16 @@ export const usePreregisteredEmails = (): void => {
   }, []);
 };
 
+/**
+ * Prepares info if the currently logged in user has permissions to preregister.
+ */
 export const useCanUserPreregister = (): void => {
   const { user, setCanPreregister } = useContext(AppContext);
 
   useEffect(() => {
+    if (!user?.email) {
+      return;
+    }
     const docRef = db.collection('options').doc('preregistration');
     docRef
       .get()
@@ -221,5 +270,5 @@ export const useCanUserPreregister = (): void => {
         }
       })
       .catch(errorHandler);
-  }, []);
+  }, [user]);
 };

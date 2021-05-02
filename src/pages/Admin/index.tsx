@@ -11,10 +11,7 @@ import {
   useBackIfNotLogged,
   usePreregisteredEmails,
 } from '../../context';
-import {
-  getRegistrationsForThisWeek,
-  savePreregistrationEmails,
-} from './utils';
+import { getRegistrationsForExcel, savePreregistrationEmails } from './utils';
 
 const { Title } = Typography;
 
@@ -41,10 +38,9 @@ export default function Admin(): JSX.Element {
   }, [preregistrationEmails]);
 
   const onDownloadRegisteredUsers = async () => {
-    const {
-      final: registrations,
-      weekDate,
-    } = await getRegistrationsForThisWeek(activeRegistration);
+    const { final: registrations, weekDate } = await getRegistrationsForExcel(
+      activeRegistration,
+    );
     const fileTitle = weekDate.replace(' ', '');
     const workbook = XLSX.utils.book_new();
     const sheet = XLSX.utils.aoa_to_sheet(registrations);
@@ -65,6 +61,7 @@ export default function Admin(): JSX.Element {
       });
     }
   };
+  const onPreviewRegisteredUsers = () => history.push('/admin/preview');
   const onCreateNewRegistration = () => history.push('/admin/newweek');
   const onBack = () => history.push('/start');
 
@@ -106,6 +103,13 @@ export default function Admin(): JSX.Element {
                 </Title>
               </>
             )}
+            <Button
+              type="primary"
+              onClick={onPreviewRegisteredUsers}
+              disabled={!activeRegistration}
+              style={{ marginBottom: '8px' }}>
+              View registered users
+            </Button>
             <Button
               type="primary"
               onClick={onDownloadRegisteredUsers}

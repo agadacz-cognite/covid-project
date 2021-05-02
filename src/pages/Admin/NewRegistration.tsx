@@ -244,7 +244,7 @@ export default function NewRegistration(): JSX.Element {
           size="large"
           style={{ boxShadow: '0 0 20px #000', marginRight: '8px' }}
           onClick={onBack}>
-          Back to admin panel
+          Cancel
         </Button>
         <Button
           type="primary"

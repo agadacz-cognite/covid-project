@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Input, Button, Tooltip, Switch, Spin, notification } from 'antd';
+import { Input, Button, Switch, notification } from 'antd';
 import {
   AppContext,
   useBackIfNotLogged,
@@ -8,15 +8,19 @@ import {
   useAvailablePlacesForSlots,
 } from '../../context';
 import { registerUserForTest } from '../../firebase';
-import { FixedSlotData, RegisteredUser, SlotData } from '../../shared';
+import { RegisteredUser, SlotData } from '../../shared';
 import { Flex, Card } from '../../components';
-import { Choice, Hour, Places } from './components';
+import MappedHours from './MappedHours';
 
 export default function HourSelection(): JSX.Element {
   const history = useHistory();
-  const { user, slotsData, setLoading, activeRegistration } = useContext(
-    AppContext,
-  );
+  const {
+    user,
+    slotsData,
+    setLoading,
+    usersRegistration,
+    activeRegistration,
+  } = useContext(AppContext);
   const [managerName, setManagerName] = useState('');
   const [chosenDays, setChosenDays] = useState<SlotData[]>([]);
   const [testHours, setTestHours] = useState<any>({});
@@ -35,18 +39,14 @@ export default function HourSelection(): JSX.Element {
     }
   }, []);
 
-  const isChosen = (id: string, hour: any) => testHours[id] === hour;
-
-  const onHourChoose = (id: string, hour: any, available: boolean) => {
-    if (!available) {
-      return;
+  useEffect(() => {
+    if (usersRegistration?.testHours) {
+      setTestHours(usersRegistration.testHours);
+      setVaccinated(usersRegistration.vaccinated);
+      setManagerName(usersRegistration.manager);
     }
-    const fixedChosenSlots = {
-      ...testHours,
-      [id]: hour,
-    };
-    setTestHours(fixedChosenSlots);
-  };
+  }, []);
+
   const onManagerNameChange = (event: React.ChangeEvent<HTMLInputElement>) =>
     setManagerName(event.target.value);
   const onSubmit = async () => {
@@ -104,7 +104,7 @@ export default function HourSelection(): JSX.Element {
       })
       .join(', ');
     const userFirstName = user.displayName.split(' ')[0];
-    const content = `Hello ${userFirstName}!\r\n\r\nYou just registered for the COVID test for the week ${week}.\r\nYour testing dates: ${userHours}.`;
+    const content = `Hello ${userFirstName}! You just registered for the COVID test for the week ${week}. Your testing dates: ${userHours}.`;
 
     (window as any).Email.send({
       SecureToken: 'd92b5171-f9c5-4573-b866-b87c4d392dd6',
@@ -113,63 +113,6 @@ export default function HourSelection(): JSX.Element {
       From: 'cogcovidtest@gmail.com',
       Subject: `💉 You have registered to a COVID test! Week ${week}`,
       Body: content,
-    });
-  };
-
-  const mapHours = (id: string) => {
-    const slotToMap = chosenDays.find((slot: SlotData) => slot.id === id);
-    if (!slotToMap) {
-      return (
-        <Choice>
-          <Spin />
-        </Choice>
-      );
-    }
-    return slotToMap.testHours.map((hour: any) => {
-      const slotData = slotsData.find(
-        (fixedSlot: FixedSlotData) => fixedSlot.id === id,
-      );
-      if (!slotData) {
-        return (
-          <Choice>
-            <Spin />
-          </Choice>
-        );
-      }
-      const fixedTestHour = slotData.testHours.find(
-        (testHour: any) => testHour.time === hour,
-      );
-      if (!fixedTestHour) {
-        return (
-          <Choice>
-            <Spin />
-          </Choice>
-        );
-      }
-      const available = fixedTestHour.takenPlaces < fixedTestHour.totalPlaces;
-      const percentOfPlacesTaken =
-        (fixedTestHour.totalPlaces - fixedTestHour.takenPlaces) /
-        fixedTestHour.totalPlaces;
-      return (
-        <Tooltip
-          key={JSON.stringify(hour)}
-          title={
-            !available && 'All of the slots for this hour are already taken :C'
-          }>
-          <Choice
-            availability={percentOfPlacesTaken}
-            chosen={isChosen(id, hour)}
-            onClick={() => onHourChoose(id, hour, available)}>
-            <Hour available={available}>{hour}</Hour>
-            <Places>
-              <span style={{ fontWeight: 'bold' }}>
-                {fixedTestHour.totalPlaces - fixedTestHour.takenPlaces}
-              </span>{' '}
-              available
-            </Places>
-          </Choice>
-        </Tooltip>
-      );
     });
   };
 
@@ -195,7 +138,12 @@ export default function HourSelection(): JSX.Element {
               ))}
             </ul>
             <Flex row align justify style={{ flexWrap: 'wrap' }}>
-              {mapHours(slot.id)}
+              <MappedHours
+                id={slot.id}
+                chosenDays={chosenDays}
+                testHours={testHours}
+                setTestHours={setTestHours}
+              />
             </Flex>
           </Card>
         ))}

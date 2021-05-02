@@ -83,16 +83,6 @@ export default function Slot(props: Props): JSX.Element {
         </Flex>
       </Flex>
       <Flex row align style={{ margin: '4px 0' }}>
-        <span style={{ fontWeight: 'bold', width: '90px' }}>Test hours</span>
-        <Select
-          value={testHours}
-          onChange={value => onTestHoursChange(id, value)}
-          mode="tags"
-          style={{ width: '100%', marginLeft: '8px' }}>
-          {hoursOptions}
-        </Select>
-      </Flex>
-      <Flex row align style={{ margin: '4px 0' }}>
         <span style={{ fontWeight: 'bold', width: '90px' }}>Office days</span>
         <Select
           value={officeDays}
@@ -100,6 +90,15 @@ export default function Slot(props: Props): JSX.Element {
           mode="tags"
           style={{ width: '100%', marginLeft: '8px' }}>
           {daysOptions}
+        </Select>
+      </Flex>
+      <Flex row align style={{ margin: '4px 0' }}>
+        <span style={{ fontWeight: 'bold', width: '90px' }}>Test hours</span>
+        <Select
+          value={testHours}
+          onChange={value => onTestHoursChange(id, value)}
+          style={{ width: '100%', marginLeft: '8px' }}>
+          {hoursOptions}
         </Select>
       </Flex>
     </StyledSlot>
