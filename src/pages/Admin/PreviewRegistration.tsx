@@ -26,21 +26,12 @@ export default function PreviewRegistration(): JSX.Element {
 
   const getRegisteredUsers = async () => {
     const {
-      final: registrations,
-      weekDate: rawWeekDate,
+      usersRegistrationData,
+      weekDate,
       weeks,
     } = await getRegistrationsForThisWeek(activeRegistration);
-    const sanitizedRegistrations = registrations
-      .map((registration: string[][]) =>
-        registration.map((singleUser: string[]) =>
-          singleUser.filter((field: string) => field?.length),
-        ),
-      )
-      .map((registration: string[][]) =>
-        registration.filter((singleUser: string[]) => singleUser?.length),
-      );
-    setRegisteredUsersData(sanitizedRegistrations);
-    setWeekDate(rawWeekDate);
+    setRegisteredUsersData(usersRegistrationData);
+    setWeekDate(weekDate);
     setWeekDays(weeks);
   };
   const onBack = () => history.push('/admin');
@@ -97,39 +88,54 @@ const columns = [
   {
     title: 'Date',
     key: 'date',
+    dataIndex: 'registeredAt',
     width: '50px',
-    render: (item: string[]) => <span>{item[0]}</span>,
-    sorter: (a: any, b: any) => stringCompare(a?.[0], b?.[0]),
+    render: (registeredAt: string) => (
+      <span>
+        {Number(registeredAt) === 0
+          ? '-'
+          : new Date(registeredAt).toLocaleString('no-NO', {
+              hour12: false,
+            })}
+      </span>
+    ),
+    sorter: (a: any, b: any) => b?.registeredAt - a?.registeredAt,
   },
   {
     title: 'Name',
     key: 'name',
+    dataIndex: 'name',
     width: '250px',
-    render: (item: string[]) => (
-      <span style={{ fontWeight: 'bold' }}>{item[1]}</span>
+    render: (name: string) => (
+      <span style={{ fontWeight: 'bold' }}>{name}</span>
     ),
-    sorter: (a: any, b: any) => stringCompare(a?.[1], b?.[1]),
+    sorter: (a: any, b: any) => stringCompare(a?.name, b?.name),
   },
   {
     title: 'Manager',
     key: 'manager',
+    dataIndex: 'manager',
     width: '250px',
-    render: (item: string[]) => <span>{item[2]}</span>,
-    sorter: (a: any, b: any) => stringCompare(a?.[2], b?.[2]),
+    render: (manager: string) => <span>{manager}</span>,
+    sorter: (a: any, b: any) => stringCompare(a?.manager, b?.manager),
   },
   {
     title: 'Hour',
     key: 'hour',
+    dataIndex: 'hour',
     width: '50px',
     align: 'center' as const,
-    render: (item: string[]) => <span>{item[3]}</span>,
-    sorter: (a: any, b: any) => stringCompare(a?.[3], b?.[3]),
+    render: (hour: string) => <span>{hour}</span>,
+    sorter: (a: any, b: any) => stringCompare(a?.hour, b?.hour),
   },
   {
     title: 'Vaccinated',
     key: 'vaccinated',
+    dataIndex: 'vaccinated',
     width: '100px',
-    render: (item: string[]) => <span>{item[4] === 'X' ? 'yes' : ''}</span>,
-    sorter: (a: any, b: any) => stringCompare(a?.[4], b?.[4]),
+    render: (vaccinated: string) => (
+      <span>{vaccinated === 'X' ? 'yes' : ''}</span>
+    ),
+    sorter: (a: any, b: any) => stringCompare(a?.vaccinated, b?.vaccinated),
   },
 ];

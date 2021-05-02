@@ -11,10 +11,7 @@ import {
   useBackIfNotLogged,
   usePreregisteredEmails,
 } from '../../context';
-import {
-  getRegistrationsForThisWeek,
-  savePreregistrationEmails,
-} from './utils';
+import { getRegistrationsForExcel, savePreregistrationEmails } from './utils';
 
 const { Title } = Typography;
 
@@ -41,10 +38,9 @@ export default function Admin(): JSX.Element {
   }, [preregistrationEmails]);
 
   const onDownloadRegisteredUsers = async () => {
-    const {
-      final: registrations,
-      weekDate,
-    } = await getRegistrationsForThisWeek(activeRegistration, true);
+    const { final: registrations, weekDate } = await getRegistrationsForExcel(
+      activeRegistration,
+    );
     const fileTitle = weekDate.replace(' ', '');
     const workbook = XLSX.utils.book_new();
     const sheet = XLSX.utils.aoa_to_sheet(registrations);
