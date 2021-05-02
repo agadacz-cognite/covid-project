@@ -186,7 +186,9 @@ export const useUsersRegistration = async (
   email: string | undefined,
   weekId: string | undefined,
 ): Promise<any> => {
-  const { usersRegistration, setUsersRegistration } = useContext(AppContext);
+  const { usersRegistration, setUsersRegistration, loading } = useContext(
+    AppContext,
+  );
 
   useEffect(() => {
     if (!weekId || !email) {
@@ -215,7 +217,7 @@ export const useUsersRegistration = async (
     return () => {
       unsubscribe && unsubscribe();
     };
-  }, [weekId, email]);
+  }, [weekId, email, loading]);
 };
 
 /**

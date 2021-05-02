@@ -138,6 +138,7 @@ export default function HourSelection(): JSX.Element {
             </ul>
             <Flex row align justify style={{ flexWrap: 'wrap' }}>
               <MappedHours
+                key={`mapped-hour-${slot.id}`}
                 id={slot.id}
                 chosenDays={chosenDays}
                 testHours={testHours}

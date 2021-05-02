@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 import { Tooltip, Spin } from 'antd';
+import { v4 as uuid } from 'uuid';
 import { FixedSlotData, SlotData } from '../../shared';
 import { Choice, Hour, Places } from './components';
 import { AppContext } from '../../context';
@@ -38,19 +39,19 @@ export default function MappedHours(props: MappedHoursProps): JSX.Element {
 
   if (!slotToMap) {
     return (
-      <Choice>
+      <Choice key={`mapped-hour-${uuid()}`}>
         <Spin />
       </Choice>
     );
   }
 
-  return slotToMap.testHours.map((hour: any) => {
+  return slotToMap.testHours.map((hour: any, index: number) => {
     const slotData = slotsData.find(
       (fixedSlot: FixedSlotData) => fixedSlot.id === id,
     );
     if (!slotData) {
       return (
-        <Choice>
+        <Choice key={`mapped-hour-${index}-${hour}-noslotdata`}>
           <Spin />
         </Choice>
       );
@@ -60,7 +61,7 @@ export default function MappedHours(props: MappedHoursProps): JSX.Element {
     );
     if (!fixedTestHour) {
       return (
-        <Choice>
+        <Choice key={`mapped-hour-${index}-${hour}-nofixed`}>
           <Spin />
         </Choice>
       );
@@ -72,7 +73,7 @@ export default function MappedHours(props: MappedHoursProps): JSX.Element {
 
     return (
       <Tooltip
-        key={JSON.stringify(hour)}
+        key={`mapped-hour-${index}-${hour}-ok`}
         title={
           !available && 'All of the slots for this hour are already taken :C'
         }>
