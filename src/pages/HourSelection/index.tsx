@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Input, Button, Tooltip, Switch, Spin, notification } from 'antd';
+import { Input, Button, Switch, notification } from 'antd';
 import {
   AppContext,
   useBackIfNotLogged,
@@ -8,9 +8,9 @@ import {
   useAvailablePlacesForSlots,
 } from '../../context';
 import { registerUserForTest } from '../../firebase';
-import { FixedSlotData, RegisteredUser, SlotData } from '../../shared';
+import { RegisteredUser, SlotData } from '../../shared';
 import { Flex, Card } from '../../components';
-import { Choice, Hour, Places } from './components';
+import MappedHours from './MappedHours';
 
 export default function HourSelection(): JSX.Element {
   const history = useHistory();
@@ -40,25 +40,13 @@ export default function HourSelection(): JSX.Element {
   }, []);
 
   useEffect(() => {
-    if (usersRegistration) {
+    if (usersRegistration?.testHours) {
       setTestHours(usersRegistration.testHours);
       setVaccinated(usersRegistration.vaccinated);
       setManagerName(usersRegistration.manager);
     }
   }, []);
 
-  const isChosen = (id: string, hour: any) => testHours[id] === hour;
-
-  const onHourChoose = (id: string, hour: any, available: boolean) => {
-    if (!available) {
-      return;
-    }
-    const fixedChosenSlots = {
-      ...testHours,
-      [id]: hour,
-    };
-    setTestHours(fixedChosenSlots);
-  };
   const onManagerNameChange = (event: React.ChangeEvent<HTMLInputElement>) =>
     setManagerName(event.target.value);
   const onSubmit = async () => {
@@ -128,63 +116,6 @@ export default function HourSelection(): JSX.Element {
     });
   };
 
-  const mapHours = (id: string) => {
-    const slotToMap = chosenDays.find((slot: SlotData) => slot.id === id);
-    if (!slotToMap) {
-      return (
-        <Choice>
-          <Spin />
-        </Choice>
-      );
-    }
-    return slotToMap.testHours.map((hour: any) => {
-      const slotData = slotsData.find(
-        (fixedSlot: FixedSlotData) => fixedSlot.id === id,
-      );
-      if (!slotData) {
-        return (
-          <Choice>
-            <Spin />
-          </Choice>
-        );
-      }
-      const fixedTestHour = slotData.testHours.find(
-        (testHour: any) => testHour.time === hour,
-      );
-      if (!fixedTestHour) {
-        return (
-          <Choice>
-            <Spin />
-          </Choice>
-        );
-      }
-      const available = fixedTestHour.takenPlaces < fixedTestHour.totalPlaces;
-      const percentOfPlacesTaken =
-        (fixedTestHour.totalPlaces - fixedTestHour.takenPlaces) /
-        fixedTestHour.totalPlaces;
-      return (
-        <Tooltip
-          key={JSON.stringify(hour)}
-          title={
-            !available && 'All of the slots for this hour are already taken :C'
-          }>
-          <Choice
-            availability={percentOfPlacesTaken}
-            chosen={isChosen(id, hour)}
-            onClick={() => onHourChoose(id, hour, available)}>
-            <Hour available={available}>{hour}</Hour>
-            <Places>
-              <span style={{ fontWeight: 'bold' }}>
-                {fixedTestHour.totalPlaces - fixedTestHour.takenPlaces}
-              </span>{' '}
-              available
-            </Places>
-          </Choice>
-        </Tooltip>
-      );
-    });
-  };
-
   return (
     <Flex column style={{ margin: 'auto' }}>
       <Flex row align justify style={{ flexWrap: 'wrap' }}>
@@ -207,7 +138,12 @@ export default function HourSelection(): JSX.Element {
               ))}
             </ul>
             <Flex row align justify style={{ flexWrap: 'wrap' }}>
-              {mapHours(slot.id)}
+              <MappedHours
+                id={slot.id}
+                chosenDays={chosenDays}
+                testHours={testHours}
+                setTestHours={setTestHours}
+              />
             </Flex>
           </Card>
         ))}
