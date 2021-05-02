@@ -8,6 +8,9 @@ import {
 } from '../shared';
 import { FixedSlotData } from '../shared';
 
+/**
+ * Create a new registration as admin
+ */
 export const createActiveRegistration = (
   registrationData: RegistrationData,
 ): any => {
@@ -30,6 +33,12 @@ export const createActiveRegistration = (
     .catch(errorHandler);
 };
 
+/**
+ * Register user for the testing slot
+ * @param userToRegister
+ * @param slotsData
+ * @returns
+ */
 export const registerUserForTest = (
   userToRegister: RegisteredUser,
   slotsData: FixedSlotData[],
@@ -118,5 +127,26 @@ export const registerUserForTest = (
     } catch (error) {
       resolve();
     }
+  });
+};
+
+/** Delee user from the testing slot */
+export const removeUserRegistration = (
+  weekId: string,
+  email: string,
+): Promise<void> => {
+  return new Promise(resolve => {
+    if (!db) {
+      return resolve();
+    }
+    const userRef = db
+      .collection('registrations')
+      .where('weekId', '==', weekId)
+      .where('email', '==', email);
+    userRef
+      .get()
+      .then(userSnapshot =>
+        userSnapshot.forEach(user => user.ref.delete().catch(errorHandler)),
+      );
   });
 };

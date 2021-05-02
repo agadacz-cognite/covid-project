@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Button, Typography, Spin } from 'antd';
+import { Button, Typography, Spin, Popconfirm } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import dayjs from 'dayjs';
@@ -13,6 +13,7 @@ import {
   useBackIfNotLogged,
   useCanUserPreregister,
 } from '../context';
+import { removeUserRegistration } from '../firebase/utils';
 import { Flex, Card, Header } from '../components';
 
 dayjs.extend(relativeTime);
@@ -58,6 +59,13 @@ export default function DaysSelection(): JSX.Element {
   const onAdminPageClick = () => history.push('/admin');
   const onProceed = () => {
     history.push('/choose');
+  };
+  const onDelete = () => {
+    const weekId = usersRegistration?.weekId;
+    const email = usersRegistration?.email;
+    if (isUserRegistered && weekId && email) {
+      removeUserRegistration(weekId, email);
+    }
   };
 
   const getUserFirstName = () => {
@@ -126,9 +134,31 @@ export default function DaysSelection(): JSX.Element {
     ) {
       return (
         <StyledFlex column justify align>
-          <Button type="primary" onClick={onProceed}>
+          <Button type="primary" onClick={onProceed} style={{ margin: '4px' }}>
             {isUserRegistered ? 'Change your choice' : 'Register'}
           </Button>
+          {isUserRegistered && (
+            <Popconfirm
+              title={
+                <>
+                  <div>Are you sure you want to delete your registration?</div>
+                  <div>
+                    You will be able to register again (if there are any slots
+                    left).
+                  </div>
+                </>
+              }
+              onConfirm={() => onDelete()}
+              okText="Delete"
+              okButtonProps={{ danger: true }}
+              cancelButtonProps={{ type: 'primary' }}
+              cancelText="Nope :c"
+              placement="right">
+              <Button type="primary" danger style={{ margin: '4px' }}>
+                Delete your registration
+              </Button>
+            </Popconfirm>
+          )}
         </StyledFlex>
       );
     }
