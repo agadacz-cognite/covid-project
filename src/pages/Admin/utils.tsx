@@ -68,6 +68,7 @@ export const getRegistrationsForThisWeek = async (
           name: registeredUser?.name ?? registeredUser?.email ?? '<unknown>',
           manager: registeredUser?.manager ?? '<unknown>',
           hour: usersRegisteredHour,
+          email: registeredUser?.email ?? 'cogcovidtest@gmail.com',
           vaccinated: registeredUser.vaccinated ? 'X' : '',
         };
         return userRegistrationData;

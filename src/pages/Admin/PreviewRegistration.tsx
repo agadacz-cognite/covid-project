@@ -1,6 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Button, Typography, Spin } from 'antd';
+import { Button, Typography, Spin, Tooltip } from 'antd';
+import { WarningOutlined } from '@ant-design/icons';
 import {
   AppContext,
   useBackIfNotAdmin,
@@ -104,10 +105,21 @@ const columns = [
   {
     title: 'Name',
     key: 'name',
-    dataIndex: 'name',
     width: '250px',
-    render: (name: string) => (
-      <span style={{ fontWeight: 'bold' }}>{name}</span>
+    render: (item: any) => (
+      <span style={{ fontWeight: 'bold' }}>
+        {item.registeredTooLate ? (
+          <Tooltip title="This person has signed up after the slot was already unavailable. Please contact them to rebook. Clicking their name will redirect you to email service with template preregistered.">
+            <WarningOutlined style={{ color: 'red', marginRight: '4px' }} />
+            <a
+              href={`mailto:${item.email}?subject=😿 Notice about your COVID test appointment rebook&body=Unfortunately you have to rebook your COVID appointment. Due to a database lag your registration went through already after all the places for the slot were already taken. We sincerely apologize for inconvenience.`}>
+              {item.name}
+            </a>
+          </Tooltip>
+        ) : (
+          item.name
+        )}
+      </span>
     ),
     sorter: (a: any, b: any) => stringCompare(a?.name, b?.name),
   },
