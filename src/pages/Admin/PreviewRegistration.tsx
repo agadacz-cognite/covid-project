@@ -69,7 +69,7 @@ export default function PreviewRegistration(): JSX.Element {
                 </Title>
               </Header>
               <Table
-                columns={columns}
+                columns={columns(weekDays[index])}
                 dataSource={oneSlot}
                 pagination={{ pageSize: 10, hideOnSinglePage: true }}
               />
@@ -85,7 +85,7 @@ export default function PreviewRegistration(): JSX.Element {
   );
 }
 
-const columns = [
+const columns = (day: string) => [
   {
     title: 'Date',
     key: 'date',
@@ -106,21 +106,23 @@ const columns = [
     title: 'Name',
     key: 'name',
     width: '250px',
-    render: (item: any) => (
-      <span style={{ fontWeight: 'bold' }}>
-        {item.registeredTooLate ? (
-          <Tooltip title="This person has signed up after the slot was already unavailable. Please contact them to rebook. Clicking their name will redirect you to email service with template preregistered.">
-            <WarningOutlined style={{ color: 'red', marginRight: '4px' }} />
-            <a
-              href={`mailto:${item.email}?subject=😿 Notice about your COVID test appointment rebook&body=Unfortunately you have to rebook your COVID appointment. Due to a database lag your registration went through already after all the places for the slot were already taken. We sincerely apologize for inconvenience.`}>
-              {item.name}
-            </a>
-          </Tooltip>
-        ) : (
-          item.name
-        )}
-      </span>
-    ),
+    render: (item: any) => {
+      const tooLateTooltip =
+        'This person has signed up after the slot was already unavailable. Please contact them to rebook. Clicking their name will redirect you to email service with prepared template.';
+      const tooLateEmail = `mailto:${item.email}?subject=❗❗ You need to rebook your COVID test appointment 😿&body=Unfortunately you have to rebook your COVID appointment at ${day}, ${item.hour}.%0A%0ADue to a database lag your registration went through already after all the places for the slot were already taken.%0A%0AWe sincerely apologize for inconvenience.`;
+      return (
+        <span style={{ fontWeight: 'bold' }}>
+          {item.registeredTooLate ? (
+            <Tooltip title={tooLateTooltip}>
+              <WarningOutlined style={{ color: 'red', marginRight: '4px' }} />
+              <a href={tooLateEmail}>{item.name}</a>
+            </Tooltip>
+          ) : (
+            item.name
+          )}
+        </span>
+      );
+    },
     sorter: (a: any, b: any) => stringCompare(a?.name, b?.name),
   },
   {

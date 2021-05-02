@@ -48,31 +48,49 @@ export const getRegistrationsForThisWeek = async (
   const allSlots = week.slots.map((slot: SlotData) => ({
     slotId: slot.id,
     testDay: slot.testDay,
+    slotsNr: slot.slotsNr,
   }));
 
   const usersMappedToSlots = allSlots.map((slot: any) => {
     const { slotId } = slot;
-    const users = registrations
-      .filter((registeredUser: RegisteredUser) => {
-        const userInThisSlot = registeredUser.testHours[slotId];
-        return userInThisSlot;
-      })
-      .map((registeredUser: RegisteredUser) => {
-        const userInThisSlot = registeredUser.testHours[slotId];
-        const usersRegisteredHour =
-          !userInThisSlot.startsWith('0') && userInThisSlot.length === 4
-            ? `0${userInThisSlot}`
-            : userInThisSlot;
-        const userRegistrationData = {
-          registeredAt: registeredUser?.registeredTimestamp ?? 0,
-          name: registeredUser?.name ?? registeredUser?.email ?? '<unknown>',
-          manager: registeredUser?.manager ?? '<unknown>',
-          hour: usersRegisteredHour,
-          email: registeredUser?.email ?? 'cogcovidtest@gmail.com',
-          vaccinated: registeredUser.vaccinated ? 'X' : '',
-        };
-        return userRegistrationData;
-      });
+    const registeredUsers = registrations.filter(
+      (registeredUser: RegisteredUser) => {
+        const userRegistrationTimeForSlot = registeredUser.testHours[slotId];
+        return userRegistrationTimeForSlot;
+      },
+    );
+    const users = registeredUsers.map((registeredUser: RegisteredUser) => {
+      const userRegistrationTimeForSlot = registeredUser.testHours[slotId];
+      const allUsersRegisteredForSlot = registrations
+        .filter(
+          (rU: RegisteredUser) =>
+            rU.weekId === weekId &&
+            rU.testHours[slotId] === userRegistrationTimeForSlot,
+        )
+        .sort((a, b) => a.registeredTimestamp - b.registeredTimestamp);
+      const placesTaken = allUsersRegisteredForSlot.length;
+      const registrationsOverLimit = placesTaken - slot.slotsNr;
+      const registeredTooLate =
+        registrationsOverLimit > 0 &&
+        allUsersRegisteredForSlot.findIndex(
+          u => u.email === registeredUser.email,
+        ) >= slot.slotsNr;
+      const usersRegisteredHour =
+        !userRegistrationTimeForSlot.startsWith('0') &&
+        userRegistrationTimeForSlot.length === 4
+          ? `0${userRegistrationTimeForSlot}`
+          : userRegistrationTimeForSlot;
+      const userRegistrationData = {
+        registeredAt: registeredUser?.registeredTimestamp ?? 0,
+        name: registeredUser?.name ?? registeredUser?.email ?? '<unknown>',
+        manager: registeredUser?.manager ?? '<unknown>',
+        hour: usersRegisteredHour,
+        email: registeredUser?.email ?? 'cogcovidtest@gmail.com',
+        vaccinated: registeredUser.vaccinated ? 'X' : '',
+        registeredTooLate,
+      };
+      return userRegistrationData;
+    });
     return users;
   });
 

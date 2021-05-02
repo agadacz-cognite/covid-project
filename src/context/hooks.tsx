@@ -12,6 +12,9 @@ import {
   FixedSlotData,
 } from '../shared';
 
+/**
+ * Retrieves fresh data about active registration straight from database.
+ */
 export const useActiveRegistration = (): void => {
   const { activeRegistration, setActiveRegistration } = useContext(AppContext);
 
@@ -56,6 +59,10 @@ export const useActiveRegistration = (): void => {
   }, []);
 };
 
+/**
+ * Checks if the user has admin permissions.
+ * @returns boolean
+ */
 export const useIsUserAdmin = (): any => {
   const { admins, setAdmins, user } = useContext(AppContext);
   if (admins?.length && user?.email) {
@@ -84,6 +91,9 @@ export const useIsUserAdmin = (): any => {
   });
 };
 
+/**
+ * Redirects user to the main page if they do not have admin permissions.
+ */
 export const useBackIfNotAdmin = (): void => {
   const isAdmin = useIsUserAdmin();
   const history = useHistory();
@@ -94,6 +104,9 @@ export const useBackIfNotAdmin = (): void => {
   }, [isAdmin]);
 };
 
+/**
+ * Redirects user to login page if they are not logged in.
+ */
 export const useBackIfNotLogged = (): void => {
   const { user } = useContext(AppContext);
   const history = useHistory();
@@ -104,6 +117,10 @@ export const useBackIfNotLogged = (): void => {
   }, [user]);
 };
 
+/**
+ * Prepares the information about the availability of the slots for the passed week.
+ * @param weekId string|undefined
+ */
 export const useAvailablePlacesForSlots = async (
   weekId: string | undefined,
 ): Promise<any> => {
@@ -160,6 +177,11 @@ export const useAvailablePlacesForSlots = async (
   }, []);
 };
 
+/**
+ * Prepares information about the logged user's rejestration.
+ * @param email
+ * @param weekId
+ */
 export const useUsersRegistration = async (
   email: string | undefined,
   weekId: string | undefined,
@@ -196,6 +218,10 @@ export const useUsersRegistration = async (
   }, [weekId, email]);
 };
 
+/**
+ * Prepares list of the emails which are allowed to preregister.
+ * @returns
+ */
 export const usePreregisteredEmails = (): void => {
   const { setPreregistrationEmails } = useContext(AppContext);
   const isAdmin = useIsUserAdmin();
@@ -219,6 +245,9 @@ export const usePreregisteredEmails = (): void => {
   }, []);
 };
 
+/**
+ * Prepares info if the currently logged in user has permissions to preregister.
+ */
 export const useCanUserPreregister = (): void => {
   const { user, setCanPreregister } = useContext(AppContext);
 

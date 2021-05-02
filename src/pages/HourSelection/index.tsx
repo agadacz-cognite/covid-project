@@ -104,7 +104,7 @@ export default function HourSelection(): JSX.Element {
       })
       .join(', ');
     const userFirstName = user.displayName.split(' ')[0];
-    const content = `Hello ${userFirstName}!\r\n\r\nYou just registered for the COVID test for the week ${week}.\r\nYour testing dates: ${userHours}.`;
+    const content = `Hello ${userFirstName}!%0A%0AYou just registered for the COVID test for the week ${week}.%0A%0AYour testing dates: ${userHours}.`;
 
     (window as any).Email.send({
       SecureToken: 'd92b5171-f9c5-4573-b866-b87c4d392dd6',
