@@ -105,7 +105,6 @@ const columns = (day: string) => [
   {
     title: 'Name',
     key: 'name',
-    width: '250px',
     render: (item: any) => {
       const tooLateTooltip =
         'This person has signed up after the slot was already unavailable. Please contact them to rebook. Clicking their name will redirect you to email service with prepared template.';
@@ -129,7 +128,6 @@ const columns = (day: string) => [
     title: 'Manager',
     key: 'manager',
     dataIndex: 'manager',
-    width: '250px',
     render: (manager: string) => <span>{manager}</span>,
     sorter: (a: any, b: any) => stringCompare(a?.manager, b?.manager),
   },
