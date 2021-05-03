@@ -58,7 +58,7 @@ export const registerUserForTest = (
         return false;
       }
       const hour = slot?.testHours.find(
-        (hour: TestHours) => hour.time === testHour[1],
+        (hour: TestHours) => hour.time.hour === testHour[1],
       );
       if (!hour) {
         return false;

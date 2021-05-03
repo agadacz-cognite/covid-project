@@ -63,7 +63,7 @@ export const useAvailablePlacesForSlots = async (
                   id: slot.id,
                   testHours: testHours.map((testHour: TestHoursInSlot) => ({
                     time: testHour.hour,
-                    totalPlaces: slot.slotsNr,
+                    totalPlaces: testHour.places ?? slot.slotsNr ?? 15,
                     takenPlaces: registrations.filter(
                       (registeredUser: RegisteredUser) =>
                         registeredUser.weekId === weekId &&

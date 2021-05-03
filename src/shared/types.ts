@@ -19,7 +19,7 @@ export type SlotData = {
 };
 
 export type TestHours = {
-  time: string;
+  time: TestHoursInSlot;
   totalPlaces: number;
   takenPlaces: number;
 };

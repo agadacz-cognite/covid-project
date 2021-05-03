@@ -50,6 +50,28 @@ export default function Slot(props: Props): JSX.Element {
     );
     onTestHoursChange(id, newTestHours);
   };
+  const onTestPlacesChange = (hour: TestHoursInSlot, places: number) => {
+    const newTestHours: TestHoursInSlot[] = testHours.map(
+      (testHour: TestHoursInSlot) => {
+        if (testHour.id === hour.id) {
+          return { ...testHour, places };
+        }
+        return testHour;
+      },
+    );
+    onTestHoursChange(id, newTestHours);
+  };
+  const onTestHourChange = (testHour: TestHoursInSlot, newHour: string) => {
+    const newTestHours: TestHoursInSlot[] = testHours.map(
+      (oldHour: TestHoursInSlot) => {
+        if (testHour.id === oldHour.id) {
+          return { ...oldHour, hour: newHour };
+        }
+        return oldHour;
+      },
+    );
+    onTestHoursChange(id, newTestHours);
+  };
 
   return (
     <StyledSlot column>
@@ -147,7 +169,7 @@ export default function Slot(props: Props): JSX.Element {
                   <AutoComplete
                     placeholder="hour"
                     value={testHour.hour}
-                    onChange={value => onTestHoursChange(id, value)}
+                    onChange={value => onTestHourChange(testHour, value)}
                     style={{ width: '60px' }}>
                     {possibleHours.map((hour: string) => (
                       <OptionAutoComplete key={`hour-${uuid()}`} value={hour}>
@@ -160,6 +182,9 @@ export default function Slot(props: Props): JSX.Element {
                     max={50}
                     defaultValue={15}
                     style={{ width: '60px' }}
+                    onChange={(value: number) =>
+                      onTestPlacesChange(testHour, value)
+                    }
                   />
                 </Flex>
               </Flex>

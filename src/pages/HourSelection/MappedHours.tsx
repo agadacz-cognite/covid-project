@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { Tooltip, Spin } from 'antd';
 import { v4 as uuid } from 'uuid';
-import { FixedSlotData, SlotData } from '../../shared';
+import { FixedSlotData, SlotData, TestHoursInSlot } from '../../shared';
 import { Choice, Hour, Places } from './components';
 import { AppContext } from '../../context';
 
@@ -45,7 +45,8 @@ export default function MappedHours(props: MappedHoursProps): JSX.Element {
     );
   }
 
-  return slotToMap.testHours.map((hour: any, index: number) => {
+  return slotToMap.testHours.map((testHour: TestHoursInSlot, index: number) => {
+    const { hour, places: totalPlaces } = testHour;
     const slotData = slotsData.find(
       (fixedSlot: FixedSlotData) => fixedSlot.id === id,
     );
@@ -57,7 +58,7 @@ export default function MappedHours(props: MappedHoursProps): JSX.Element {
       );
     }
     const fixedTestHour = slotData.testHours.find(
-      (testHour: any) => testHour.time === hour,
+      (testHour: any) => testHour.time.hour === hour,
     );
     if (!fixedTestHour) {
       return (
@@ -66,10 +67,9 @@ export default function MappedHours(props: MappedHoursProps): JSX.Element {
         </Choice>
       );
     }
-    const available = fixedTestHour.takenPlaces < fixedTestHour.totalPlaces;
+    const available = fixedTestHour.takenPlaces < totalPlaces;
     const percentOfPlacesTaken =
-      (fixedTestHour.totalPlaces - fixedTestHour.takenPlaces) /
-      fixedTestHour.totalPlaces;
+      (totalPlaces - fixedTestHour.takenPlaces) / totalPlaces;
 
     return (
       <Tooltip
@@ -85,7 +85,7 @@ export default function MappedHours(props: MappedHoursProps): JSX.Element {
           <Hour available={available}>{hour}</Hour>
           <Places>
             <span style={{ fontWeight: 'bold' }}>
-              {fixedTestHour.totalPlaces - fixedTestHour.takenPlaces}
+              {totalPlaces - fixedTestHour.takenPlaces}
             </span>{' '}
             available
           </Places>
