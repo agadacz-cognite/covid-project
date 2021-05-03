@@ -9,9 +9,12 @@ import {
   useActiveRegistration,
   useBackIfNotAdmin,
   useBackIfNotLogged,
-  usePreregisteredEmails,
+  usePreviousWeeks,
 } from '../../context';
-import { getRegistrationsForExcel, savePreregistrationEmails } from './utils';
+import {
+  getRegistrationsForExcel,
+  savePreregistrationEmails,
+} from '../../shared';
 
 const { Title } = Typography;
 
@@ -31,7 +34,7 @@ export default function Admin(): JSX.Element {
   useActiveRegistration();
   useBackIfNotAdmin();
   useBackIfNotLogged();
-  usePreregisteredEmails();
+  usePreviousWeeks();
 
   useEffect(() => {
     setCurrentPreregistrationEmails(preregistrationEmails);
@@ -39,7 +42,7 @@ export default function Admin(): JSX.Element {
 
   const onDownloadRegisteredUsers = async () => {
     const { final: registrations, weekDate } = await getRegistrationsForExcel(
-      activeRegistration,
+      activeRegistration?.id,
     );
     const fileTitle = weekDate.replace(' ', '');
     const workbook = XLSX.utils.book_new();
@@ -63,6 +66,7 @@ export default function Admin(): JSX.Element {
   };
   const onPreviewRegisteredUsers = () => history.push('/admin/preview');
   const onCreateNewRegistration = () => history.push('/admin/newweek');
+  const onSeeOldRegistrations = () => history.push('/admin/oldweeks');
   const onBack = () => history.push('/start');
 
   return (
@@ -86,22 +90,26 @@ export default function Admin(): JSX.Element {
               )}
               {activeRegistration?.registrationOpenTime?.seconds && (
                 <>
-                  <p>For the week:</p>
-                  <Title level={5} style={{ margin: '0 0 16px 0' }}>
-                    {new Date(
-                      (activeRegistration?.week[0]?.seconds ?? 0) * 1000,
-                    ).toLocaleDateString()}{' '}
-                    -{' '}
-                    {new Date(
-                      (activeRegistration?.week[1]?.seconds ?? 0) * 1000,
-                    ).toLocaleDateString()}
-                  </Title>
-                  <p>Opens at:</p>
-                  <Title level={5} style={{ margin: '0 0 16px 0' }}>
-                    {new Date(
-                      activeRegistration.registrationOpenTime.seconds * 1000,
-                    ).toLocaleString()}
-                  </Title>
+                  <Flex align row style={{ marginBottom: '8px' }}>
+                    <div>Week: </div>
+                    <Title level={5} style={{ margin: '0 0 0 8px' }}>
+                      {new Date(
+                        (activeRegistration?.week[0]?.seconds ?? 0) * 1000,
+                      ).toLocaleDateString()}{' '}
+                      -{' '}
+                      {new Date(
+                        (activeRegistration?.week[1]?.seconds ?? 0) * 1000,
+                      ).toLocaleDateString()}
+                    </Title>
+                  </Flex>
+                  <Flex align row style={{ marginBottom: '8px' }}>
+                    <div>Opens at:</div>
+                    <Title level={5} style={{ margin: '0 0 0 8px' }}>
+                      {new Date(
+                        activeRegistration.registrationOpenTime.seconds * 1000,
+                      ).toLocaleString()}
+                    </Title>
+                  </Flex>
                 </>
               )}
               <Button
@@ -116,6 +124,13 @@ export default function Admin(): JSX.Element {
                 onClick={onDownloadRegisteredUsers}
                 disabled={!activeRegistration}>
                 Export to Excel (*.xlsx) <ExportOutlined />
+              </Button>
+            </Flex>
+          </Card>
+          <Card style={{ width: 'auto', height: 'auto', margin: '8px' }}>
+            <Flex row align justify>
+              <Button type="primary" onClick={onSeeOldRegistrations}>
+                See old registrations
               </Button>
             </Flex>
           </Card>

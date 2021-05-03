@@ -1,11 +1,6 @@
-import { db } from '../../firebase';
+import { db } from '../firebase';
 import { notification } from 'antd';
-import {
-  RegisteredUser,
-  RegistrationData,
-  SlotData,
-  errorHandler,
-} from '../../shared';
+import { RegisteredUser, RegistrationData, SlotData, errorHandler } from '.';
 
 /**
  * Function preparing the registration data to be displayed in a table
@@ -109,12 +104,11 @@ export const getRegistrationsForThisWeek = async (
  * @returns
  */
 export const getRegistrationsForExcel = async (
-  activeRegistration: RegistrationData | undefined,
+  weekId: string | undefined,
 ): Promise<any> => {
-  if (!activeRegistration) {
+  if (!weekId) {
     return;
   }
-  const weekId = activeRegistration.id;
 
   const registrationsRef = db
     .collection('registrations')
@@ -138,7 +132,7 @@ export const getRegistrationsForExcel = async (
   });
   const week = weeks[0];
   const weekDate = week.week
-    .map(w => new Date(w.seconds * 1000).toLocaleDateString())
+    .map((w: any) => new Date(w.seconds * 1000).toLocaleDateString())
     .flat()
     .join(' - ');
   const allSlots = week.slots.map((slot: SlotData) => slot.id);
@@ -167,8 +161,8 @@ export const getRegistrationsForExcel = async (
   });
 
   const mergedUsers: any[] = [];
-  usersMappedToSlots[0].forEach((_, i) => {
-    const otherSlotsForUser = usersMappedToSlots.map(user => user[i]);
+  usersMappedToSlots[0].forEach((_: any, i: number) => {
+    const otherSlotsForUser = usersMappedToSlots.map((user: any) => user[i]);
     mergedUsers.push(otherSlotsForUser.flat());
   });
 
@@ -211,7 +205,7 @@ export const savePreregistrationEmails = (emails: string[]): Promise<void> => {
         });
         resolve();
       })
-      .catch(error => {
+      .catch((error: any) => {
         errorHandler(error);
         resolve();
       });

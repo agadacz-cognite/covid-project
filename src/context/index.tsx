@@ -5,21 +5,23 @@ type ContextType = {
   loading: boolean;
   gapiLoaded: boolean;
   user: any;
-  admins: string[];
+  isUserAdmin: boolean;
   activeRegistration: RegistrationData | undefined;
   usersRegistration: RegisteredUser | undefined;
   slotsData: FixedSlotData[];
   preregistrationEmails: string[];
   canPreregister: boolean;
+  previousWeeks: RegistrationData[] | undefined;
   setLoading: (loading: boolean) => void;
   setGapiLoaded: (gapi: boolean) => void;
   setUser: (user: any) => void;
-  setAdmins: (admins: string[]) => void;
+  setIsUserAdmin: (isUserAdmin: boolean) => void;
   setActiveRegistration: (week: RegistrationData | undefined) => void;
   setUsersRegistration: (user: RegisteredUser | undefined) => void;
   setSlotsData: (slots: FixedSlotData[]) => void;
   setPreregistrationEmails: (emails: string[]) => void;
   setCanPreregister: (canPreregister: boolean) => void;
+  setPreviousWeeks: (previousWeeks: RegistrationData[] | undefined) => void;
 };
 
 export const AppContext = React.createContext({} as ContextType);
@@ -28,7 +30,7 @@ const AppContextProvider = ({ children }: { children: any }): JSX.Element => {
   const [loading, setLoading] = useState(false);
   const [gapiLoaded, setGapiLoaded] = useState(false);
   const [user, setUser] = useState();
-  const [admins, setAdmins] = useState<string[]>([]);
+  const [isUserAdmin, setIsUserAdmin] = useState<boolean>(false);
   const [days, setDays] = useState<string[]>([]);
   const [slotsData, setSlotsData] = useState<any[]>([]);
   const [usersRegistration, setUsersRegistration] = useState<
@@ -41,6 +43,9 @@ const AppContextProvider = ({ children }: { children: any }): JSX.Element => {
     [],
   );
   const [canPreregister, setCanPreregister] = useState(false);
+  const [previousWeeks, setPreviousWeeks] = useState<
+    RegistrationData[] | undefined
+  >();
 
   const value = {
     loading,
@@ -51,8 +56,8 @@ const AppContextProvider = ({ children }: { children: any }): JSX.Element => {
     setUser,
     days,
     setDays,
-    admins,
-    setAdmins,
+    isUserAdmin,
+    setIsUserAdmin,
     activeRegistration,
     setActiveRegistration,
     usersRegistration,
@@ -63,6 +68,8 @@ const AppContextProvider = ({ children }: { children: any }): JSX.Element => {
     setPreregistrationEmails,
     canPreregister,
     setCanPreregister,
+    previousWeeks,
+    setPreviousWeeks,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

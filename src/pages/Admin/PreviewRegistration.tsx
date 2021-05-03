@@ -8,8 +8,7 @@ import {
   useBackIfNotLogged,
   useActiveRegistration,
 } from '../../context';
-import { stringCompare } from '../../shared/helpers';
-import { getRegistrationsForThisWeek } from './utils';
+import { stringCompare, getRegistrationsForThisWeek } from '../../shared/';
 import { Flex, Header, Table } from '../../components';
 
 const { Title } = Typography;

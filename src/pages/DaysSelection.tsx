@@ -45,11 +45,12 @@ export default function DaysSelection(): JSX.Element {
     activeRegistration,
     usersRegistration,
     canPreregister,
+    isUserAdmin,
     setLoading,
   } = useContext(AppContext);
-  const isAdmin = useIsUserAdmin();
 
   useBackIfNotLogged();
+  useIsUserAdmin();
   useActiveRegistration();
   useCanUserPreregister();
   useUsersRegistration(user?.email, activeRegistration?.id);
@@ -260,6 +261,8 @@ export default function DaysSelection(): JSX.Element {
     }
   };
 
+  console.log(isUserAdmin);
+
   if (!user) {
     return <Spin size="large" />;
   }
@@ -275,7 +278,7 @@ export default function DaysSelection(): JSX.Element {
       </Header>
       <Flex row align justify style={{ flexWrap: 'wrap' }}>
         <Flex column>
-          {isAdmin && (
+          {isUserAdmin && (
             <Card style={{ width: 'auto', height: 'auto', margin: '8px' }}>
               <Flex row align justify>
                 <Button type="primary" danger onClick={onAdminPageClick}>
