@@ -8,12 +8,11 @@ import { RegisteredUser, RegistrationData, SlotData, errorHandler } from '.';
  * @returns
  */
 export const getRegistrationsForThisWeek = async (
-  activeRegistration: RegistrationData | undefined,
+  weekId: string | undefined,
 ): Promise<any> => {
-  if (!activeRegistration) {
+  if (!weekId) {
     return;
   }
-  const weekId = activeRegistration.id;
 
   const registrationsRef = db
     .collection('registrations')

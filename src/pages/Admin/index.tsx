@@ -64,7 +64,8 @@ export default function Admin(): JSX.Element {
       });
     }
   };
-  const onPreviewRegisteredUsers = () => history.push('/admin/preview');
+  const onPreviewRegisteredUsers = () =>
+    history.push(`/admin/preview/${activeRegistration?.id}`);
   const onCreateNewRegistration = () => history.push('/admin/newweek');
   const onSeeOldRegistrations = () => history.push('/admin/oldweeks');
   const onBack = () => history.push('/start');

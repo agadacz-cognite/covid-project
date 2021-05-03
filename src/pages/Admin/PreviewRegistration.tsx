@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import { Button, Typography, Spin, Tooltip } from 'antd';
 import { WarningOutlined } from '@ant-design/icons';
 import {
@@ -15,6 +15,7 @@ const { Title } = Typography;
 
 export default function PreviewRegistration(): JSX.Element {
   const history = useHistory();
+  const { weekId } = useParams<{ weekId: string }>();
   const { activeRegistration } = useContext(AppContext);
   const [registeredUsersData, setRegisteredUsersData] = useState([]);
   const [weekDate, setWeekDate] = useState('');
@@ -29,7 +30,7 @@ export default function PreviewRegistration(): JSX.Element {
       usersRegistrationData,
       weekDate,
       weeks,
-    } = await getRegistrationsForThisWeek(activeRegistration);
+    } = await getRegistrationsForThisWeek(weekId);
     setRegisteredUsersData(usersRegistrationData);
     setWeekDate(weekDate);
     setWeekDays(weeks);

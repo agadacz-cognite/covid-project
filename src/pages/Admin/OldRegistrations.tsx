@@ -42,7 +42,8 @@ export default function OldRegistrations(): JSX.Element {
       setOpenKeys(latestOpenKey ? [latestOpenKey] : []);
     }
   };
-  const onWeekPreview = () => alert('this is not added yet');
+  const onWeekPreview = (weekId: string | undefined) =>
+    history.push(`/admin/preview/${weekId}`);
   const onWeekExport = async (weekId: string | undefined) => {
     const { final: registrations, weekDate } = await getRegistrationsForExcel(
       weekId,
@@ -67,14 +68,13 @@ export default function OldRegistrations(): JSX.Element {
       return (
         <SubMenu key={week.id} title={weekDate} onTitleClick={onWeekClick}>
           <Menu.Item
-            key={`view-users-${week.id}`}
-            onClick={onWeekPreview}
-            disabled>
+            key={`view-users-${week?.id}`}
+            onClick={() => onWeekPreview(week?.id)}>
             View registered users
           </Menu.Item>
           <Menu.Item
-            key={`export-${week.id}`}
-            onClick={() => onWeekExport(week.id)}>
+            key={`export-${week?.id}`}
+            onClick={() => onWeekExport(week?.id)}>
             Export to Excel (*.xlsx) <ExportOutlined />
           </Menu.Item>
         </SubMenu>

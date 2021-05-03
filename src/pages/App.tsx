@@ -77,7 +77,7 @@ export default function App(): JSX.Element {
             <OldRegistrations />
           </Wrapper>
         </Route>
-        <Route exact path="/admin/preview">
+        <Route exact path="/admin/preview/:weekId">
           <Wrapper>
             <Loader $loading={loading} />
             <PreviewRegistration />
