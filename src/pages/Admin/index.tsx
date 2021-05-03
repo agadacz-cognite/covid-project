@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Typography, Button, Select, notification } from 'antd';
-import { ExportOutlined, WarningOutlined } from '@ant-design/icons';
+import { ExportOutlined } from '@ant-design/icons';
 import XLSX from 'xlsx';
 import { Flex, Header, Card } from '../../components';
 import {
@@ -74,51 +74,53 @@ export default function Admin(): JSX.Element {
         </p>
       </Header>
       <Flex row align justify style={{ flexWrap: 'wrap' }}>
-        <Card
-          title="Active registration"
-          style={{ width: 'auto', height: 'auto', margin: '8px' }}>
-          <Flex column align justify>
-            {!activeRegistration && (
-              <Title level={5}>
-                There is no open registration at the moment!
-              </Title>
-            )}
-            {activeRegistration?.registrationOpenTime?.seconds && (
-              <>
-                <p>For the week:</p>
-                <Title level={5} style={{ margin: '0 0 16px 0' }}>
-                  {new Date(
-                    (activeRegistration?.week[0]?.seconds ?? 0) * 1000,
-                  ).toLocaleDateString()}{' '}
-                  -{' '}
-                  {new Date(
-                    (activeRegistration?.week[1]?.seconds ?? 0) * 1000,
-                  ).toLocaleDateString()}
+        <Flex column style={{ height: '100%' }}>
+          <Card
+            title="Active registration"
+            style={{ width: 'auto', height: 'auto', margin: '8px' }}>
+            <Flex column align justify>
+              {!activeRegistration && (
+                <Title level={5}>
+                  There is no open registration at the moment!
                 </Title>
-                <p>Opens at:</p>
-                <Title level={5} style={{ margin: '0 0 16px 0' }}>
-                  {new Date(
-                    activeRegistration.registrationOpenTime.seconds * 1000,
-                  ).toLocaleString()}
-                </Title>
-              </>
-            )}
-            <Button
-              type="primary"
-              onClick={onPreviewRegisteredUsers}
-              disabled={!activeRegistration}
-              style={{ marginBottom: '8px' }}>
-              View registered users
-            </Button>
-            <Button
-              type="primary"
-              onClick={onDownloadRegisteredUsers}
-              disabled={!activeRegistration}>
-              Export to Excel (*.xlsx) <ExportOutlined />
-            </Button>
-          </Flex>
-        </Card>
-        <Flex column>
+              )}
+              {activeRegistration?.registrationOpenTime?.seconds && (
+                <>
+                  <p>For the week:</p>
+                  <Title level={5} style={{ margin: '0 0 16px 0' }}>
+                    {new Date(
+                      (activeRegistration?.week[0]?.seconds ?? 0) * 1000,
+                    ).toLocaleDateString()}{' '}
+                    -{' '}
+                    {new Date(
+                      (activeRegistration?.week[1]?.seconds ?? 0) * 1000,
+                    ).toLocaleDateString()}
+                  </Title>
+                  <p>Opens at:</p>
+                  <Title level={5} style={{ margin: '0 0 16px 0' }}>
+                    {new Date(
+                      activeRegistration.registrationOpenTime.seconds * 1000,
+                    ).toLocaleString()}
+                  </Title>
+                </>
+              )}
+              <Button
+                type="primary"
+                onClick={onPreviewRegisteredUsers}
+                disabled={!activeRegistration}
+                style={{ marginBottom: '8px' }}>
+                View registered users
+              </Button>
+              <Button
+                type="primary"
+                onClick={onDownloadRegisteredUsers}
+                disabled={!activeRegistration}>
+                Export to Excel (*.xlsx) <ExportOutlined />
+              </Button>
+            </Flex>
+          </Card>
+        </Flex>
+        <Flex column style={{ height: '100%' }}>
           <Card
             title="Who can preregister?"
             style={{ margin: '8px', maxWidth: '500px' }}>
@@ -149,30 +151,24 @@ export default function Admin(): JSX.Element {
               </Button>
             </Flex>
           </Card>
-          <Card
-            title="New registration"
-            style={{ width: 'auto', height: 'auto', margin: '8px' }}>
-            <Flex column>
-              <p>
-                <WarningOutlined /> Creating new registration will close the old
-                one
-              </p>
-              <Button type="primary" danger onClick={onCreateNewRegistration}>
-                Start new registration
-              </Button>
-            </Flex>
-          </Card>
         </Flex>
       </Flex>
-      <Flex row align justify style={{ padding: '8px', margin: '8px' }}>
+      <Header style={{ flexDirection: 'row' }}>
         <Button
-          type="default"
+          type="primary"
           size="large"
-          style={{ boxShadow: '0 0 20px #000' }}
-          onClick={onBack}>
+          onClick={onBack}
+          style={{ marginRight: '8px' }}>
           Back
         </Button>
-      </Flex>
+        <Button
+          type="primary"
+          danger
+          size="large"
+          onClick={onCreateNewRegistration}>
+          Start new registration
+        </Button>
+      </Header>
     </Flex>
   );
 }

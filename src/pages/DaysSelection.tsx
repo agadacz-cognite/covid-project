@@ -295,6 +295,17 @@ export default function DaysSelection(): JSX.Element {
               {ifRegistrationOpen()}
             </Flex>
           </Card>
+          <Card style={{ width: 'auto', height: 'auto', margin: '8px' }}>
+            <div>In case of technical problems with the application,</div>
+            <div>
+              {' '}
+              please{' '}
+              <a href="mailto:anna.gadacz@cognite.com?subject=COVID Project issue, fix fast pls">
+                contact Anna
+              </a>
+              .
+            </div>
+          </Card>
         </Flex>
         <Card
           title={

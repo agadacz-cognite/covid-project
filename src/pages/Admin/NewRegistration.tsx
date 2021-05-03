@@ -4,8 +4,8 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import 'moment/locale/en-gb';
 import { v4 as uuid } from 'uuid';
-import { Typography, Button, notification } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
+import { Typography, Button, Popconfirm, notification } from 'antd';
+import { PlusOutlined, WarningOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import { Flex, Header, Card } from '../../components';
 import {
@@ -158,10 +158,6 @@ export default function NewRegistration(): JSX.Element {
             title="Select the week of the registration"
             style={{ margin: '8px', maxWidth: '400px' }}>
             <Flex column align justify>
-              <p>
-                Here you can choose for which week this registration will be
-                valid.
-              </p>
               <DatePicker
                 selected={weekStartDate}
                 // @ts-ignore
@@ -238,22 +234,35 @@ export default function NewRegistration(): JSX.Element {
           </Flex>
         </Card>
       </Flex>
-      <Flex row align justify style={{ padding: '8px', margin: '8px' }}>
-        <Button
-          type="default"
-          size="large"
-          style={{ boxShadow: '0 0 20px #000', marginRight: '8px' }}
-          onClick={onBack}>
-          Cancel
-        </Button>
+      <Header style={{ flexDirection: 'row' }}>
         <Button
           type="primary"
           size="large"
-          style={{ boxShadow: '0 0 20px #000' }}
-          onClick={onCreateNewRegistration}>
-          Open new week!
+          onClick={onBack}
+          style={{ marginRight: '8px' }}>
+          Cancel
         </Button>
-      </Flex>
+        <Popconfirm
+          title={
+            <div>
+              <div>Are you sure you want to start a new registration?</div>
+              <div style={{ fontWeight: 'bold' }}>
+                <WarningOutlined style={{ marginRight: '8px', color: 'red' }} />
+                This will CLOSE the old one!
+              </div>
+            </div>
+          }
+          onConfirm={onCreateNewRegistration}
+          okText="Do it"
+          okButtonProps={{ danger: true }}
+          cancelButtonProps={{ type: 'primary' }}
+          cancelText="Nope :c"
+          placement="top">
+          <Button type="primary" size="large" danger>
+            Open new registration
+          </Button>
+        </Popconfirm>
+      </Header>
     </Flex>
   );
 }
