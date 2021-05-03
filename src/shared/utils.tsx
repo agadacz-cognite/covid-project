@@ -210,3 +210,26 @@ export const savePreregistrationEmails = (emails: string[]): Promise<void> => {
       });
   });
 };
+
+export const closeActiveRegistration = (): Promise<void> => {
+  return new Promise(resolve => {
+    if (!db) {
+      resolve();
+      return;
+    }
+    db.collection('options')
+      .doc('activeRegistration')
+      .delete()
+      .then(() => {
+        notification.success({
+          message: 'Yay!',
+          description: 'You successfully closed the registration!',
+        });
+        return resolve();
+      })
+      .catch(error => {
+        errorHandler(error);
+        return resolve();
+      });
+  });
+};

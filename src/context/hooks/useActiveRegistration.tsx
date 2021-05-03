@@ -1,5 +1,4 @@
 import { useEffect, useContext } from 'react';
-import { notification } from 'antd';
 import deepEqual from 'deep-equal';
 import { AppContext } from '../';
 import { db } from '../../firebase';
@@ -19,11 +18,7 @@ export const useActiveRegistration = (): void => {
     const unsubscribeActiveRegistration = activeRegistrationRef.onSnapshot(
       option => {
         if (!option.exists) {
-          notification.error({
-            message: 'Something went wrong.',
-            description:
-              'Something went wrong when trying to retrieve data of the active registration from database.',
-          });
+          setActiveRegistration(undefined);
           return;
         } else {
           const freshActiveRegistration = option.data();

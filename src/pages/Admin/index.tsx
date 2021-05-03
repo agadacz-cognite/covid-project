@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Typography, Button, Select, notification } from 'antd';
+import { Typography, Button, Select, Popconfirm, notification } from 'antd';
 import { ExportOutlined } from '@ant-design/icons';
 import XLSX from 'xlsx';
 import { Flex, Header, Card } from '../../components';
@@ -10,10 +10,12 @@ import {
   useBackIfNotAdmin,
   useBackIfNotLogged,
   usePreviousWeeks,
+  usePreregisteredEmails,
 } from '../../context';
 import {
   getRegistrationsForExcel,
   savePreregistrationEmails,
+  closeActiveRegistration,
 } from '../../shared';
 
 const { Title } = Typography;
@@ -34,6 +36,7 @@ export default function Admin(): JSX.Element {
   useActiveRegistration();
   useBackIfNotAdmin();
   useBackIfNotLogged();
+  usePreregisteredEmails();
   usePreviousWeeks();
 
   useEffect(() => {
@@ -64,6 +67,7 @@ export default function Admin(): JSX.Element {
       });
     }
   };
+  const onActiveRegistrationClose = () => closeActiveRegistration();
   const onPreviewRegisteredUsers = () =>
     history.push(`/admin/preview/${activeRegistration?.id}`);
   const onCreateNewRegistration = () => history.push('/admin/newweek');
@@ -123,9 +127,37 @@ export default function Admin(): JSX.Element {
               <Button
                 type="primary"
                 onClick={onDownloadRegisteredUsers}
-                disabled={!activeRegistration}>
+                disabled={!activeRegistration}
+                style={{ marginBottom: '8px' }}>
                 Export to Excel (*.xlsx) <ExportOutlined />
               </Button>
+              <Popconfirm
+                title={
+                  <>
+                    <div>
+                      Are you sure you want to close the active registration?
+                    </div>
+                    <div>
+                      You won&apos;t be able to reopen it and people won&apos;t
+                      be able to register for this week anymore.
+                    </div>
+                    <div>
+                      You can still view and export the list of all registered
+                      users by clicking &quot;See old registrations&quot; button
+                      below.
+                    </div>
+                  </>
+                }
+                onConfirm={onActiveRegistrationClose}
+                okText="Close"
+                okButtonProps={{ danger: true }}
+                cancelButtonProps={{ type: 'primary' }}
+                cancelText="Nope :c"
+                placement="top">
+                <Button type="primary" danger disabled={!activeRegistration}>
+                  Close current registration
+                </Button>
+              </Popconfirm>
             </Flex>
           </Card>
           <Card style={{ width: 'auto', height: 'auto', margin: '8px' }}>

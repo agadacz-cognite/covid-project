@@ -85,7 +85,7 @@ export default function DaysSelection(): JSX.Element {
       const userFirstName =
         usersRegistration?.name?.split(' ')?.[0] ?? 'Unknown Person';
       const subject = `💉 You have deleted your COVID test registration - week ${week}`;
-      const content = `Hello ${userFirstName}! You just removed your apponitnment for the COVID test for the week ${week}. Removed testing dates: ${userHours}.`;
+      const content = `Hello ${userFirstName}! You just removed your appointnment for the COVID test for the week ${week}. Removed testing dates: ${userHours}.`;
       setLoading(true);
       await removeUserRegistration(weekId, email);
       sendEmail({
@@ -261,8 +261,6 @@ export default function DaysSelection(): JSX.Element {
     }
   };
 
-  console.log(isUserAdmin);
-
   if (!user) {
     return <Spin size="large" />;
   }
@@ -304,7 +302,7 @@ export default function DaysSelection(): JSX.Element {
               {' '}
               please{' '}
               <a href="mailto:anna.gadacz@cognite.com?subject=COVID Project issue, fix fast pls">
-                contact Anna
+                contact Anna Gadacz
               </a>
               .
             </div>
