@@ -2,11 +2,13 @@ import { useEffect, useContext } from 'react';
 import deepEqual from 'deep-equal';
 import { AppContext } from '../';
 import { db } from '../../firebase';
+import { v4 as uuid } from 'uuid';
 import {
   errorHandler,
   RegisteredUser,
   SlotData,
   FixedSlotData,
+  TestHoursInSlot,
 } from '../../shared';
 
 /**
@@ -43,18 +45,33 @@ export const useAvailablePlacesForSlots = async (
               });
             });
             const slots: FixedSlotData[] = weeksRaw?.slots.map(
-              (slot: SlotData) => ({
-                id: slot.id,
-                testHours: slot.testHours.map((testHour: string) => ({
-                  time: testHour,
-                  totalPlaces: slot.slotsNr,
-                  takenPlaces: registrations.filter(
-                    (registeredUser: RegisteredUser) =>
-                      registeredUser.weekId === weekId &&
-                      registeredUser.testHours[slot.id] === testHour,
-                  ).length,
-                })),
-              }),
+              (slot: SlotData) => {
+                let testHours = [];
+                if (Array.isArray(slot.testHours)) {
+                  const adjustToNewFormat = slot.testHours.map(
+                    (testHour: any) => ({
+                      hour: testHour,
+                      places: slot.slotsNr ?? 15,
+                      id: uuid(),
+                    }),
+                  );
+                  testHours = adjustToNewFormat;
+                } else {
+                  testHours = slot.testHours;
+                }
+                return {
+                  id: slot.id,
+                  testHours: testHours.map((testHour: TestHoursInSlot) => ({
+                    time: testHour.hour,
+                    totalPlaces: slot.slotsNr,
+                    takenPlaces: registrations.filter(
+                      (registeredUser: RegisteredUser) =>
+                        registeredUser.weekId === weekId &&
+                        registeredUser.testHours[slot.id] === testHour.hour,
+                    ).length,
+                  })),
+                };
+              },
             );
             if (!deepEqual(slots, slotsData)) {
               setSlotsData(slots);

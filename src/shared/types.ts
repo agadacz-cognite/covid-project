@@ -5,10 +5,15 @@ export type Time = {
   nanoseconds: number;
 };
 
+export type TestHoursInSlot = {
+  hour: string;
+  places: number;
+  id: string;
+};
 export type SlotData = {
   id: string;
   testDay: Day;
-  testHours: string[];
+  testHours: TestHoursInSlot[];
   slotsNr: number;
   officeDays: Day[];
 };

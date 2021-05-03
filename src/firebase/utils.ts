@@ -22,7 +22,8 @@ export const createActiveRegistration = (
     .doc(registrationData.id)
     .set(registrationData)
     .then(() => {
-      db.collection('options').doc('activeRegistration').update({
+      db.collection('options').doc('activeRegistrationTest').update({
+        // TODO remove TEST
         id: registrationData.id,
       });
       notification.success({

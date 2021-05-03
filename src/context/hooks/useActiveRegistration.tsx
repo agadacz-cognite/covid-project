@@ -13,7 +13,7 @@ export const useActiveRegistration = (): void => {
   useEffect(() => {
     const activeRegistrationRef = db
       .collection('options')
-      .doc('activeRegistration');
+      .doc('activeRegistrationTest'); // TODO remove TEST
     let unsubscribeWeeks: any;
     const unsubscribeActiveRegistration = activeRegistrationRef.onSnapshot(
       option => {

@@ -211,6 +211,10 @@ export const savePreregistrationEmails = (emails: string[]): Promise<void> => {
   });
 };
 
+/**
+ * Closes the active registration.
+ * @returns
+ */
 export const closeActiveRegistration = (): Promise<void> => {
   return new Promise(resolve => {
     if (!db) {
@@ -218,7 +222,7 @@ export const closeActiveRegistration = (): Promise<void> => {
       return;
     }
     db.collection('options')
-      .doc('activeRegistration')
+      .doc('activeRegistrationTest') // TODO remove TEST
       .delete()
       .then(() => {
         notification.success({
