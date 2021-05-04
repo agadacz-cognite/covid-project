@@ -9,6 +9,7 @@ import {
   SlotData,
   FixedSlotData,
   TestHoursInSlot,
+  ChosenHours,
 } from '../../shared';
 
 /**
@@ -47,11 +48,12 @@ export const useAvailablePlacesForSlots = async (
             const slots: FixedSlotData[] = weeksRaw?.slots.map(
               (slot: SlotData) => {
                 let testHours = [];
-                if (Array.isArray(slot.testHours)) {
+                if (typeof slot.testHours[0] === 'string') {
+                  // this means it's an old format
                   const adjustToNewFormat = slot.testHours.map(
                     (testHour: any) => ({
                       hour: testHour,
-                      places: slot.slotsNr ?? 15,
+                      places: 15,
                       id: uuid(),
                     }),
                   );
@@ -61,15 +63,24 @@ export const useAvailablePlacesForSlots = async (
                 }
                 return {
                   id: slot.id,
-                  testHours: testHours.map((testHour: TestHoursInSlot) => ({
-                    time: testHour.hour,
-                    totalPlaces: testHour.places ?? slot.slotsNr ?? 15,
-                    takenPlaces: registrations.filter(
-                      (registeredUser: RegisteredUser) =>
-                        registeredUser.weekId === weekId &&
-                        registeredUser.testHours[slot.id] === testHour.hour,
-                    ).length,
-                  })),
+                  testHours: testHours.map((testHour: TestHoursInSlot) => {
+                    return {
+                      time: testHour.hour,
+                      totalPlaces: testHour.places ?? 15,
+                      takenPlaces: registrations.filter(
+                        (registeredUser: RegisteredUser) => {
+                          const usersChosenHours = registeredUser.testHours.find(
+                            (userTestHour: ChosenHours) =>
+                              userTestHour.slotId === slot.id &&
+                              userTestHour.hourId === testHour.hour,
+                          );
+                          return (
+                            registeredUser.weekId === weekId && usersChosenHours
+                          );
+                        },
+                      ).length,
+                    };
+                  }),
                 };
               },
             );

@@ -18,7 +18,6 @@ type Props = {
   onTestDayChange: (id: string, value: any) => void;
   onTestHoursChange: (id: string, value: any) => void;
   onOfficeDaysChange: (id: string, value: any) => void;
-  onSlotsNrChange: (id: string, value: any) => void;
   onSlotDelete: (id: string) => void;
 };
 

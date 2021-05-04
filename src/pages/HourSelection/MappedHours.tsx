@@ -1,7 +1,12 @@
 import React, { useContext } from 'react';
 import { Tooltip, Spin } from 'antd';
 import { v4 as uuid } from 'uuid';
-import { FixedSlotData, SlotData, TestHoursInSlot } from '../../shared';
+import {
+  FixedSlotData,
+  SlotData,
+  TestHoursInSlot,
+  ChosenHours,
+} from '../../shared';
 import { Choice, Hour, Places } from './components';
 import { AppContext } from '../../context';
 
@@ -17,10 +22,20 @@ export default function MappedHours(props: MappedHoursProps): JSX.Element {
   const { slotsData } = useContext(AppContext);
   const slotToMap = chosenDays.find((slot: SlotData) => slot.id === id);
 
-  const isChosen = (id: string, hour: any) =>
-    testHours[id] ? testHours[id] === hour : false;
-  const onHourChoose = (id: string, hour: any, available: boolean) => {
-    const chosen = isChosen(id, hour);
+  const isChosen = (id: string, hourId: string) => {
+    const chosenHour = testHours.find(
+      (testHour: ChosenHours) =>
+        testHour.slotId === id && testHour.hourId === hourId,
+    );
+    return chosenHour;
+  };
+  const onHourChoose = (id: string, hourId: string, available: boolean) => {
+    const test = {
+      slotId: id,
+      hourId,
+    };
+    console.log(test);
+    const chosen = isChosen(id, hourId);
     if (chosen) {
       const fixedChosenSlots = testHours;
       delete fixedChosenSlots[id];
@@ -31,7 +46,7 @@ export default function MappedHours(props: MappedHoursProps): JSX.Element {
       }
       const fixedChosenSlots = {
         ...testHours,
-        [id]: hour,
+        [id]: hourId,
       };
       setTestHours(fixedChosenSlots);
     }
@@ -46,47 +61,46 @@ export default function MappedHours(props: MappedHoursProps): JSX.Element {
   }
 
   return slotToMap.testHours.map((testHour: TestHoursInSlot, index: number) => {
-    const { hour, places: totalPlaces } = testHour;
+    const { hour, id: hourId } = testHour;
     const slotData = slotsData.find(
       (fixedSlot: FixedSlotData) => fixedSlot.id === id,
     );
     if (!slotData) {
       return (
-        <Choice key={`mapped-hour-${index}-${hour}-noslotdata`}>
+        <Choice key={`mapped-hour-${index}-${hourId}-noslotdata`}>
           <Spin />
         </Choice>
       );
     }
     const fixedTestHour = slotData.testHours.find(
-      (testHour: any) => testHour.time.hour === hour,
+      (testHour: any) => testHour.time === hour,
     );
     if (!fixedTestHour) {
       return (
-        <Choice key={`mapped-hour-${index}-${hour}-nofixed`}>
+        <Choice key={`mapped-hour-${index}-${hourId}-nofixed`}>
           <Spin />
         </Choice>
       );
     }
-    const available = fixedTestHour.takenPlaces < totalPlaces;
-    const percentOfPlacesTaken =
-      (totalPlaces - fixedTestHour.takenPlaces) / totalPlaces;
+    const available = fixedTestHour.takenPlaces < fixedTestHour.totalPlaces;
+    const remainingPlaces =
+      fixedTestHour.totalPlaces - fixedTestHour.takenPlaces;
+    const percentOfPlacesTaken = remainingPlaces / fixedTestHour.totalPlaces;
 
     return (
       <Tooltip
-        key={`mapped-hour-${index}-${hour}-ok`}
+        key={`mapped-hour-${index}-${hourId}-ok`}
         title={
           !available && 'All of the slots for this hour are already taken :C'
         }>
         <Choice
-          key={`slot-${id}-${hour}`}
+          key={`slot-${id}-${hourId}`}
           availability={percentOfPlacesTaken}
-          chosen={isChosen(id, hour)}
-          onClick={() => onHourChoose(id, hour, available)}>
+          chosen={isChosen(id, hourId)}
+          onClick={() => onHourChoose(id, hourId, available)}>
           <Hour available={available}>{hour}</Hour>
           <Places>
-            <span style={{ fontWeight: 'bold' }}>
-              {totalPlaces - fixedTestHour.takenPlaces}
-            </span>{' '}
+            <span style={{ fontWeight: 'bold' }}>{remainingPlaces}</span>{' '}
             available
           </Places>
         </Choice>

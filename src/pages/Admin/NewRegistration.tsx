@@ -32,7 +32,6 @@ const defaultSlot: SlotData = {
     { hour: '11:00', places: 15, id: uuid() },
     { hour: '11:20', places: 15, id: uuid() },
   ],
-  slotsNr: 15,
   officeDays: ['Monday', 'Tuesday', 'Wednesday'],
 };
 
@@ -107,7 +106,6 @@ export default function NewRegistration(): JSX.Element {
       testDay: 'Monday',
       testHours: [{ hour: '9:00', places: 15, id: uuid() }],
       officeDays: ['Monday'],
-      slotsNr: 15,
     };
     setSlots([...slots, newSlot]);
   };
@@ -126,12 +124,6 @@ export default function NewRegistration(): JSX.Element {
   const onOfficeDaysChange = (id: string, value: any) => {
     const fixedSlots = slots.map(slot =>
       slot.id === id ? { ...slot, officeDays: value } : slot,
-    );
-    setSlots(fixedSlots);
-  };
-  const onSlotsNrChange = (id: string, value: any) => {
-    const fixedSlots = slots.map(slot =>
-      slot.id === id ? { ...slot, slotsNr: value } : slot,
     );
     setSlots(fixedSlots);
   };
@@ -221,7 +213,6 @@ export default function NewRegistration(): JSX.Element {
                 onTestDayChange={onTestDayChange}
                 onTestHoursChange={onTestHoursChange}
                 onOfficeDaysChange={onOfficeDaysChange}
-                onSlotsNrChange={onSlotsNrChange}
                 onSlotDelete={onSlotDelete}
               />
             ))}

@@ -14,14 +14,18 @@ export type SlotData = {
   id: string;
   testDay: Day;
   testHours: TestHoursInSlot[];
-  slotsNr: number;
   officeDays: Day[];
 };
 
 export type TestHours = {
-  time: TestHoursInSlot;
+  time: string;
   totalPlaces: number;
   takenPlaces: number;
+};
+
+export type ChosenHours = {
+  slotId: string;
+  hourId: string;
 };
 
 export type FixedSlotData = {
@@ -44,9 +48,7 @@ export type RegisteredUser = {
   manager: string;
   registeredTimestamp: number;
   vaccinated: boolean;
-  testHours: {
-    [weekId: string]: string;
-  };
+  testHours: ChosenHours[];
 };
 
 export type SendEmailProps = {

@@ -1,6 +1,7 @@
 import { db } from '../firebase';
 import { notification } from 'antd';
 import { RegisteredUser, RegistrationData, SlotData, errorHandler } from '.';
+import { TestHoursInSlot, ChosenHours } from './types';
 
 /**
  * Function preparing the registration data to be displayed in a table
@@ -42,7 +43,7 @@ export const getRegistrationsForThisWeek = async (
   const allSlots = week.slots.map((slot: SlotData) => ({
     slotId: slot.id,
     testDay: slot.testDay,
-    slotsNr: slot.slotsNr,
+    testHours: slot.testHours,
   }));
 
   const usersMappedToSlots = allSlots.map((slot: any) => {
@@ -54,7 +55,10 @@ export const getRegistrationsForThisWeek = async (
       },
     );
     const users = registeredUsers.map((registeredUser: RegisteredUser) => {
-      const userRegistrationTimeForSlot = registeredUser.testHours[slotId];
+      const userRegistrationTimeForSlot = registeredUser.testHours.find(
+        (userTestHours: ChosenHours) => userTestHours.slotId === slotId,
+      );
+      console.log(userRegistrationTimeForSlot);
       const allUsersRegisteredForSlot = registrations
         .filter(
           (rU: RegisteredUser) =>
@@ -63,15 +67,23 @@ export const getRegistrationsForThisWeek = async (
         )
         .sort((a, b) => a.registeredTimestamp - b.registeredTimestamp);
       const placesTaken = allUsersRegisteredForSlot.length;
+      console.log(slot);
+      console.log(allUsersRegisteredForSlot);
+      // TODO
       const registrationsOverLimit = placesTaken - slot.slotsNr;
       const registeredTooLate =
         registrationsOverLimit > 0 &&
         allUsersRegisteredForSlot.findIndex(
           u => u.email === registeredUser.email,
         ) >= slot.slotsNr;
+      const usersRegisteredHourId = userRegistrationTimeForSlot?.hourId;
+      const usersRegisteredHourMapped = slot.testHours.find(
+        (slotTestHour: TestHoursInSlot) =>
+          slotTestHour.id === usersRegisteredHourId,
+      );
       const usersRegisteredHour =
-        !userRegistrationTimeForSlot.startsWith('0') &&
-        userRegistrationTimeForSlot.length === 4
+        !usersRegisteredHourMapped.startsWith('0') &&
+        usersRegisteredHourMapped?.length === 4
           ? `0${userRegistrationTimeForSlot}`
           : userRegistrationTimeForSlot;
       const userRegistrationData = {
@@ -134,30 +146,47 @@ export const getRegistrationsForExcel = async (
     .map((w: any) => new Date(w.seconds * 1000).toLocaleDateString())
     .flat()
     .join(' - ');
-  const allSlots = week.slots.map((slot: SlotData) => slot.id);
+  const allSlots = week.slots.map((slot: SlotData) => ({
+    slotId: slot.id,
+    slotTestHours: slot.testHours,
+  }));
 
-  const usersMappedToSlots = allSlots.map((slotId: string) => {
-    const users = registrations.map((registeredUser: RegisteredUser) => {
-      const userInThisSlot = registeredUser.testHours[slotId];
-      if (!userInThisSlot) {
-        return ['', '', '', '', '', ''];
-      }
-      const usersRegisteredHour =
-        !userInThisSlot.startsWith('0') && userInThisSlot.length === 4
-          ? `0${userInThisSlot}`
-          : userInThisSlot;
-      const field = [
-        '',
-        '',
-        registeredUser.name ?? registeredUser.email,
-        registeredUser.manager,
-        usersRegisteredHour,
-        registeredUser.vaccinated ? 'X' : '',
-      ];
-      return field;
-    });
-    return users;
-  });
+  const usersMappedToSlots = allSlots.map(
+    ({
+      slotId,
+      slotTestHours,
+    }: {
+      slotId: string;
+      slotTestHours: TestHoursInSlot[];
+    }) => {
+      const users = registrations.map((registeredUser: RegisteredUser) => {
+        const userInThisSlot = registeredUser.testHours.find(
+          (userTestHour: ChosenHours) => userTestHour.slotId === slotId,
+        );
+        if (!userInThisSlot) {
+          return ['', '', '', '', '', ''];
+        }
+        const registeredHour = slotTestHours.find(
+          (slotTestHour: TestHoursInSlot) =>
+            slotTestHour.id === userInThisSlot.hourId,
+        )?.hour;
+        const usersRegisteredHour =
+          !registeredHour?.startsWith('0') && registeredHour?.length === 4
+            ? `0${registeredHour}`
+            : registeredHour;
+        const field = [
+          '',
+          '',
+          registeredUser.name ?? registeredUser.email,
+          registeredUser.manager,
+          usersRegisteredHour,
+          registeredUser.vaccinated ? 'X' : '',
+        ];
+        return field;
+      });
+      return users;
+    },
+  );
 
   const mergedUsers: any[] = [];
   usersMappedToSlots[0].forEach((_: any, i: number) => {

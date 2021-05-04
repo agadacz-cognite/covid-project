@@ -118,14 +118,12 @@ export default function Admin(): JSX.Element {
                 </>
               )}
               <Button
-                type="primary"
                 onClick={onPreviewRegisteredUsers}
                 disabled={!activeRegistration}
                 style={{ marginBottom: '8px' }}>
                 View registered users
               </Button>
               <Button
-                type="primary"
                 onClick={onDownloadRegisteredUsers}
                 disabled={!activeRegistration}
                 style={{ marginBottom: '8px' }}>
@@ -154,7 +152,7 @@ export default function Admin(): JSX.Element {
                 cancelButtonProps={{ type: 'primary' }}
                 cancelText="Nope :c"
                 placement="top">
-                <Button type="primary" danger disabled={!activeRegistration}>
+                <Button danger disabled={!activeRegistration}>
                   Close current registration
                 </Button>
               </Popconfirm>
@@ -162,7 +160,7 @@ export default function Admin(): JSX.Element {
           </Card>
           <Card style={{ width: 'auto', height: 'auto', margin: '8px' }}>
             <Flex row align justify>
-              <Button type="primary" onClick={onSeeOldRegistrations}>
+              <Button onClick={onSeeOldRegistrations}>
                 See old registrations
               </Button>
             </Flex>
@@ -194,7 +192,10 @@ export default function Admin(): JSX.Element {
               row
               align
               style={{ justifyContent: 'flex-end', marginTop: '8px' }}>
-              <Button type="primary" onClick={onPreregistrationEmailsSave}>
+              <Button
+                type="primary"
+                ghost
+                onClick={onPreregistrationEmailsSave}>
                 Save
               </Button>
             </Flex>

@@ -5,6 +5,7 @@ import {
   RegistrationData,
   RegisteredUser,
   TestHours,
+  ChosenHours,
 } from '../shared';
 import { FixedSlotData } from '../shared';
 
@@ -48,27 +49,27 @@ export const registerUserForTest = (
     if (!db) {
       return resolve();
     }
-    const userSlotsAreAvailableArray = Object.entries(
-      userToRegister.testHours,
-    ).map((testHour: string[]) => {
-      const slot = slotsData.find(
-        (slotData: FixedSlotData) => slotData.id === testHour[0],
-      );
-      if (!slot) {
+    const userSlotsAreAvailableArray = userToRegister.testHours.map(
+      (testHour: ChosenHours) => {
+        const slot = slotsData.find(
+          (slotData: FixedSlotData) => slotData.id === testHour.slotId,
+        );
+        if (!slot) {
+          return false;
+        }
+        const hour = slot?.testHours.find(
+          (hour: TestHours) => hour.time === testHour.hourId,
+        );
+        if (!hour) {
+          return false;
+        }
+        const available = hour.takenPlaces < hour?.totalPlaces;
+        if (available) {
+          return true;
+        }
         return false;
-      }
-      const hour = slot?.testHours.find(
-        (hour: TestHours) => hour.time.hour === testHour[1],
-      );
-      if (!hour) {
-        return false;
-      }
-      const available = hour.takenPlaces < hour?.totalPlaces;
-      if (available) {
-        return true;
-      }
-      return false;
-    });
+      },
+    );
     const userSlotsAreAvailable = userSlotsAreAvailableArray.reduce(
       (sum, next) => sum && next,
     );
