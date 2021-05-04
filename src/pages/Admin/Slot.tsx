@@ -175,7 +175,7 @@ export default function Slot(props: Props): JSX.Element {
                     ))}
                   </AutoComplete>
                   <InputNumber
-                    min={1}
+                    min={0}
                     max={500}
                     value={testHour.places}
                     style={{ width: '60px' }}

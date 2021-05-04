@@ -86,11 +86,14 @@ export const getRegistrationsForThisWeek = async (
           )
           .sort((a, b) => a.registeredTimestamp - b.registeredTimestamp);
         const placesTaken = allUsersRegisteredForSlot.length;
-        // TODO
-        const slotPlacesLimit = 15;
-        const registrationsOverLimit = placesTaken - slotPlacesLimit;
+        const slotPlacesLimit =
+          testHours.find(
+            (slotTestHour: TestHourInSlot) =>
+              slotTestHour.id === userRegistrationForSlot?.hourId,
+          )?.places ?? 0;
+        const placesLeft = slotPlacesLimit - placesTaken;
         const registeredTooLate =
-          registrationsOverLimit > 0 &&
+          placesLeft < 0 &&
           allUsersRegisteredForSlot.findIndex(
             u => u.email === registeredUser.email,
           ) >= slotPlacesLimit;

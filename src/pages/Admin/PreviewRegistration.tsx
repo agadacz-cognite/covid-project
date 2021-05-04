@@ -119,6 +119,7 @@ const columns = (day: string) => [
     title: 'Name',
     key: 'name',
     render: (item: any) => {
+      console.log(item);
       const tooLateTooltip =
         'This person has signed up after the slot was already unavailable. Please contact them to rebook. Clicking their name will redirect you to email service with prepared template.';
       const tooLateEmail = `mailto:${item.email}?subject=❗❗ You need to rebook your COVID test appointment 😿&body=Unfortunately you have to rebook your COVID appointment at ${day}, ${item.hour}.%0A%0ADue to a database lag your registration went through already after all the places for the slot were already taken.%0A%0AWe sincerely apologize for inconvenience.`;
