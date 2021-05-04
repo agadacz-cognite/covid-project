@@ -273,7 +273,7 @@ export const closeActiveRegistration = (): Promise<void> => {
       return;
     }
     db.collection('options')
-      .doc('activeRegistrationTest') // TODO remove TEST
+      .doc('activeRegistration')
       .delete()
       .then(() => {
         notification.success({
