@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
-import { Button, Typography, Spin, Tooltip } from 'antd';
+import { Button, Typography, Spin, Tooltip, notification } from 'antd';
 import { WarningOutlined } from '@ant-design/icons';
 import {
   AppContext,
@@ -30,7 +30,18 @@ export default function PreviewRegistration(): JSX.Element {
       usersRegistrationData,
       weekDate,
       weeks,
+      legacy,
     } = await getRegistrationsForThisWeek(weekId);
+
+    if (legacy) {
+      notification.warning({
+        message: 'Cannot download this week',
+        description:
+          'The week you try to download uses the legacy format and cannot be downloaded.',
+      });
+      return;
+    }
+
     setRegisteredUsersData(usersRegistrationData);
     setWeekDate(weekDate);
     setWeekDays(weeks);

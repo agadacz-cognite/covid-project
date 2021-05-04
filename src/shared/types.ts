@@ -39,6 +39,7 @@ export type RegistrationData = {
   slots: SlotData[];
   registrationOpenTime: Time;
   week: Time[];
+  legacy?: boolean;
 };
 
 export type RegisteredUser = {

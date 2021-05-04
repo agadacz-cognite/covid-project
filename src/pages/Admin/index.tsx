@@ -44,9 +44,20 @@ export default function Admin(): JSX.Element {
   }, [preregistrationEmails]);
 
   const onDownloadRegisteredUsers = async () => {
-    const { final: registrations, weekDate } = await getRegistrationsForExcel(
-      activeRegistration?.id,
-    );
+    const {
+      final: registrations,
+      weekDate,
+      legacy,
+    } = await getRegistrationsForExcel(activeRegistration?.id);
+
+    if (legacy) {
+      notification.warning({
+        message: 'Cannot download this week',
+        description:
+          'The week you try to download uses the legacy format and cannot be downloaded.',
+      });
+      return;
+    }
     const fileTitle = weekDate.replace(' ', '');
     const workbook = XLSX.utils.book_new();
     const sheet = XLSX.utils.aoa_to_sheet(registrations);

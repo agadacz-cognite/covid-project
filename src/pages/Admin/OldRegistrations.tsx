@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Menu, Typography, Button } from 'antd';
-import { ExportOutlined } from '@ant-design/icons';
+import { Menu, Typography, Button, Tooltip, notification } from 'antd';
+import { ExportOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import XLSX from 'xlsx';
 import {
   usePreviousWeeks,
@@ -45,9 +45,19 @@ export default function OldRegistrations(): JSX.Element {
   const onWeekPreview = (weekId: string | undefined) =>
     history.push(`/admin/preview/${weekId}`);
   const onWeekExport = async (weekId: string | undefined) => {
-    const { final: registrations, weekDate } = await getRegistrationsForExcel(
-      weekId,
-    );
+    const {
+      final: registrations,
+      weekDate,
+      legacy,
+    } = await getRegistrationsForExcel(weekId);
+    if (legacy) {
+      notification.warning({
+        message: 'Cannot download this week',
+        description:
+          'The week you try to download uses the legacy format and cannot be downloaded.',
+      });
+      return;
+    }
     const fileTitle = weekDate.replace(' ', '');
     const workbook = XLSX.utils.book_new();
     const sheet = XLSX.utils.aoa_to_sheet(registrations);
@@ -60,21 +70,35 @@ export default function OldRegistrations(): JSX.Element {
   const mappedWeeks = () =>
     previousWeeks &&
     previousWeeks.map((week: RegistrationData) => {
+      const isDisabled = week.legacy && (
+        <Tooltip
+          title={
+            'This week uses the legacy format and cannot be downloaded nor previewed.'
+          }>
+          <ExclamationCircleOutlined style={{ color: 'orange' }} />
+        </Tooltip>
+      );
       const weekDate = `${new Date(
         (week?.week[0]?.seconds ?? 0) * 1000,
       ).toLocaleDateString()} - ${new Date(
         (week?.week[1]?.seconds ?? 0) * 1000,
       ).toLocaleDateString()}`;
       return (
-        <SubMenu key={week.id} title={weekDate} onTitleClick={onWeekClick}>
+        <SubMenu
+          key={week.id}
+          title={weekDate}
+          onTitleClick={onWeekClick}
+          icon={isDisabled}>
           <Menu.Item
             key={`view-users-${week?.id}`}
-            onClick={() => onWeekPreview(week?.id)}>
+            onClick={() => onWeekPreview(week?.id)}
+            disabled={week.legacy}>
             View registered users
           </Menu.Item>
           <Menu.Item
             key={`export-${week?.id}`}
-            onClick={() => onWeekExport(week?.id)}>
+            onClick={() => onWeekExport(week?.id)}
+            disabled={week.legacy}>
             Export to Excel (*.xlsx) <ExportOutlined />
           </Menu.Item>
         </SubMenu>

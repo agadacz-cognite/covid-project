@@ -36,6 +36,11 @@ export const getRegistrationsForThisWeek = async (
     });
   });
   const week = weeks[0];
+
+  if (week.legacy) {
+    return { legacy: true };
+  }
+
   const weekDate = week.week
     .map(w => new Date(w.seconds * 1000).toLocaleDateString())
     .flat()
@@ -151,6 +156,11 @@ export const getRegistrationsForExcel = async (
     });
   });
   const week = weeks[0];
+
+  if (week.legacy) {
+    return { legacy: true };
+  }
+
   const weekDate = week.week
     .map((w: any) => new Date(w.seconds * 1000).toLocaleDateString())
     .flat()
