@@ -8,6 +8,7 @@ import NotFound from './NotFound';
 import Admin from './Admin';
 import NewRegistration from './Admin/NewRegistration';
 import OldRegistrations from './Admin/OldRegistrations';
+import EditRegistration from './Admin/EditRegistration';
 import PreviewRegistration from './Admin/PreviewRegistration';
 import DaysSelection from './DaysSelection';
 import HourSelection from './HourSelection';
@@ -69,6 +70,12 @@ export default function App(): JSX.Element {
           <Wrapper>
             <Loader $loading={loading} />
             <NewRegistration />
+          </Wrapper>
+        </Route>
+        <Route exact path="/admin/editweek/:weekId">
+          <Wrapper>
+            <Loader $loading={loading} />
+            <EditRegistration />
           </Wrapper>
         </Route>
         <Route exact path="/admin/oldweeks">

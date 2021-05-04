@@ -5,23 +5,33 @@ export type Time = {
   nanoseconds: number;
 };
 
+export type TestHourInSlot = {
+  hour: string;
+  places: number;
+  id: string;
+};
 export type SlotData = {
   id: string;
   testDay: Day;
-  testHours: string[];
-  slotsNr: number;
+  testHours: TestHourInSlot[];
   officeDays: Day[];
 };
 
-export type TestHours = {
+export type TestHour = {
+  hourId: string;
   time: string;
   totalPlaces: number;
   takenPlaces: number;
 };
 
+export type ChosenHour = {
+  slotId: string;
+  hourId: string;
+};
+
 export type FixedSlotData = {
   id: string;
-  testHours: TestHours[];
+  testHours: TestHour[];
 };
 
 export type RegistrationData = {
@@ -29,6 +39,7 @@ export type RegistrationData = {
   slots: SlotData[];
   registrationOpenTime: Time;
   week: Time[];
+  legacy?: boolean;
 };
 
 export type RegisteredUser = {
@@ -39,9 +50,7 @@ export type RegisteredUser = {
   manager: string;
   registeredTimestamp: number;
   vaccinated: boolean;
-  testHours: {
-    [weekId: string]: string;
-  };
+  testHours: ChosenHour[];
 };
 
 export type SendEmailProps = {

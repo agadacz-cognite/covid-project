@@ -2,11 +2,14 @@ import { useEffect, useContext } from 'react';
 import deepEqual from 'deep-equal';
 import { AppContext } from '../';
 import { db } from '../../firebase';
+import { v4 as uuid } from 'uuid';
 import {
   errorHandler,
   RegisteredUser,
   SlotData,
   FixedSlotData,
+  TestHourInSlot,
+  ChosenHour,
 } from '../../shared';
 
 /**
@@ -43,18 +46,46 @@ export const useAvailablePlacesForSlots = async (
               });
             });
             const slots: FixedSlotData[] = weeksRaw?.slots.map(
-              (slot: SlotData) => ({
-                id: slot.id,
-                testHours: slot.testHours.map((testHour: string) => ({
-                  time: testHour,
-                  totalPlaces: slot.slotsNr,
-                  takenPlaces: registrations.filter(
-                    (registeredUser: RegisteredUser) =>
-                      registeredUser.weekId === weekId &&
-                      registeredUser.testHours[slot.id] === testHour,
-                  ).length,
-                })),
-              }),
+              (slot: SlotData) => {
+                let testHours = [];
+                if (typeof slot.testHours[0] === 'string') {
+                  // this means it's an old format
+                  const adjustToNewFormat = slot.testHours.map(
+                    (testHour: any) => ({
+                      hour: testHour,
+                      places: 15,
+                      id: uuid(),
+                    }),
+                  );
+                  testHours = adjustToNewFormat;
+                } else {
+                  testHours = slot.testHours;
+                }
+                return {
+                  id: slot.id,
+                  testHours: testHours.map((testHour: TestHourInSlot) => {
+                    return {
+                      hourId: testHour.id,
+                      totalPlaces: testHour.places ?? 15,
+                      takenPlaces: registrations.filter(
+                        (registeredUser: RegisteredUser) => {
+                          const usersChosenHours = registeredUser.testHours.find(
+                            (userTestHour: ChosenHour) => {
+                              return (
+                                userTestHour.slotId === slot.id &&
+                                userTestHour.hourId === testHour.id
+                              );
+                            },
+                          );
+                          return (
+                            registeredUser.weekId === weekId && usersChosenHours
+                          );
+                        },
+                      ).length,
+                    };
+                  }),
+                };
+              },
             );
             if (!deepEqual(slots, slotsData)) {
               setSlotsData(slots);

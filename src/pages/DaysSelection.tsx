@@ -14,7 +14,7 @@ import {
   useCanUserPreregister,
 } from '../context';
 import { removeUserRegistration } from '../firebase/utils';
-import { sendEmail } from '../shared/helpers';
+import { sendEmail, translateHourIdToHour, ChosenHour } from '../shared';
 import { Flex, Card, Header } from '../components';
 
 dayjs.extend(relativeTime);
@@ -119,14 +119,15 @@ export default function DaysSelection(): JSX.Element {
   const ifNotRegisteredYet = (): JSX.Element | undefined => {
     const registrationOpenTimestamp =
       (activeRegistration?.registrationOpenTime?.seconds ?? 0) * 1000;
+    const registrationIsOpen = registrationOpenTimestamp <= Number(new Date());
     if (
       !isUserRegistered &&
       activeRegistration &&
-      (registrationOpenTimestamp <= Number(new Date()) || canPreregister)
+      (registrationIsOpen || canPreregister)
     ) {
       return (
         <StyledFlex column justify align>
-          {canPreregister ? (
+          {canPreregister && !registrationIsOpen ? (
             <Flex
               row
               align
@@ -241,16 +242,19 @@ export default function DaysSelection(): JSX.Element {
               (activeRegistration?.week[1]?.seconds ?? 0) * 1000,
             ).toLocaleDateString()}
           </Title>
-          {Object.entries(usersRegistration?.testHours ?? {}).map(
-            (testHour: any, index: number) => {
+          {(usersRegistration?.testHours ?? []).map(
+            (chosenHour: ChosenHour, index: number) => {
               const week = activeRegistration?.slots.find(
-                slot => slot.id === testHour[0],
+                slot => slot.id === chosenHour.slotId,
+              );
+              const userHours = translateHourIdToHour(
+                week?.testHours,
+                chosenHour,
               );
               return (
                 <Flex column align justify key={`your-slot-${index}`}>
                   <Title level={5}>
-                    {week?.testDay ?? '<unknown>'} -{' '}
-                    {testHour?.[1] ?? '<unknown>'}
+                    {week?.testDay ?? '<unknown>'} - {userHours ?? '<unknown>'}
                   </Title>
                 </Flex>
               );

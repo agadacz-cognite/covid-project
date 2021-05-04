@@ -15,6 +15,7 @@ import {
 } from '../../context';
 import { createActiveRegistration } from '../../firebase';
 import { SlotData } from '../../shared';
+import { defaultHour, defaultPlaces, defaultNewHour } from './utils';
 import Slot from './Slot';
 
 const { Title } = Typography;
@@ -22,17 +23,7 @@ const { Title } = Typography;
 const defaultSlot: SlotData = {
   id: uuid(),
   testDay: 'Monday',
-  testHours: [
-    '9:00',
-    '9:20',
-    '9:40',
-    '10:00',
-    '10:20',
-    '10:40',
-    '11:00',
-    '11:20',
-  ],
-  slotsNr: 15,
+  testHours: [{ hour: defaultHour, places: defaultPlaces, id: uuid() }],
   officeDays: ['Monday', 'Tuesday', 'Wednesday'],
 };
 
@@ -105,9 +96,8 @@ export default function NewRegistration(): JSX.Element {
     const newSlot: SlotData = {
       id: uuid(),
       testDay: 'Monday',
-      testHours: ['9:00'],
+      testHours: [defaultNewHour],
       officeDays: ['Monday'],
-      slotsNr: 15,
     };
     setSlots([...slots, newSlot]);
   };
@@ -126,12 +116,6 @@ export default function NewRegistration(): JSX.Element {
   const onOfficeDaysChange = (id: string, value: any) => {
     const fixedSlots = slots.map(slot =>
       slot.id === id ? { ...slot, officeDays: value } : slot,
-    );
-    setSlots(fixedSlots);
-  };
-  const onSlotsNrChange = (id: string, value: any) => {
-    const fixedSlots = slots.map(slot =>
-      slot.id === id ? { ...slot, slotsNr: value } : slot,
     );
     setSlots(fixedSlots);
   };
@@ -221,7 +205,6 @@ export default function NewRegistration(): JSX.Element {
                 onTestDayChange={onTestDayChange}
                 onTestHoursChange={onTestHoursChange}
                 onOfficeDaysChange={onOfficeDaysChange}
-                onSlotsNrChange={onSlotsNrChange}
                 onSlotDelete={onSlotDelete}
               />
             ))}

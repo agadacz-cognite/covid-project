@@ -8,7 +8,7 @@ import {
   useAvailablePlacesForSlots,
 } from '../../context';
 import { registerUserForTest } from '../../firebase';
-import { RegisteredUser, SlotData, sendEmail } from '../../shared';
+import { RegisteredUser, SlotData, ChosenHour, sendEmail } from '../../shared';
 import { Flex, Card } from '../../components';
 import MappedHours from './MappedHours';
 
@@ -23,7 +23,7 @@ export default function HourSelection(): JSX.Element {
   } = useContext(AppContext);
   const [managerName, setManagerName] = useState('');
   const [chosenDays, setChosenDays] = useState<SlotData[]>([]);
-  const [testHours, setTestHours] = useState<any>({});
+  const [testHours, setTestHours] = useState<ChosenHour[]>([]);
   const [vaccinated, setVaccinated] = useState(false);
 
   useBackIfNotLogged();

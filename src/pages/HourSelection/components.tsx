@@ -44,11 +44,12 @@ export const Hour = styled.div.attrs(
   },
 )<{ available: boolean }>`
   width: 100%;
-  padding: 8px;
+  padding: 8px 8px 4px 8px;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 24px;
+  text-align: center;
+  font-size: 20px;
   font-weight: bold;
 `;
 

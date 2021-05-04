@@ -1,14 +1,16 @@
 import React from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
 import 'moment/locale/en-gb';
-import { Select, Button, Slider } from 'antd';
-import { CloseCircleOutlined } from '@ant-design/icons';
+import { Select, Button, InputNumber, AutoComplete } from 'antd';
+import { CloseCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
+import { v4 as uuid } from 'uuid';
 import { Flex } from '../../components';
-import { SlotData } from '../../shared/types';
-import { possibleDays, possibleHours } from './dates';
+import { SlotData, TestHourInSlot } from '../../shared/types';
+import { possibleDays, possibleHours, defaultNewHour } from './utils';
 
 const { Option } = Select;
+const { Option: OptionAutoComplete } = AutoComplete;
 
 type Props = {
   slot: SlotData;
@@ -16,30 +18,57 @@ type Props = {
   onTestDayChange: (id: string, value: any) => void;
   onTestHoursChange: (id: string, value: any) => void;
   onOfficeDaysChange: (id: string, value: any) => void;
-  onSlotsNrChange: (id: string, value: any) => void;
   onSlotDelete: (id: string) => void;
 };
 
 export default function Slot(props: Props): JSX.Element {
   const {
-    slot: { id, testDay, testHours, slotsNr, officeDays },
+    slot,
     onTestDayChange,
     onTestHoursChange,
     onOfficeDaysChange,
-    onSlotsNrChange,
     onSlotDelete,
   } = props;
+  const { id, testDay, testHours, officeDays } = slot;
 
-  const hoursOptions = possibleHours.map((hour: string) => (
-    <Option key={hour.replace(':', '')} value={hour}>
-      {hour}
-    </Option>
-  ));
   const daysOptions = possibleDays.map((day: string) => (
     <Option key={day} value={day}>
       {day}
     </Option>
   ));
+
+  const onAddHour = () => {
+    const newTestHours: TestHourInSlot[] = [...testHours, defaultNewHour];
+    onTestHoursChange(id, newTestHours);
+  };
+  const onHourDelete = (hour: TestHourInSlot) => {
+    const newTestHours: TestHourInSlot[] = testHours.filter(
+      (testHour: TestHourInSlot) => testHour.id !== hour.id,
+    );
+    onTestHoursChange(id, newTestHours);
+  };
+  const onTestPlacesChange = (hour: TestHourInSlot, places: number) => {
+    const newTestHours: TestHourInSlot[] = testHours.map(
+      (testHour: TestHourInSlot) => {
+        if (testHour.id === hour.id) {
+          return { ...testHour, places };
+        }
+        return testHour;
+      },
+    );
+    onTestHoursChange(id, newTestHours);
+  };
+  const onTestHourChange = (testHour: TestHourInSlot, newHour: string) => {
+    const newTestHours: TestHourInSlot[] = testHours.map(
+      (oldHour: TestHourInSlot) => {
+        if (testHour.id === oldHour.id) {
+          return { ...oldHour, hour: newHour };
+        }
+        return oldHour;
+      },
+    );
+    onTestHoursChange(id, newTestHours);
+  };
 
   return (
     <StyledSlot column>
@@ -59,7 +88,7 @@ export default function Slot(props: Props): JSX.Element {
       </Flex>
       <Flex row align style={{ margin: '4px 0' }}>
         <Flex row align style={{ flexGrow: 1 }}>
-          <span style={{ fontWeight: 'bold', width: '73px' }}>Test day</span>
+          <span style={{ fontWeight: 'bold', minWidth: '80px' }}>Test day</span>
           <Select
             value={testDay}
             onChange={value => onTestDayChange(id, value)}
@@ -71,19 +100,11 @@ export default function Slot(props: Props): JSX.Element {
             ))}
           </Select>
         </Flex>
-        <Flex row align style={{ flexGrow: 1 }}>
-          <span style={{ fontWeight: 'bold', margin: '0 8px' }}>Slots</span>
-          <Slider
-            value={slotsNr}
-            onChange={(value: number) => onSlotsNrChange(id, value)}
-            min={1}
-            max={30}
-            style={{ marginLeft: '8px', flexGrow: 1 }}
-          />
-        </Flex>
       </Flex>
       <Flex row align style={{ margin: '4px 0' }}>
-        <span style={{ fontWeight: 'bold', width: '90px' }}>Office days</span>
+        <span style={{ fontWeight: 'bold', minWidth: '80px' }}>
+          Office days
+        </span>
         <Select
           value={officeDays}
           onChange={value => onOfficeDaysChange(id, value)}
@@ -93,14 +114,97 @@ export default function Slot(props: Props): JSX.Element {
         </Select>
       </Flex>
       <Flex row align style={{ margin: '4px 0' }}>
-        <span style={{ fontWeight: 'bold', width: '90px' }}>Test hours</span>
-        <Select
-          value={testHours}
-          mode="tags"
-          onChange={value => onTestHoursChange(id, value)}
-          style={{ width: '100%', marginLeft: '8px' }}>
-          {hoursOptions}
-        </Select>
+        <Flex column style={{ fontWeight: 'bold', minWidth: '90px' }}>
+          <div>Test hours </div>
+          <div>+ places</div>
+        </Flex>
+        <Flex row style={{ flexWrap: 'wrap' }}>
+          {testHours.map((testHour: TestHourInSlot, index: number) => {
+            return (
+              <Flex
+                column
+                key={`one-hour-slot-${index}`}
+                style={{
+                  position: 'relative',
+                  margin: '0 4px 4px 0',
+                  padding: 0,
+                  alignItems: 'flex-end',
+                }}>
+                <Button
+                  type="text"
+                  danger
+                  icon={
+                    <CloseCircleOutlined
+                      style={{
+                        width: '16px',
+                        height: '16px',
+                        zIndex: 10,
+                        backgroundColor: 'white',
+                        borderRadius: '20px',
+                      }}
+                    />
+                  }
+                  onClick={() => onHourDelete(testHour)}
+                  style={{
+                    position: 'absolute',
+                    top: '-10px',
+                    right: 0,
+                    padding: 0,
+                    margin: 0,
+                    width: '16px',
+                    height: '16px',
+                    zIndex: 10,
+                  }}
+                />
+                <Flex
+                  column
+                  style={{
+                    margin: '0 4px 4px 0',
+                    padding: 0,
+                    border: '1px solid #cecece',
+                  }}>
+                  <AutoComplete
+                    placeholder="hour"
+                    value={testHour.hour}
+                    onChange={value => onTestHourChange(testHour, value)}
+                    style={{ width: '60px' }}>
+                    {possibleHours.map((hour: string) => (
+                      <OptionAutoComplete key={`hour-${uuid()}`} value={hour}>
+                        {hour}
+                      </OptionAutoComplete>
+                    ))}
+                  </AutoComplete>
+                  <InputNumber
+                    min={0}
+                    max={500}
+                    value={testHour.places}
+                    style={{ width: '60px' }}
+                    onChange={(value: number) =>
+                      onTestPlacesChange(testHour, value)
+                    }
+                  />
+                </Flex>
+              </Flex>
+            );
+          })}
+          <Flex
+            column
+            style={{
+              margin: '0 4px 4px 0',
+              padding: 0,
+              minWidth: '60px',
+              minHeight: '60px',
+            }}>
+            <Button
+              type="dashed"
+              icon={<PlusOutlined />}
+              onClick={onAddHour}
+              style={{ height: '60px', width: '60px' }}
+            />
+          </Flex>
+        </Flex>
+        <Flex
+          style={{ height: '100%', width: '32px', marginLeft: '8px' }}></Flex>
       </Flex>
     </StyledSlot>
   );

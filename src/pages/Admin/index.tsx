@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Typography, Button, Select, Popconfirm, notification } from 'antd';
-import { ExportOutlined } from '@ant-design/icons';
+import { ExportOutlined, EditOutlined } from '@ant-design/icons';
 import XLSX from 'xlsx';
 import { Flex, Header, Card } from '../../components';
 import {
@@ -44,9 +44,20 @@ export default function Admin(): JSX.Element {
   }, [preregistrationEmails]);
 
   const onDownloadRegisteredUsers = async () => {
-    const { final: registrations, weekDate } = await getRegistrationsForExcel(
-      activeRegistration?.id,
-    );
+    const {
+      final: registrations,
+      weekDate,
+      legacy,
+    } = await getRegistrationsForExcel(activeRegistration?.id);
+
+    if (legacy) {
+      notification.warning({
+        message: 'Cannot download this week',
+        description:
+          'The week you try to download uses the legacy format and cannot be downloaded.',
+      });
+      return;
+    }
     const fileTitle = weekDate.replace(' ', '');
     const workbook = XLSX.utils.book_new();
     const sheet = XLSX.utils.aoa_to_sheet(registrations);
@@ -67,6 +78,8 @@ export default function Admin(): JSX.Element {
       });
     }
   };
+  const onEditActiveRegistration = () =>
+    history.push(`/admin/editweek/${activeRegistration?.id}`);
   const onActiveRegistrationClose = () => closeActiveRegistration();
   const onPreviewRegisteredUsers = () =>
     history.push(`/admin/preview/${activeRegistration?.id}`);
@@ -89,9 +102,14 @@ export default function Admin(): JSX.Element {
             style={{ width: 'auto', height: 'auto', margin: '8px' }}>
             <Flex column align justify>
               {!activeRegistration && (
-                <Title level={5}>
-                  There is no open registration at the moment!
-                </Title>
+                <>
+                  <Title level={5}>
+                    There is no open registration at the moment!
+                  </Title>
+                  <Button danger onClick={onCreateNewRegistration}>
+                    Start new registration
+                  </Button>
+                </>
               )}
               {activeRegistration?.registrationOpenTime?.seconds && (
                 <>
@@ -117,52 +135,57 @@ export default function Admin(): JSX.Element {
                   </Flex>
                 </>
               )}
-              <Button
-                type="primary"
-                onClick={onPreviewRegisteredUsers}
-                disabled={!activeRegistration}
-                style={{ marginBottom: '8px' }}>
-                View registered users
-              </Button>
-              <Button
-                type="primary"
-                onClick={onDownloadRegisteredUsers}
-                disabled={!activeRegistration}
-                style={{ marginBottom: '8px' }}>
-                Export to Excel (*.xlsx) <ExportOutlined />
-              </Button>
-              <Popconfirm
-                title={
-                  <>
-                    <div>
-                      Are you sure you want to close the active registration?
-                    </div>
-                    <div>
-                      You won&apos;t be able to reopen it and people won&apos;t
-                      be able to register for this week anymore.
-                    </div>
-                    <div>
-                      You can still view and export the list of all registered
-                      users by clicking &quot;See old registrations&quot; button
-                      below.
-                    </div>
-                  </>
-                }
-                onConfirm={onActiveRegistrationClose}
-                okText="Close"
-                okButtonProps={{ danger: true }}
-                cancelButtonProps={{ type: 'primary' }}
-                cancelText="Nope :c"
-                placement="top">
-                <Button type="primary" danger disabled={!activeRegistration}>
-                  Close current registration
-                </Button>
-              </Popconfirm>
+              {activeRegistration && (
+                <>
+                  <Button
+                    onClick={onEditActiveRegistration}
+                    icon={<EditOutlined />}
+                    style={{ marginBottom: '8px' }}>
+                    Edit
+                  </Button>
+                  <Button
+                    onClick={onPreviewRegisteredUsers}
+                    style={{ marginBottom: '8px' }}>
+                    View registered users
+                  </Button>
+                  <Button
+                    onClick={onDownloadRegisteredUsers}
+                    style={{ marginBottom: '8px' }}>
+                    Export to Excel (*.xlsx) <ExportOutlined />
+                  </Button>
+                  <Popconfirm
+                    title={
+                      <>
+                        <div>
+                          Are you sure you want to close the active
+                          registration?
+                        </div>
+                        <div>
+                          You won&apos;t be able to reopen it and people
+                          won&apos;t be able to register for this week anymore.
+                        </div>
+                        <div>
+                          You can still view and export the list of all
+                          registered users by clicking &quot;See old
+                          registrations&quot; button below.
+                        </div>
+                      </>
+                    }
+                    onConfirm={onActiveRegistrationClose}
+                    okText="Close"
+                    okButtonProps={{ danger: true }}
+                    cancelButtonProps={{ type: 'primary' }}
+                    cancelText="Nope :c"
+                    placement="top">
+                    <Button danger>Close current registration</Button>
+                  </Popconfirm>{' '}
+                </>
+              )}
             </Flex>
           </Card>
           <Card style={{ width: 'auto', height: 'auto', margin: '8px' }}>
             <Flex row align justify>
-              <Button type="primary" onClick={onSeeOldRegistrations}>
+              <Button onClick={onSeeOldRegistrations}>
                 See old registrations
               </Button>
             </Flex>
@@ -194,7 +217,10 @@ export default function Admin(): JSX.Element {
               row
               align
               style={{ justifyContent: 'flex-end', marginTop: '8px' }}>
-              <Button type="primary" onClick={onPreregistrationEmailsSave}>
+              <Button
+                type="primary"
+                ghost
+                onClick={onPreregistrationEmailsSave}>
                 Save
               </Button>
             </Flex>
