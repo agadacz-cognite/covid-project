@@ -8,7 +8,13 @@ import {
   useAvailablePlacesForSlots,
 } from '../../context';
 import { registerUserForTest } from '../../firebase';
-import { RegisteredUser, SlotData, ChosenHour, sendEmail } from '../../shared';
+import {
+  RegisteredUser,
+  SlotData,
+  ChosenHour,
+  sendEmail,
+  translateHourIdToHour,
+} from '../../shared';
 import { Flex, Card } from '../../components';
 import MappedHours from './MappedHours';
 
@@ -93,14 +99,16 @@ export default function HourSelection(): JSX.Element {
     ).toLocaleDateString()} - ${new Date(
       (activeRegistration?.week[1]?.seconds ?? 0) * 1000,
     ).toLocaleDateString()}`;
-    const userHours = Object.entries(registeredUser?.testHours ?? {})
-      .map((testHour: any) => {
+    const userHours = registeredUser?.testHours
+      .map((testHour: ChosenHour) => {
         const week = activeRegistration?.slots.find(
-          slot => slot.id === testHour[0],
+          slot => slot.id === testHour.slotId,
         );
+        const translatedHour = translateHourIdToHour(week?.testHours, testHour);
+        const officeDays = week?.officeDays ?? [];
         return `${week?.testDay ?? '<unknown>'} - ${
-          testHour?.[1] ?? '<unknown>'
-        }`;
+          translatedHour ?? '<unknown>'
+        } (office days: ${officeDays.join(',')})`;
       })
       .join(', ');
     const userFirstName =

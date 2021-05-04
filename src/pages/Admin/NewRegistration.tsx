@@ -75,7 +75,13 @@ export default function NewRegistration(): JSX.Element {
     }
     setLoading(true);
     const week = [weekStartDate, weekEndDate];
-    const registrationData = { week, registrationOpenTime, slots, id: uuid() };
+    const registrationData = {
+      week,
+      registrationOpenTime,
+      slots,
+      id: uuid(),
+      openedBy: user.email,
+    };
     if (weekStartDate && weekEndDate && registrationOpenTime && slots) {
       createActiveRegistration(registrationData);
       setTimeout(() => {

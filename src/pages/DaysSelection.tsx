@@ -72,14 +72,19 @@ export default function DaysSelection(): JSX.Element {
       ).toLocaleDateString()} - ${new Date(
         (activeRegistration?.week[1]?.seconds ?? 0) * 1000,
       ).toLocaleDateString()}`;
-      const userHours = Object.entries(usersRegistration?.testHours ?? {})
-        .map((testHour: any) => {
+      const userHours = usersRegistration?.testHours
+        .map((testHour: ChosenHour) => {
           const week = activeRegistration?.slots.find(
-            slot => slot.id === testHour[0],
+            slot => slot.id === testHour.slotId,
           );
+          const translatedHour = translateHourIdToHour(
+            week?.testHours,
+            testHour,
+          );
+          const officeDays = week?.officeDays ?? [];
           return `${week?.testDay ?? '<unknown>'} - ${
-            testHour?.[1] ?? '<unknown>'
-          }`;
+            translatedHour ?? '<unknown>'
+          } (office days: ${officeDays.join(',')})`;
         })
         .join(', ');
       const userFirstName =
