@@ -70,9 +70,12 @@ export const useAvailablePlacesForSlots = async (
                       takenPlaces: registrations.filter(
                         (registeredUser: RegisteredUser) => {
                           const usersChosenHours = registeredUser.testHours.find(
-                            (userTestHour: ChosenHour) =>
-                              userTestHour.slotId === slot.id &&
-                              userTestHour.hourId === testHour.hour,
+                            (userTestHour: ChosenHour) => {
+                              return (
+                                userTestHour.slotId === slot.id &&
+                                userTestHour.hourId === testHour.id
+                              );
+                            },
                           );
                           return (
                             registeredUser.weekId === weekId && usersChosenHours

@@ -19,6 +19,7 @@ export type SlotData = {
 
 export type TestHour = {
   hourId: string;
+  time: string;
   totalPlaces: number;
   takenPlaces: number;
 };

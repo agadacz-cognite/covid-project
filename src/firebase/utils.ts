@@ -51,18 +51,15 @@ export const registerUserForTest = (
     }
     const userSlotsAreAvailableArray = userToRegister.testHours.map(
       (testHour: ChosenHour) => {
-        console.log(testHour);
         const slot = slotsData.find(
           (slotData: FixedSlotData) => slotData.id === testHour.slotId,
         );
-        console.log(slot);
         if (!slot) {
           return false;
         }
         const hour = slot?.testHours.find(
           (hour: TestHour) => hour.hourId === testHour.hourId,
         );
-        console.log(hour);
         if (!hour) {
           return false;
         }

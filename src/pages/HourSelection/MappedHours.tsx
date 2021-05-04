@@ -7,6 +7,7 @@ import {
   TestHourInSlot,
   ChosenHour,
   TestHour,
+  // translateHourIdToHour,
 } from '../../shared';
 import { Choice, Hour, Places } from './components';
 import { AppContext } from '../../context';
@@ -108,6 +109,8 @@ export default function MappedHours(props: MappedHoursProps): JSX.Element {
       const remainingPlaces =
         fixedTestHour.totalPlaces - fixedTestHour.takenPlaces;
       const percentOfPlacesTaken = remainingPlaces / fixedTestHour.totalPlaces;
+
+      // const dupa = translateHourIdToHour(testHours);
 
       return (
         <Tooltip

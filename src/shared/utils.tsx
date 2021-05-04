@@ -46,56 +46,68 @@ export const getRegistrationsForThisWeek = async (
     testHours: slot.testHours,
   }));
 
-  const usersMappedToSlots = allSlots.map((slot: any) => {
-    const { slotId } = slot;
-    const registeredUsers = registrations.filter(
-      (registeredUser: RegisteredUser) => {
-        const userRegistrationTimeForSlot = registeredUser.testHours[slotId];
-        return userRegistrationTimeForSlot;
-      },
-    );
-    const users = registeredUsers.map((registeredUser: RegisteredUser) => {
-      const userRegistrationTimeForSlot = registeredUser.testHours.find(
-        (userTestHour: ChosenHour) => userTestHour.slotId === slotId,
+  const usersMappedToSlots = allSlots.map(
+    ({
+      slotId,
+      testHours,
+    }: {
+      slotId: string;
+      testHours: TestHourInSlot[];
+    }) => {
+      const registeredUsers = registrations.filter(
+        (registeredUser: RegisteredUser) => {
+          const userRegistrationTimeForSlot = registeredUser.testHours.find(
+            (testHour: ChosenHour) => testHour.slotId === slotId,
+          );
+          return userRegistrationTimeForSlot;
+        },
       );
-      const allUsersRegisteredForSlot = registrations
-        .filter(
-          (rU: RegisteredUser) =>
-            rU.weekId === weekId &&
-            rU.testHours[slotId] === userRegistrationTimeForSlot,
-        )
-        .sort((a, b) => a.registeredTimestamp - b.registeredTimestamp);
-      const placesTaken = allUsersRegisteredForSlot.length;
-      // TODO
-      const registrationsOverLimit = placesTaken - slot.slotsNr;
-      const registeredTooLate =
-        registrationsOverLimit > 0 &&
-        allUsersRegisteredForSlot.findIndex(
-          u => u.email === registeredUser.email,
-        ) >= slot.slotsNr;
-      const usersRegisteredHourId = userRegistrationTimeForSlot?.hourId;
-      const usersRegisteredHourMapped = slot.testHours.find(
-        (slotTestHour: TestHourInSlot) =>
-          slotTestHour.id === usersRegisteredHourId,
-      );
-      const usersRegisteredHour =
-        !usersRegisteredHourMapped.startsWith('0') &&
-        usersRegisteredHourMapped?.length === 4
-          ? `0${userRegistrationTimeForSlot}`
-          : userRegistrationTimeForSlot;
-      const userRegistrationData = {
-        registeredAt: registeredUser?.registeredTimestamp ?? 0,
-        name: registeredUser?.name ?? registeredUser?.email ?? '<unknown>',
-        manager: registeredUser?.manager ?? '<unknown>',
-        hour: usersRegisteredHour,
-        email: registeredUser?.email ?? 'cogcovidtest@gmail.com',
-        vaccinated: registeredUser.vaccinated ? 'X' : '',
-        registeredTooLate,
-      };
-      return userRegistrationData;
-    });
-    return users;
-  });
+      const users = registeredUsers.map((registeredUser: RegisteredUser) => {
+        const userRegistrationForSlot = registeredUser.testHours.find(
+          (userTestHour: ChosenHour) => userTestHour.slotId === slotId,
+        );
+        const userRegistrationHour =
+          testHours.find(
+            (slotTestHour: TestHourInSlot) =>
+              slotTestHour.id === userRegistrationForSlot?.hourId,
+          )?.hour ?? '-';
+        const allUsersRegisteredForSlot = registrations
+          .filter(
+            (rU: RegisteredUser) =>
+              rU.weekId === weekId &&
+              rU.testHours.find(
+                (userTestHour: ChosenHour) => userTestHour.slotId === slotId,
+              ) === userRegistrationForSlot,
+          )
+          .sort((a, b) => a.registeredTimestamp - b.registeredTimestamp);
+        const placesTaken = allUsersRegisteredForSlot.length;
+        // TODO
+        const slotPlacesLimit = 15;
+        const registrationsOverLimit = placesTaken - slotPlacesLimit;
+        const registeredTooLate =
+          registrationsOverLimit > 0 &&
+          allUsersRegisteredForSlot.findIndex(
+            u => u.email === registeredUser.email,
+          ) >= slotPlacesLimit;
+        const usersRegisteredHourFixed =
+          !userRegistrationHour.startsWith('0') &&
+          userRegistrationHour?.length === 4
+            ? `0${userRegistrationHour}`
+            : userRegistrationHour;
+        const userRegistrationData = {
+          registeredAt: registeredUser?.registeredTimestamp ?? 0,
+          name: registeredUser?.name ?? registeredUser?.email ?? '<unknown>',
+          manager: registeredUser?.manager ?? '<unknown>',
+          hour: usersRegisteredHourFixed,
+          email: registeredUser?.email ?? 'cogcovidtest@gmail.com',
+          vaccinated: registeredUser.vaccinated ? 'X' : '',
+          registeredTooLate,
+        };
+        return userRegistrationData;
+      });
+      return users;
+    },
+  );
 
   const finalData = {
     weekDate,

@@ -53,28 +53,30 @@ export default function PreviewRegistration(): JSX.Element {
       <Flex row align justify style={{ flexWrap: 'wrap' }}>
         {!registeredUsersData && <Spin size="large" />}
         {registeredUsersData &&
-          registeredUsersData.map((oneSlot: string[][], index: number) => (
-            <Flex
-              column
-              align
-              justify
-              key={`users-table-${index}`}
-              style={{ boxSizing: 'border-box', margin: '0 8px' }}>
-              <Header style={{ flexDirection: 'row', width: '100%' }}>
-                <Title level={4} style={{ margin: '0 8px 0 0' }}>
-                  {weekDays[index]}
-                </Title>
-                <Title level={5} style={{ margin: 0 }}>
-                  ({oneSlot?.length ?? '<?>'} registrations)
-                </Title>
-              </Header>
-              <Table
-                columns={columns(weekDays[index])}
-                dataSource={oneSlot}
-                pagination={{ pageSize: 10, hideOnSinglePage: true }}
-              />
-            </Flex>
-          ))}
+          registeredUsersData.map((oneSlot: string[][], index: number) => {
+            return (
+              <Flex
+                column
+                align
+                justify
+                key={`users-table-${index}`}
+                style={{ boxSizing: 'border-box', margin: '0 8px' }}>
+                <Header style={{ flexDirection: 'row', width: '100%' }}>
+                  <Title level={4} style={{ margin: '0 8px 0 0' }}>
+                    {weekDays[index]}
+                  </Title>
+                  <Title level={5} style={{ margin: 0 }}>
+                    ({oneSlot?.length ?? '<?>'} registrations)
+                  </Title>
+                </Header>
+                <Table
+                  columns={columns(weekDays[index])}
+                  dataSource={oneSlot}
+                  pagination={{ pageSize: 10, hideOnSinglePage: true }}
+                />
+              </Flex>
+            );
+          })}
       </Flex>
       <Header>
         <Button type="primary" onClick={onBack}>
