@@ -8,8 +8,8 @@ import {
   RegisteredUser,
   SlotData,
   FixedSlotData,
-  TestHoursInSlot,
-  ChosenHours,
+  TestHourInSlot,
+  ChosenHour,
 } from '../../shared';
 
 /**
@@ -63,14 +63,14 @@ export const useAvailablePlacesForSlots = async (
                 }
                 return {
                   id: slot.id,
-                  testHours: testHours.map((testHour: TestHoursInSlot) => {
+                  testHours: testHours.map((testHour: TestHourInSlot) => {
                     return {
-                      time: testHour.hour,
+                      hourId: testHour.id,
                       totalPlaces: testHour.places ?? 15,
                       takenPlaces: registrations.filter(
                         (registeredUser: RegisteredUser) => {
                           const usersChosenHours = registeredUser.testHours.find(
-                            (userTestHour: ChosenHours) =>
+                            (userTestHour: ChosenHour) =>
                               userTestHour.slotId === slot.id &&
                               userTestHour.hourId === testHour.hour,
                           );

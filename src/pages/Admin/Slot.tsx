@@ -6,7 +6,7 @@ import { CloseCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import { v4 as uuid } from 'uuid';
 import { Flex } from '../../components';
-import { SlotData, TestHoursInSlot } from '../../shared/types';
+import { SlotData, TestHourInSlot } from '../../shared/types';
 import { possibleDays, possibleHours } from './dates';
 
 const { Option } = Select;
@@ -37,21 +37,21 @@ export default function Slot(props: Props): JSX.Element {
   ));
 
   const onAddHour = () => {
-    const newTestHours: TestHoursInSlot[] = [
+    const newTestHours: TestHourInSlot[] = [
       ...testHours,
       { hour: '', places: 15, id: uuid() },
     ];
     onTestHoursChange(id, newTestHours);
   };
-  const onHourDelete = (hour: TestHoursInSlot) => {
-    const newTestHours: TestHoursInSlot[] = testHours.filter(
-      (testHour: TestHoursInSlot) => testHour.id !== hour.id,
+  const onHourDelete = (hour: TestHourInSlot) => {
+    const newTestHours: TestHourInSlot[] = testHours.filter(
+      (testHour: TestHourInSlot) => testHour.id !== hour.id,
     );
     onTestHoursChange(id, newTestHours);
   };
-  const onTestPlacesChange = (hour: TestHoursInSlot, places: number) => {
-    const newTestHours: TestHoursInSlot[] = testHours.map(
-      (testHour: TestHoursInSlot) => {
+  const onTestPlacesChange = (hour: TestHourInSlot, places: number) => {
+    const newTestHours: TestHourInSlot[] = testHours.map(
+      (testHour: TestHourInSlot) => {
         if (testHour.id === hour.id) {
           return { ...testHour, places };
         }
@@ -60,9 +60,9 @@ export default function Slot(props: Props): JSX.Element {
     );
     onTestHoursChange(id, newTestHours);
   };
-  const onTestHourChange = (testHour: TestHoursInSlot, newHour: string) => {
-    const newTestHours: TestHoursInSlot[] = testHours.map(
-      (oldHour: TestHoursInSlot) => {
+  const onTestHourChange = (testHour: TestHourInSlot, newHour: string) => {
+    const newTestHours: TestHourInSlot[] = testHours.map(
+      (oldHour: TestHourInSlot) => {
         if (testHour.id === oldHour.id) {
           return { ...oldHour, hour: newHour };
         }
@@ -121,7 +121,7 @@ export default function Slot(props: Props): JSX.Element {
           <div>+ places</div>
         </Flex>
         <Flex row style={{ flexWrap: 'wrap' }}>
-          {testHours.map((testHour: TestHoursInSlot, index: number) => {
+          {testHours.map((testHour: TestHourInSlot, index: number) => {
             return (
               <Flex
                 column

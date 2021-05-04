@@ -1,7 +1,7 @@
 import { db } from '../firebase';
 import { notification } from 'antd';
 import { RegisteredUser, RegistrationData, SlotData, errorHandler } from '.';
-import { TestHoursInSlot, ChosenHours } from './types';
+import { TestHourInSlot, ChosenHour } from './types';
 
 /**
  * Function preparing the registration data to be displayed in a table
@@ -56,9 +56,8 @@ export const getRegistrationsForThisWeek = async (
     );
     const users = registeredUsers.map((registeredUser: RegisteredUser) => {
       const userRegistrationTimeForSlot = registeredUser.testHours.find(
-        (userTestHours: ChosenHours) => userTestHours.slotId === slotId,
+        (userTestHour: ChosenHour) => userTestHour.slotId === slotId,
       );
-      console.log(userRegistrationTimeForSlot);
       const allUsersRegisteredForSlot = registrations
         .filter(
           (rU: RegisteredUser) =>
@@ -67,8 +66,6 @@ export const getRegistrationsForThisWeek = async (
         )
         .sort((a, b) => a.registeredTimestamp - b.registeredTimestamp);
       const placesTaken = allUsersRegisteredForSlot.length;
-      console.log(slot);
-      console.log(allUsersRegisteredForSlot);
       // TODO
       const registrationsOverLimit = placesTaken - slot.slotsNr;
       const registeredTooLate =
@@ -78,7 +75,7 @@ export const getRegistrationsForThisWeek = async (
         ) >= slot.slotsNr;
       const usersRegisteredHourId = userRegistrationTimeForSlot?.hourId;
       const usersRegisteredHourMapped = slot.testHours.find(
-        (slotTestHour: TestHoursInSlot) =>
+        (slotTestHour: TestHourInSlot) =>
           slotTestHour.id === usersRegisteredHourId,
       );
       const usersRegisteredHour =
@@ -157,17 +154,17 @@ export const getRegistrationsForExcel = async (
       slotTestHours,
     }: {
       slotId: string;
-      slotTestHours: TestHoursInSlot[];
+      slotTestHours: TestHourInSlot[];
     }) => {
       const users = registrations.map((registeredUser: RegisteredUser) => {
         const userInThisSlot = registeredUser.testHours.find(
-          (userTestHour: ChosenHours) => userTestHour.slotId === slotId,
+          (userTestHour: ChosenHour) => userTestHour.slotId === slotId,
         );
         if (!userInThisSlot) {
           return ['', '', '', '', '', ''];
         }
         const registeredHour = slotTestHours.find(
-          (slotTestHour: TestHoursInSlot) =>
+          (slotTestHour: TestHourInSlot) =>
             slotTestHour.id === userInThisSlot.hourId,
         )?.hour;
         const usersRegisteredHour =
@@ -265,4 +262,19 @@ export const closeActiveRegistration = (): Promise<void> => {
         return resolve();
       });
   });
+};
+
+/** Extracts the hour id from the ChosenHour[] object, and returns the actual hour (r undefined if ID does not map to anything) */
+export const translateHourIdToHour = (
+  testHours: TestHourInSlot[] | undefined,
+  chosenHour: ChosenHour,
+): string | undefined => {
+  const { hourId } = chosenHour;
+  if (!testHours || !chosenHour) {
+    return undefined;
+  }
+  const hourObj = testHours.find(
+    (testHour: TestHourInSlot) => testHour.id === hourId,
+  );
+  return hourObj?.hour;
 };

@@ -4,8 +4,8 @@ import {
   errorHandler,
   RegistrationData,
   RegisteredUser,
-  TestHours,
-  ChosenHours,
+  TestHour,
+  ChosenHour,
 } from '../shared';
 import { FixedSlotData } from '../shared';
 
@@ -50,16 +50,19 @@ export const registerUserForTest = (
       return resolve();
     }
     const userSlotsAreAvailableArray = userToRegister.testHours.map(
-      (testHour: ChosenHours) => {
+      (testHour: ChosenHour) => {
+        console.log(testHour);
         const slot = slotsData.find(
           (slotData: FixedSlotData) => slotData.id === testHour.slotId,
         );
+        console.log(slot);
         if (!slot) {
           return false;
         }
         const hour = slot?.testHours.find(
-          (hour: TestHours) => hour.time === testHour.hourId,
+          (hour: TestHour) => hour.hourId === testHour.hourId,
         );
+        console.log(hour);
         if (!hour) {
           return false;
         }
