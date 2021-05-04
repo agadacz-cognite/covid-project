@@ -69,45 +69,55 @@ export default function OldRegistrations(): JSX.Element {
 
   const mappedWeeks = () =>
     previousWeeks &&
-    previousWeeks.map((week: RegistrationData) => {
-      const isDisabled = week.legacy && (
-        <Tooltip
-          title={
-            'This week uses the legacy format and cannot be downloaded nor previewed.'
-          }>
-          <ExclamationCircleOutlined style={{ color: 'orange' }} />
-        </Tooltip>
-      );
-      const weekDate = `${new Date(
-        (week?.week[0]?.seconds ?? 0) * 1000,
-      ).toLocaleDateString()} - ${new Date(
-        (week?.week[1]?.seconds ?? 0) * 1000,
-      ).toLocaleDateString()}`;
-      return (
-        <SubMenu
-          key={week.id}
-          title={weekDate}
-          onTitleClick={onWeekClick}
-          icon={isDisabled}>
-          <Menu.Item
-            key={`view-users-${week?.id}`}
-            onClick={() => onWeekPreview(week?.id)}
-            disabled={week.legacy}>
-            View registered users
-          </Menu.Item>
-          <Menu.Item
-            key={`export-${week?.id}`}
-            onClick={() => onWeekExport(week?.id)}
-            disabled={week.legacy}>
-            Export to Excel (*.xlsx) <ExportOutlined />
-          </Menu.Item>
-        </SubMenu>
-      );
-    });
+    previousWeeks
+      .sort(
+        (a: RegistrationData, b: RegistrationData) =>
+          b.week[0].seconds - a.week[0].seconds,
+      )
+      .map((week: RegistrationData) => {
+        const isDisabled = week.legacy && (
+          <Tooltip
+            title={
+              'This week uses the legacy format and cannot be downloaded nor previewed.'
+            }>
+            <ExclamationCircleOutlined style={{ color: 'orange' }} />
+          </Tooltip>
+        );
+        const weekDate = `${new Date(
+          (week?.week[0]?.seconds ?? 0) * 1000,
+        ).toLocaleDateString()} - ${new Date(
+          (week?.week[1]?.seconds ?? 0) * 1000,
+        ).toLocaleDateString()}`;
+        return (
+          <SubMenu
+            key={week.id}
+            title={weekDate}
+            onTitleClick={onWeekClick}
+            icon={isDisabled}>
+            <Menu.Item
+              key={`view-users-${week?.id}`}
+              onClick={() => onWeekPreview(week?.id)}
+              disabled={week.legacy}>
+              View registered users
+            </Menu.Item>
+            <Menu.Item
+              key={`export-${week?.id}`}
+              onClick={() => onWeekExport(week?.id)}
+              disabled={week.legacy}>
+              Export to Excel (*.xlsx) <ExportOutlined />
+            </Menu.Item>
+          </SubMenu>
+        );
+      });
   const selectedWeekData = () => {
     const week = previousWeeks?.find(
       (w: RegistrationData) => selectedWeek && w.id === selectedWeek,
     );
+    const weekDate = `${new Date(
+      (week?.week[0]?.seconds ?? 0) * 1000,
+    ).toLocaleDateString()} - ${new Date(
+      (week?.week[1]?.seconds ?? 0) * 1000,
+    ).toLocaleDateString()}`;
     return (
       <Card
         style={{
@@ -117,7 +127,13 @@ export default function OldRegistrations(): JSX.Element {
           margin: '8px',
           padding: 0,
         }}>
-        {week?.id ? week.id : 'Select a week in the menu on the left.'}
+        {!week?.id && 'Select a week in the menu on the left.'}
+        {week?.id && (
+          <Flex column align justify>
+            <Title level={4}>{weekDate}</Title>
+            <p>Week ID: {week?.id}</p>
+          </Flex>
+        )}
       </Card>
     );
   };
