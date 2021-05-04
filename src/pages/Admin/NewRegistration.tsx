@@ -15,6 +15,7 @@ import {
 } from '../../context';
 import { createActiveRegistration } from '../../firebase';
 import { SlotData } from '../../shared';
+import { defaultHour, defaultPlaces, defaultNewHour } from './utils';
 import Slot from './Slot';
 
 const { Title } = Typography;
@@ -22,16 +23,7 @@ const { Title } = Typography;
 const defaultSlot: SlotData = {
   id: uuid(),
   testDay: 'Monday',
-  testHours: [
-    { hour: '9:00', places: 15, id: uuid() },
-    { hour: '9:20', places: 15, id: uuid() },
-    { hour: '9:40', places: 15, id: uuid() },
-    { hour: '10:00', places: 15, id: uuid() },
-    { hour: '10:20', places: 15, id: uuid() },
-    { hour: '10:40', places: 15, id: uuid() },
-    { hour: '11:00', places: 15, id: uuid() },
-    { hour: '11:20', places: 15, id: uuid() },
-  ],
+  testHours: [{ hour: defaultHour, places: defaultPlaces, id: uuid() }],
   officeDays: ['Monday', 'Tuesday', 'Wednesday'],
 };
 
@@ -104,7 +96,7 @@ export default function NewRegistration(): JSX.Element {
     const newSlot: SlotData = {
       id: uuid(),
       testDay: 'Monday',
-      testHours: [{ hour: '9:00', places: 15, id: uuid() }],
+      testHours: [defaultNewHour],
       officeDays: ['Monday'],
     };
     setSlots([...slots, newSlot]);

@@ -119,14 +119,15 @@ export default function DaysSelection(): JSX.Element {
   const ifNotRegisteredYet = (): JSX.Element | undefined => {
     const registrationOpenTimestamp =
       (activeRegistration?.registrationOpenTime?.seconds ?? 0) * 1000;
+    const registrationIsOpen = registrationOpenTimestamp <= Number(new Date());
     if (
       !isUserRegistered &&
       activeRegistration &&
-      (registrationOpenTimestamp <= Number(new Date()) || canPreregister)
+      (registrationIsOpen || canPreregister)
     ) {
       return (
         <StyledFlex column justify align>
-          {canPreregister ? (
+          {canPreregister && !registrationIsOpen ? (
             <Flex
               row
               align

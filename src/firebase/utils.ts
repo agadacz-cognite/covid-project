@@ -11,6 +11,7 @@ import { FixedSlotData } from '../shared';
 
 /**
  * Create a new registration as admin
+ * @param registrationData the new, edited data of the registration
  */
 export const createActiveRegistration = (
   registrationData: RegistrationData,
@@ -32,6 +33,32 @@ export const createActiveRegistration = (
         description: 'You successfully opened a new registration!',
       });
     })
+    .catch(errorHandler);
+};
+
+/**
+ * Saves the edited data for the currently active registration
+ * @param activeRegistrationId ID of the active registration
+ * @param registrationData the new, edited data of the registration
+ * @returns
+ */
+export const editActiveRegistration = (
+  activeRegistrationId: string | undefined,
+  registrationData: RegistrationData,
+): any => {
+  if (!db || !activeRegistrationId) {
+    return;
+  }
+  return db
+    .collection('weeks')
+    .doc(activeRegistrationId)
+    .set(registrationData)
+    .then(() =>
+      notification.success({
+        message: 'Yay!',
+        description: 'You successfully edited active registration!',
+      }),
+    )
     .catch(errorHandler);
 };
 

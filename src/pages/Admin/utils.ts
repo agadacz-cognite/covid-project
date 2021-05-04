@@ -1,3 +1,14 @@
+import { v4 as uuid } from 'uuid';
+
+export const defaultPlaces = 130;
+export const defaultHour = 'all day';
+export const defaultMaxPlaces = 1000;
+export const defaultNewHour = {
+  hour: '',
+  places: defaultPlaces,
+  id: uuid(),
+};
+
 export const possibleHours: any[] = [
   '8:00',
   '8:05',

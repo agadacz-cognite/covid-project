@@ -7,7 +7,7 @@ import styled from 'styled-components';
 import { v4 as uuid } from 'uuid';
 import { Flex } from '../../components';
 import { SlotData, TestHourInSlot } from '../../shared/types';
-import { possibleDays, possibleHours } from './dates';
+import { possibleDays, possibleHours, defaultNewHour } from './utils';
 
 const { Option } = Select;
 const { Option: OptionAutoComplete } = AutoComplete;
@@ -23,12 +23,13 @@ type Props = {
 
 export default function Slot(props: Props): JSX.Element {
   const {
-    slot: { id, testDay, testHours, officeDays },
+    slot,
     onTestDayChange,
     onTestHoursChange,
     onOfficeDaysChange,
     onSlotDelete,
   } = props;
+  const { id, testDay, testHours, officeDays } = slot;
 
   const daysOptions = possibleDays.map((day: string) => (
     <Option key={day} value={day}>
@@ -37,10 +38,7 @@ export default function Slot(props: Props): JSX.Element {
   ));
 
   const onAddHour = () => {
-    const newTestHours: TestHourInSlot[] = [
-      ...testHours,
-      { hour: '', places: 15, id: uuid() },
-    ];
+    const newTestHours: TestHourInSlot[] = [...testHours, defaultNewHour];
     onTestHoursChange(id, newTestHours);
   };
   const onHourDelete = (hour: TestHourInSlot) => {
@@ -178,8 +176,8 @@ export default function Slot(props: Props): JSX.Element {
                   </AutoComplete>
                   <InputNumber
                     min={1}
-                    max={50}
-                    defaultValue={15}
+                    max={500}
+                    value={testHour.places}
                     style={{ width: '60px' }}
                     onChange={(value: number) =>
                       onTestPlacesChange(testHour, value)
