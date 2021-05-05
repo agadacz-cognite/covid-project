@@ -1,7 +1,8 @@
 import { v4 as uuid } from 'uuid';
+import { SlotData } from '../../shared';
 
-export const defaultPlaces = 130;
-export const defaultHour = 'all day';
+export const defaultPlaces = 15;
+export const defaultHour = '8:00';
 export const defaultMaxPlaces = 1000;
 export const defaultNewHour = {
   hour: '',
@@ -9,60 +10,54 @@ export const defaultNewHour = {
   id: uuid(),
 };
 
-export const possibleHours: any[] = [
-  '8:00',
-  '8:05',
-  '8:10',
-  '8:15',
-  '8:20',
-  '8:25',
-  '8:30',
-  '8:35',
-  '8:40',
-  '8:45',
-  '8:50',
-  '8:55',
-  '9:00',
-  '9:05',
-  '9:10',
-  '9:15',
-  '9:20',
-  '9:25',
-  '9:30',
-  '9:35',
-  '9:40',
-  '9:45',
-  '9:50',
-  '9:55',
-  '10:00',
-  '10:05',
-  '10:10',
-  '10:15',
-  '10:20',
-  '10:25',
-  '10:30',
-  '10:35',
-  '10:40',
-  '10:45',
-  '10:50',
-  '10:55',
-  '11:00',
-  '11:05',
-  '11:10',
-  '11:15',
-  '11:20',
-  '11:25',
-  '11:30',
-  '11:35',
-  '11:40',
-  '11:45',
-  '11:50',
-  '11:55',
-];
+export const defaultSlot: SlotData = {
+  id: uuid(),
+  testDay: 'Monday',
+  testHours: [
+    { hour: '8:00', places: 20, id: uuid() },
+    { hour: '8:20', places: 20, id: uuid() },
+    { hour: '8:40', places: defaultPlaces, id: uuid() },
+    { hour: '9:00', places: defaultPlaces, id: uuid() },
+    { hour: '9:20', places: defaultPlaces, id: uuid() },
+    { hour: '9:40', places: defaultPlaces, id: uuid() },
+    { hour: '10:00', places: defaultPlaces, id: uuid() },
+    { hour: '10:20', places: defaultPlaces, id: uuid() },
+  ],
+  officeDays: ['Monday', 'Tuesday', 'Wednesday'],
+};
+
 export const possibleDays = [
   'Monday',
   'Tuesday',
   'Wednesday',
   'Thursday',
   'Friday',
+];
+
+export const possibleHours: any[] = [
+  '8:00',
+  '8:10',
+  '8:20',
+  '8:30',
+  '8:40',
+  '8:50',
+  '9:00',
+  '9:10',
+  '9:20',
+  '9:30',
+  '9:40',
+  '9:50',
+  '10:00',
+  '10:10',
+  '10:20',
+  '10:30',
+  '10:40',
+  '10:50',
+  '11:00',
+  '11:10',
+  '11:20',
+  '11:30',
+  '11:40',
+  '11:50',
+  '12:00',
 ];

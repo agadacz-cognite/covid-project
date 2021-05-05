@@ -15,17 +15,10 @@ import {
 } from '../../context';
 import { createActiveRegistration } from '../../firebase';
 import { SlotData } from '../../shared';
-import { defaultHour, defaultPlaces, defaultNewHour } from './utils';
+import { defaultSlot, defaultNewHour } from './utils';
 import Slot from './Slot';
 
 const { Title } = Typography;
-
-const defaultSlot: SlotData = {
-  id: uuid(),
-  testDay: 'Monday',
-  testHours: [{ hour: defaultHour, places: defaultPlaces, id: uuid() }],
-  officeDays: ['Monday', 'Tuesday', 'Wednesday'],
-};
 
 export default function NewRegistration(): JSX.Element {
   const history = useHistory();
