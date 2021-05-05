@@ -293,18 +293,3 @@ export const closeActiveRegistration = (): Promise<void> => {
       });
   });
 };
-
-/** Extracts the hour id from the ChosenHour[] object, and returns the actual hour (r undefined if ID does not map to anything) */
-export const translateHourIdToHour = (
-  testHours: TestHourInSlot[] | undefined,
-  chosenHour: ChosenHour,
-): string | undefined => {
-  const { hourId } = chosenHour;
-  if (!testHours || !chosenHour) {
-    return undefined;
-  }
-  const hourObj = testHours.find(
-    (testHour: TestHourInSlot) => testHour.id === hourId,
-  );
-  return hourObj?.hour;
-};

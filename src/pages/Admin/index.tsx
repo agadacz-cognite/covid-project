@@ -194,7 +194,7 @@ export default function Admin(): JSX.Element {
         <Flex column style={{ height: '100%' }}>
           <Card
             title="Who can preregister?"
-            style={{ margin: '8px', maxWidth: '500px' }}>
+            style={{ margin: '8px', maxWidth: '600px' }}>
             <p>
               People using those emails will be allowed to register instantly
               after the new registration is created, even if it&apos;s not

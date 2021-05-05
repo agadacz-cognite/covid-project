@@ -1,10 +1,11 @@
 import React, { useContext, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Button, Typography, Spin, Popconfirm } from 'antd';
-import { InfoCircleOutlined } from '@ant-design/icons';
+import { Button, Typography, Spin, Popconfirm, notification } from 'antd';
+import { InfoCircleOutlined, CalendarOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import { v4 as uuid } from 'uuid';
 import {
   AppContext,
   useActiveRegistration,
@@ -14,7 +15,14 @@ import {
   useCanUserPreregister,
 } from '../context';
 import { removeUserRegistration } from '../firebase/utils';
-import { sendEmail, translateHourIdToHour, ChosenHour } from '../shared';
+import { getUserTestHours } from '../shared';
+import {
+  sendEmail,
+  translateHourIdToHour,
+  ChosenHour,
+  errorHandler,
+  guidelines,
+} from '../shared';
 import { Flex, Card, Header } from '../components';
 
 dayjs.extend(relativeTime);
@@ -46,6 +54,7 @@ export default function DaysSelection(): JSX.Element {
     usersRegistration,
     canPreregister,
     isUserAdmin,
+    gapiLoaded,
     setLoading,
   } = useContext(AppContext);
 
@@ -99,6 +108,73 @@ export default function DaysSelection(): JSX.Element {
         content,
       });
       setLoading(false);
+    }
+  };
+  const onCreateCalendarEvent = () => {
+    if (gapiLoaded) {
+      (window as any).gapi.client.load('calendar', 'v3', () =>
+        notification.info({
+          message: 'Please wait...',
+          description:
+            'Google Calendar API properly loaded, creating events...',
+        }),
+      );
+
+      const userTestHours = getUserTestHours(
+        usersRegistration,
+        activeRegistration,
+      );
+
+      if (userTestHours.error) {
+        notification.error({
+          message: 'Something went wrong.',
+          description: userTestHours.error,
+        });
+        return;
+      }
+
+      (window as any).gapi.auth2
+        .getAuthInstance()
+        .signIn()
+        .then(() => {
+          const covidEvents = userTestHours.map((userTestHour: any) => ({
+            summary: 'COVID test',
+            location: 'Oksenøyveien 10, Grand Hall',
+            description: guidelines.join('\n\n- '),
+            start: {
+              dateTime: userTestHour.start,
+              timeZone: 'Europe/Oslo',
+            },
+            end: {
+              dateTime: userTestHour.end,
+              timeZone: 'Europe/Oslo',
+            },
+            kind: 'calendar#event',
+          }));
+          covidEvents.forEach((covidEvent: any) => {
+            (window as any).gapi.client.calendar.events
+              .insert({
+                calendarId: 'primary',
+                resource: covidEvent,
+              })
+              .then(() => {
+                notification.success({
+                  message: 'Success',
+                  description: 'Calendar event successfully created!',
+                });
+              })
+              .catch((error: any) => {
+                errorHandler(error);
+                notification.warning({
+                  message: 'Cannot create calendar event',
+                  description: 'Im so sorry :c',
+                });
+              });
+          });
+        })
+        .catch((error: any) => {
+          errorHandler(error);
+        });
     }
   };
 
@@ -265,6 +341,12 @@ export default function DaysSelection(): JSX.Element {
               );
             },
           )}
+          <Button
+            icon={<CalendarOutlined />}
+            onClick={onCreateCalendarEvent}
+            style={{ margin: '4px' }}>
+            Add to calendar
+          </Button>
         </PanelDone>
       );
     }
@@ -331,31 +413,9 @@ export default function DaysSelection(): JSX.Element {
           style={{ maxWidth: '400px', margin: '8px' }}>
           <StyledFlex column justify align>
             <ul>
-              <li>
-                It is important that you do not enter Cognite&apos;s office (the
-                4th and 5th floor) until after you have been tested in Grand
-                Hall. (1st floor).
-              </li>
-              <li>
-                You should not come in earlier than your test appointment.
-              </li>
-              <li>
-                If you have any reason / need to work from the office, please
-                reach out to your people manager, and your manager will reach
-                out to Hanne Natvik and Madeleine.
-              </li>
-              <li>
-                These tests still require employees to continue to take
-                necessary precautions.
-              </li>
-              <li>
-                Employees need to keep a 2 meter distance in the work space -
-                and use every second desk.{' '}
-              </li>
-              <li>
-                External visitors, consultants etc should be avoided / be
-                approved by Hanne Natvik.
-              </li>
+              {guidelines.map((guideline: string) => (
+                <li key={uuid()}>{guideline}</li>
+              ))}
             </ul>
           </StyledFlex>
         </Card>

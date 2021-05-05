@@ -1,8 +1,7 @@
 import React, { useEffect, useContext } from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import 'antd/dist/antd.css';
 import styled from 'styled-components';
-import { AppContext } from '../context';
-import { Loader } from '../components';
 import Home from './Home';
 import NotFound from './NotFound';
 import Admin from './Admin';
@@ -12,8 +11,9 @@ import EditRegistration from './Admin/EditRegistration';
 import PreviewRegistration from './Admin/PreviewRegistration';
 import DaysSelection from './DaysSelection';
 import HourSelection from './HourSelection';
-
-import 'antd/dist/antd.css';
+import { AppContext } from '../context';
+import { Loader } from '../components';
+// import { errorHandler } from '../shared';
 
 const Wrapper = styled.div`
   width: 100%;
