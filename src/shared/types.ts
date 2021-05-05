@@ -40,6 +40,8 @@ export type RegistrationData = {
   registrationOpenTime: Time;
   week: Time[];
   legacy?: boolean;
+  isDev?: boolean;
+  openedBy?: string;
 };
 
 export type RegisteredUser = {

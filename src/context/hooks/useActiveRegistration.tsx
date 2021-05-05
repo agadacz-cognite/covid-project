@@ -2,7 +2,11 @@ import { useEffect, useContext } from 'react';
 import deepEqual from 'deep-equal';
 import { AppContext } from '../';
 import { db } from '../../firebase';
-import { errorHandler, RegistrationData } from '../../shared';
+import {
+  errorHandler,
+  RegistrationData,
+  activeRegistrationDevOrProd,
+} from '../../shared';
 
 /**
  * Retrieves fresh data about active registration straight from database.
@@ -13,7 +17,7 @@ export const useActiveRegistration = (): void => {
   useEffect(() => {
     const activeRegistrationRef = db
       .collection('options')
-      .doc('activeRegistration');
+      .doc(activeRegistrationDevOrProd);
     let unsubscribeWeeks: any;
     const unsubscribeActiveRegistration = activeRegistrationRef.onSnapshot(
       option => {

@@ -14,7 +14,7 @@ import {
   useBackIfNotLogged,
 } from '../../context';
 import { createActiveRegistration } from '../../firebase';
-import { SlotData } from '../../shared';
+import { SlotData, RegistrationData } from '../../shared';
 import { defaultSlot, defaultNewHour } from './utils';
 import Slot from './Slot';
 
@@ -68,7 +68,7 @@ export default function NewRegistration(): JSX.Element {
     }
     setLoading(true);
     const week = [weekStartDate, weekEndDate];
-    const registrationData = {
+    const registrationData: RegistrationData = {
       week,
       registrationOpenTime,
       slots,

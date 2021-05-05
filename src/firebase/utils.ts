@@ -7,7 +7,7 @@ import {
   TestHour,
   ChosenHour,
 } from '../shared';
-import { FixedSlotData } from '../shared';
+import { FixedSlotData, activeRegistrationDevOrProd, isDev } from '../shared';
 
 /**
  * Create a new registration as admin
@@ -19,12 +19,15 @@ export const createActiveRegistration = (
   if (!db) {
     return;
   }
+  if (isDev) {
+    registrationData.isDev = true;
+  }
   return db
     .collection('weeks')
     .doc(registrationData.id)
     .set(registrationData)
     .then(() => {
-      db.collection('options').doc('activeRegistration').set({
+      db.collection('options').doc(activeRegistrationDevOrProd).set({
         id: registrationData.id,
       });
       notification.success({
@@ -47,6 +50,9 @@ export const editActiveRegistration = (
 ): any => {
   if (!db || !activeRegistrationId) {
     return;
+  }
+  if (isDev) {
+    registrationData.isDev = true;
   }
   return db
     .collection('weeks')

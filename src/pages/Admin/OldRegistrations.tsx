@@ -1,7 +1,11 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Menu, Typography, Button, Tooltip, notification } from 'antd';
-import { ExportOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import {
+  ExportOutlined,
+  ExclamationCircleOutlined,
+  ToolOutlined,
+} from '@ant-design/icons';
 import XLSX from 'xlsx';
 import {
   usePreviousWeeks,
@@ -10,7 +14,11 @@ import {
   AppContext,
 } from '../../context';
 import { Flex, Header, Card } from '../../components';
-import { getRegistrationsForExcel, RegistrationData } from '../../shared';
+import {
+  getRegistrationsForExcel,
+  RegistrationData,
+  isDev,
+} from '../../shared';
 
 const { SubMenu } = Menu;
 const { Title } = Typography;
@@ -67,22 +75,39 @@ export default function OldRegistrations(): JSX.Element {
   const onWeekClick = (item: any) => setSelectedWeek(item?.key ?? undefined);
   const onBack = () => history.push('/admin');
 
+  const iconToShow = (week: RegistrationData) => {
+    if (week.isDev) {
+      return (
+        <Tooltip
+          title={
+            'This week was added in a development and is not an official one.'
+          }>
+          <ToolOutlined style={{ color: 'blue' }} />
+        </Tooltip>
+      );
+    }
+    if (week.legacy) {
+      return (
+        <Tooltip
+          title={
+            'This week uses the legacy format and cannot be downloaded nor previewed.'
+          }>
+          <ExclamationCircleOutlined style={{ color: 'orange' }} />
+        </Tooltip>
+      );
+    }
+  };
+
   const mappedWeeks = () =>
     previousWeeks &&
     previousWeeks
+      .filter((week: RegistrationData) => (isDev ? true : !week.isDev))
       .sort(
         (a: RegistrationData, b: RegistrationData) =>
           b.week[0].seconds - a.week[0].seconds,
       )
       .map((week: RegistrationData) => {
-        const isDisabled = week.legacy && (
-          <Tooltip
-            title={
-              'This week uses the legacy format and cannot be downloaded nor previewed.'
-            }>
-            <ExclamationCircleOutlined style={{ color: 'orange' }} />
-          </Tooltip>
-        );
+        const icon = iconToShow(week);
         const weekDate = `${new Date(
           (week?.week[0]?.seconds ?? 0) * 1000,
         ).toLocaleDateString()} - ${new Date(
@@ -93,7 +118,7 @@ export default function OldRegistrations(): JSX.Element {
             key={week.id}
             title={weekDate}
             onTitleClick={onWeekClick}
-            icon={isDisabled}>
+            icon={icon}>
             <Menu.Item
               key={`view-users-${week?.id}`}
               onClick={() => onWeekPreview(week?.id)}
@@ -131,7 +156,8 @@ export default function OldRegistrations(): JSX.Element {
         {week?.id && (
           <Flex column align justify>
             <Title level={4}>{weekDate}</Title>
-            <p>Week ID: {week?.id}</p>
+            <p>Week ID: {week?.id ?? '-'}</p>
+            <p>Opened by: {week?.openedBy ?? '-'}</p>
           </Flex>
         )}
       </Card>

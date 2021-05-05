@@ -3,6 +3,11 @@ import { notification } from 'antd';
 import { RegisteredUser, RegistrationData, SlotData, errorHandler } from '.';
 import { TestHourInSlot, ChosenHour } from './types';
 
+export const isDev = window.location.hostname === 'localhost';
+export const activeRegistrationDevOrProd = isDev
+  ? 'activeRegistrationDev'
+  : 'activeRegistration';
+
 /**
  * Function preparing the registration data to be displayed in a table
  * @param activeRegistration
@@ -273,7 +278,7 @@ export const closeActiveRegistration = (): Promise<void> => {
       return;
     }
     db.collection('options')
-      .doc('activeRegistration')
+      .doc(activeRegistrationDevOrProd)
       .delete()
       .then(() => {
         notification.success({
