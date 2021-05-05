@@ -115,8 +115,8 @@ export default function Slot(props: Props): JSX.Element {
       </Flex>
       <Flex row align style={{ margin: '4px 0' }}>
         <Flex column style={{ fontWeight: 'bold', minWidth: '90px' }}>
-          <div>Test hours </div>
-          <div>+ places</div>
+          <div>Test time </div>
+          <div>+ nr of places</div>
         </Flex>
         <Flex row style={{ flexWrap: 'wrap' }}>
           {testHours.map((testHour: TestHourInSlot, index: number) => {
@@ -164,7 +164,7 @@ export default function Slot(props: Props): JSX.Element {
                     border: '1px solid #cecece',
                   }}>
                   <AutoComplete
-                    placeholder="hour"
+                    placeholder="time"
                     value={testHour.hour}
                     onChange={value => onTestHourChange(testHour, value)}
                     style={{ width: '60px' }}>
