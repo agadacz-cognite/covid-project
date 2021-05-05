@@ -51,7 +51,7 @@ export const sendEmail = ({
   content,
 }: SendEmailProps): void => {
   (window as any).Email.send({
-    SecureToken: 'd92b5171-f9c5-4573-b866-b87c4d392dd6',
+    SecureToken: process.env.REACT_APP_EMAIL_API_KEY,
     Username: 'Cognite COVID Test Bot',
     To: email,
     From: 'cogcovidtest@gmail.com',
