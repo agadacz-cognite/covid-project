@@ -136,6 +136,7 @@ export const registerUserForTest = async (
             message: 'Yay!',
             description: 'You successfully registered for a test!',
           });
+          sendEmailToUser(userToRegister, activeRegistration);
         })
         .catch(error => {
           errorHandler(error);
