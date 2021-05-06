@@ -12,8 +12,8 @@ import PreviewRegistration from './Admin/PreviewRegistration';
 import DaysSelection from './DaysSelection';
 import HourSelection from './HourSelection';
 import { AppContext } from '../context';
-import { Loader } from '../components';
-// import { errorHandler } from '../shared';
+import { Loader, LinksBar } from '../components';
+import { isDev } from '../shared';
 
 const Wrapper = styled.div`
   width: 100%;
@@ -22,6 +22,23 @@ const Wrapper = styled.div`
   margin: auto;
   justify-content: center;
   align-items: center;
+`;
+
+const Dev = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 24px;
+  font-size: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  text-shadow: 0 0 10px red;
+  ::after {
+    content: '--- DEV VERSION ---';
+  }
 `;
 
 export default function App(): JSX.Element {
@@ -44,54 +61,72 @@ export default function App(): JSX.Element {
       <Switch>
         <Route exact path="/">
           <Wrapper>
+            {isDev && <Dev />}
+            <LinksBar />
             <Loader $loading={loading} />
             <Home />
           </Wrapper>
         </Route>
         <Route exact path="/start">
           <Wrapper>
+            {isDev && <Dev />}
+            <LinksBar />
             <Loader $loading={loading} />
             <DaysSelection />
           </Wrapper>
         </Route>
         <Route exact path="/choose">
           <Wrapper>
+            {isDev && <Dev />}
+            <LinksBar />
             <Loader $loading={loading} />
             <HourSelection />
           </Wrapper>
         </Route>
         <Route exact path="/admin">
           <Wrapper>
+            {isDev && <Dev />}
+            <LinksBar />
             <Loader $loading={loading} />
             <Admin />
           </Wrapper>
         </Route>
         <Route exact path="/admin/newweek">
           <Wrapper>
+            {isDev && <Dev />}
+            <LinksBar />
             <Loader $loading={loading} />
             <NewRegistration />
           </Wrapper>
         </Route>
         <Route exact path="/admin/editweek/:weekId">
           <Wrapper>
+            {isDev && <Dev />}
+            <LinksBar />
             <Loader $loading={loading} />
             <EditRegistration />
           </Wrapper>
         </Route>
         <Route exact path="/admin/oldweeks">
           <Wrapper>
+            {isDev && <Dev />}
+            <LinksBar />
             <Loader $loading={loading} />
             <OldRegistrations />
           </Wrapper>
         </Route>
         <Route exact path="/admin/preview/:weekId">
           <Wrapper>
+            {isDev && <Dev />}
+            <LinksBar />
             <Loader $loading={loading} />
             <PreviewRegistration />
           </Wrapper>
         </Route>
         <Route>
           <Wrapper>
+            {isDev && <Dev />}
+            <LinksBar />
             <NotFound />
           </Wrapper>
         </Route>

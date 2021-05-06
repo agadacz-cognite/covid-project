@@ -3,6 +3,6 @@ import styled from 'styled-components';
 
 export const Table = styled(AntdTable)`
   .ant-table-cell {
-    padding: 8px;
+    padding: 4px 8px;
   }
 `;
