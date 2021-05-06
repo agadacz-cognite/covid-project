@@ -66,6 +66,43 @@ export const sendEmail = ({
   });
 };
 
+/**
+ * This sends email to uer but entire logic is here
+ * @param registeredUser
+ */
+export const sendEmailToUser = (
+  registeredUser: RegisteredUser,
+  activeRegistration: RegistrationData,
+): void => {
+  const week = `${new Date(
+    (activeRegistration?.week[0]?.seconds ?? 0) * 1000,
+  ).toLocaleDateString()} - ${new Date(
+    (activeRegistration?.week[1]?.seconds ?? 0) * 1000,
+  ).toLocaleDateString()}`;
+  const userHours = registeredUser?.testHours
+    .map((testHour: ChosenHour) => {
+      const week = activeRegistration?.slots.find(
+        slot => slot.id === testHour.slotId,
+      );
+      const translatedHour = translateHourIdToHour(week?.testHours, testHour);
+      const officeDays = week?.officeDays ?? [];
+      return `${week?.testDay ?? '<unknown>'} - ${
+        translatedHour ?? '<unknown>'
+      } (office days: ${officeDays.join(',')})`;
+    })
+    .join(', ');
+  const userFirstName =
+    registeredUser.name?.split(' ')?.[0] ?? 'Unknown Person';
+  const subject = `💉 You have registered to a COVID test! Week ${week}`;
+  const content = `Hello ${userFirstName}! You just registered for the COVID test for the week ${week}. Your testing dates: ${userHours}.`;
+
+  sendEmail({
+    email: registeredUser.email,
+    subject,
+    content,
+  });
+};
+
 /** Extracts the hour id from the ChosenHour[] object, and returns the actual hour (r undefined if ID does not map to anything) */
 export const translateHourIdToHour = (
   testHours: TestHourInSlot[] | undefined,

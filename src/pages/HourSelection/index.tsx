@@ -8,13 +8,7 @@ import {
   useAvailablePlacesForSlots,
 } from '../../context';
 import { registerUserForTest } from '../../firebase';
-import {
-  RegisteredUser,
-  SlotData,
-  ChosenHour,
-  sendEmail,
-  translateHourIdToHour,
-} from '../../shared';
+import { SlotData, ChosenHour } from '../../shared';
 import { Flex, Card } from '../../components';
 import MappedHours from './MappedHours';
 
@@ -22,7 +16,6 @@ export default function HourSelection(): JSX.Element {
   const history = useHistory();
   const {
     user,
-    slotsData,
     setLoading,
     usersRegistration,
     activeRegistration,
@@ -87,41 +80,10 @@ export default function HourSelection(): JSX.Element {
       testHours,
     };
     setLoading(true);
-    await registerUserForTest(registeredUser, slotsData);
-    sendEmailToUser(registeredUser);
+    await registerUserForTest(registeredUser, activeRegistration);
     setLoading(false);
   };
   const onBack = () => history.push('/start');
-
-  const sendEmailToUser = (registeredUser: RegisteredUser) => {
-    const week = `${new Date(
-      (activeRegistration?.week[0]?.seconds ?? 0) * 1000,
-    ).toLocaleDateString()} - ${new Date(
-      (activeRegistration?.week[1]?.seconds ?? 0) * 1000,
-    ).toLocaleDateString()}`;
-    const userHours = registeredUser?.testHours
-      .map((testHour: ChosenHour) => {
-        const week = activeRegistration?.slots.find(
-          slot => slot.id === testHour.slotId,
-        );
-        const translatedHour = translateHourIdToHour(week?.testHours, testHour);
-        const officeDays = week?.officeDays ?? [];
-        return `${week?.testDay ?? '<unknown>'} - ${
-          translatedHour ?? '<unknown>'
-        } (office days: ${officeDays.join(',')})`;
-      })
-      .join(', ');
-    const userFirstName =
-      user?.displayName?.split(' ')?.[0] ?? 'Unknown Person';
-    const subject = `💉 You have registered to a COVID test! Week ${week}`;
-    const content = `Hello ${userFirstName}! You just registered for the COVID test for the week ${week}. Your testing dates: ${userHours}.`;
-
-    sendEmail({
-      email: user.email,
-      subject,
-      content,
-    });
-  };
 
   return (
     <Flex column style={{ margin: 'auto' }}>

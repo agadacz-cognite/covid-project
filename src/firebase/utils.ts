@@ -1,13 +1,18 @@
 import { db } from '.';
 import { notification } from 'antd';
 import {
-  errorHandler,
   RegistrationData,
   RegisteredUser,
   TestHour,
   ChosenHour,
+  SlotData,
+  FixedSlotData,
+  TestHourInSlot,
+  errorHandler,
+  activeRegistrationDevOrProd,
+  sendEmailToUser,
+  isDev,
 } from '../shared';
-import { FixedSlotData, activeRegistrationDevOrProd, isDev } from '../shared';
 
 /**
  * Create a new registration as admin
@@ -73,95 +78,72 @@ export const editActiveRegistration = (
  * @param slotsData
  * @returns
  */
-export const registerUserForTest = (
+export const registerUserForTest = async (
   userToRegister: RegisteredUser,
-  slotsData: FixedSlotData[],
+  activeRegistration: RegistrationData,
 ): Promise<void> => {
-  return new Promise(resolve => {
-    if (!db) {
-      return resolve();
-    }
-    const userSlotsAreAvailableArray = userToRegister.testHours.map(
-      (testHour: ChosenHour) => {
-        const slot = slotsData.find(
-          (slotData: FixedSlotData) => slotData.id === testHour.slotId,
-        );
-        if (!slot) {
-          return false;
-        }
-        const hour = slot?.testHours.find(
-          (hour: TestHour) => hour.hourId === testHour.hourId,
-        );
-        if (!hour) {
-          return false;
-        }
-        const available = hour.takenPlaces < hour?.totalPlaces;
-        if (available) {
-          return true;
-        }
-        return false;
-      },
-    );
-    const userSlotsAreAvailable = userSlotsAreAvailableArray.reduce(
-      (sum, next) => sum && next,
-    );
-    if (!userSlotsAreAvailable) {
-      notification.error({
-        message: 'Someone stole your place',
-        description:
-          'One of the hours you selected are no longer available. Please choose a different one.',
-      });
-      return resolve();
-    }
+  if (!db) {
+    return;
+  }
+  const userSlotsAreAvailable = await checkIfUsersSlotsAreAvailable(
+    userToRegister,
+    activeRegistration,
+  );
+  if (!userSlotsAreAvailable) {
+    notification.error({
+      message: 'Someone stole your place',
+      description:
+        'One of the hours you selected are no longer available. Please choose a different one.',
+    });
+    return;
+  }
 
-    try {
+  try {
+    const registeredUsersRef = db.collection('registrations');
+    const registeredUsersDoc = await registeredUsersRef.get();
+    const registeredUsers: (RegisteredUser & { id: string })[] = [];
+
+    registeredUsersDoc.forEach((registeredUserDoc: any) => {
+      registeredUsers.push({
+        id: registeredUserDoc.id,
+        ...registeredUserDoc.data(),
+      });
+    });
+    const userWasAlreadyRegistered = registeredUsers.find(
+      (previouslyRegisteredUser: { id: string } & RegisteredUser) =>
+        userToRegister.email === previouslyRegisteredUser.email &&
+        userToRegister.weekId === previouslyRegisteredUser.weekId,
+    );
+    if (userWasAlreadyRegistered) {
       db.collection('registrations')
-        .get()
-        .then(registeredUsersRaw => {
-          const registeredUsers = (registeredUsersRaw.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data(),
-          })) as unknown) as (RegisteredUser & { id: string })[];
-          const userWasAlreadyRegistered = registeredUsers.find(
-            (previouslyRegisteredUser: { id: string } & RegisteredUser) =>
-              userToRegister.email === previouslyRegisteredUser.email &&
-              userToRegister.weekId === previouslyRegisteredUser.weekId,
-          );
-          if (userWasAlreadyRegistered) {
-            db.collection('registrations')
-              .doc(userWasAlreadyRegistered.id)
-              .update(userToRegister)
-              .then(() => {
-                notification.success({
-                  message: 'Yay!',
-                  description: 'You successfully updated your selection!',
-                });
-                return resolve();
-              })
-              .catch(error => {
-                errorHandler(error);
-                return resolve();
-              });
-          } else {
-            db.collection('registrations')
-              .add(userToRegister)
-              .then(() => {
-                notification.success({
-                  message: 'Yay!',
-                  description: 'You successfully registered for a test!',
-                });
-                return resolve();
-              })
-              .catch(error => {
-                errorHandler(error);
-                return resolve();
-              });
-          }
+        .doc(userWasAlreadyRegistered.id)
+        .update(userToRegister)
+        .then(() => {
+          notification.success({
+            message: 'Yay!',
+            description: 'You successfully updated your selection!',
+          });
+          sendEmailToUser(userToRegister, activeRegistration);
+        })
+        .catch(error => {
+          errorHandler(error);
         });
-    } catch (error) {
-      resolve();
+    } else {
+      db.collection('registrations')
+        .add(userToRegister)
+        .then(() => {
+          notification.success({
+            message: 'Yay!',
+            description: 'You successfully registered for a test!',
+          });
+        })
+        .catch(error => {
+          errorHandler(error);
+        });
     }
-  });
+  } catch (error) {
+    errorHandler(error);
+  }
 };
 
 /** Delee user from the testing slot */
@@ -201,4 +183,81 @@ export const removeUserRegistration = (
         return resolve();
       });
   });
+};
+
+/**
+ * Checks if the slot that user had chosen to register to is still free.
+ * @param userToRegister
+ * @param activeRegistration
+ * @returns
+ */
+export const checkIfUsersSlotsAreAvailable = async (
+  userToRegister: RegisteredUser,
+  activeRegistration: RegistrationData,
+): Promise<boolean> => {
+  const weekId = activeRegistration.id;
+  const registrationsForThisWeekRef = db
+    .collection('registrations')
+    .where('weekId', '==', weekId);
+
+  const registrationsForThisWeekDoc = await registrationsForThisWeekRef.get();
+  const registrationsForThisWeek: any = [];
+  registrationsForThisWeekDoc.forEach((registrationDoc: any) => {
+    registrationsForThisWeek.push({
+      ...registrationDoc.data(),
+    });
+  });
+
+  const slots: any = activeRegistration?.slots.map((slot: SlotData) => {
+    const testHours = slot.testHours;
+    const fixedSlot = {
+      id: slot.id,
+      testHours: testHours.map((testHour: TestHourInSlot) => {
+        return {
+          hourId: testHour.id,
+          totalPlaces: testHour.places ?? 15,
+          takenPlaces: registrationsForThisWeek.filter(
+            (registeredUser: RegisteredUser) => {
+              const usersChosenHours = registeredUser.testHours.find(
+                (userTestHour: ChosenHour) => {
+                  return (
+                    userTestHour.slotId === slot.id &&
+                    userTestHour.hourId === testHour.id
+                  );
+                },
+              );
+              return registeredUser.weekId === weekId && usersChosenHours;
+            },
+          ).length,
+        };
+      }),
+    };
+    return fixedSlot;
+  });
+
+  const userSlotsAreAvailableArray = userToRegister.testHours.map(
+    (testHour: ChosenHour) => {
+      const slot = slots.find(
+        (slotData: FixedSlotData) => slotData.id === testHour.slotId,
+      );
+      if (!slot) {
+        return false;
+      }
+      const hour = slot?.testHours.find(
+        (hour: TestHour) => hour.hourId === testHour.hourId,
+      );
+      if (!hour) {
+        return false;
+      }
+      const available = hour.takenPlaces < hour?.totalPlaces;
+      if (available) {
+        return true;
+      }
+      return false;
+    },
+  );
+  const userSlotsAreAvailable = userSlotsAreAvailableArray.reduce(
+    (sum, next) => sum && next,
+  );
+  return userSlotsAreAvailable;
 };
