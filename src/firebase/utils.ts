@@ -81,6 +81,9 @@ export const editActiveRegistration = (
 export const registerUserForTest = async (
   userToRegister: RegisteredUser,
   activeRegistration: RegistrationData,
+  // forgive me for I have sinned, but I dunno how to type that crap
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  history: any,
 ): Promise<void> => {
   if (!db) {
     return;
@@ -124,9 +127,12 @@ export const registerUserForTest = async (
             description: 'You successfully updated your selection!',
           });
           sendEmailToUser(userToRegister, activeRegistration);
+          history.push('/start');
+          return;
         })
         .catch(error => {
           errorHandler(error);
+          return;
         });
     } else {
       db.collection('registrations')
@@ -137,13 +143,17 @@ export const registerUserForTest = async (
             description: 'You successfully registered for a test!',
           });
           sendEmailToUser(userToRegister, activeRegistration);
+          history.push('/start');
+          return;
         })
         .catch(error => {
           errorHandler(error);
+          return;
         });
     }
   } catch (error) {
     errorHandler(error);
+    return;
   }
 };
 

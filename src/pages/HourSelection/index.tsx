@@ -80,7 +80,7 @@ export default function HourSelection(): JSX.Element {
       testHours,
     };
     setLoading(true);
-    await registerUserForTest(registeredUser, activeRegistration);
+    await registerUserForTest(registeredUser, activeRegistration, history);
     setLoading(false);
   };
   const onBack = () => history.push('/start');
