@@ -105,13 +105,13 @@ const columns = (day: string) => [
     dataIndex: 'registeredAt',
     width: '50px',
     render: (registeredAt: string) => (
-      <span>
+      <div style={{ fontSize: '0.95em', lineHeight: '1.1' }}>
         {Number(registeredAt) === 0
           ? '-'
           : new Date(registeredAt).toLocaleString('no-NO', {
               hour12: false,
             })}
-      </span>
+      </div>
     ),
     sorter: (a: any, b: any) => b?.registeredAt - a?.registeredAt,
   },
