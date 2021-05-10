@@ -14,7 +14,7 @@ import {
   useBackIfNotLogged,
 } from '../../context';
 import { editActiveRegistration } from '../../firebase';
-import { SlotData } from '../../shared';
+import { SlotData, isWeekday, randomFarAwayDate } from '../../shared';
 import { defaultNewHour } from './utils';
 import Slot from './Slot';
 
@@ -52,15 +52,6 @@ export default function EditRegistration(): JSX.Element {
 
   useBackIfNotLogged();
   useBackIfNotAdmin();
-
-  const randomFarAwayDate = new Date(1934832714000);
-
-  const isWeekday = (date: Date) => {
-    if (date.getDay() === 6 || date.getDay() === 0) {
-      return false;
-    }
-    return true;
-  };
 
   const onEditActiveRegistration = () => {
     if (!weekStartDate || !weekEndDate) {

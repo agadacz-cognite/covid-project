@@ -8,6 +8,8 @@ import {
   TestHourInSlot,
 } from './types';
 
+export const randomFarAwayDate = new Date(1934832714000);
+
 /**
  * Handles an error
  * @param error
@@ -45,6 +47,16 @@ export const stringCompare = (a = '', b = ''): any => {
   const al = a.replace(/\s+/g, '');
   const bl = b.replace(/\s+/g, '');
   return al.localeCompare(bl, 'nb');
+};
+
+/**
+ * Returns false for Saturday/Sunday and true for other days.
+ * @param date
+ * @returns
+ */
+export const isWeekday = (date: Date): boolean => {
+  const weekdays = [1, 2, 3, 4, 5];
+  return weekdays.includes(date.getDay());
 };
 
 /**

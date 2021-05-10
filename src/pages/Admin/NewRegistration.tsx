@@ -14,7 +14,12 @@ import {
   useBackIfNotLogged,
 } from '../../context';
 import { createActiveRegistration } from '../../firebase';
-import { SlotData, RegistrationData } from '../../shared';
+import {
+  SlotData,
+  RegistrationData,
+  isWeekday,
+  randomFarAwayDate,
+} from '../../shared';
 import { defaultSlot, defaultNewHour } from './utils';
 import Slot from './Slot';
 
@@ -32,15 +37,6 @@ export default function NewRegistration(): JSX.Element {
 
   useBackIfNotLogged();
   useBackIfNotAdmin();
-
-  const randomFarAwayDate = new Date(1934832714000);
-
-  const isWeekday = (date: Date) => {
-    if (date.getDay() === 6 || date.getDay() === 0) {
-      return false;
-    }
-    return true;
-  };
 
   const onCreateNewRegistration = () => {
     if (!weekStartDate || !weekEndDate) {
