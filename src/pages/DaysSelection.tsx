@@ -388,15 +388,20 @@ export default function DaysSelection(): JSX.Element {
             </Flex>
           </Card>
           <Card style={{ width: 'auto', height: 'auto', margin: '8px' }}>
-            <div>In case of technical problems with the application,</div>
-            <div>
-              {' '}
-              please{' '}
-              <a href="mailto:anna.gadacz@cognite.com?subject=COVID Project issue, fix fast pls">
-                contact Anna Gadacz
-              </a>
-              .
-            </div>
+            <ul style={{ margin: 0, padding: 0, listStyleType: 'none' }}>
+              <li>
+                Technical problems with app?{' '}
+                <a href="mailto:anna.gadacz@cognite.com?subject=COVID Project issue, fix fast pls">
+                  Contact Anna!
+                </a>
+              </li>
+              <li>
+                Question about testing itself?{' '}
+                <a href="mailto:madeleine.olstad@cognite.com?subject=Question about testing">
+                  Contact Madeleine!
+                </a>
+              </li>
+            </ul>
           </Card>
         </Flex>
         <Card
