@@ -38,7 +38,11 @@ export default function Slot(props: Props): JSX.Element {
   ));
 
   const onAddHour = () => {
-    const newTestHours: TestHourInSlot[] = [...testHours, defaultNewHour];
+    const newTestHour = {
+      ...defaultNewHour,
+      id: uuid(),
+    };
+    const newTestHours: TestHourInSlot[] = [...testHours, newTestHour];
     onTestHoursChange(id, newTestHours);
   };
   const onHourDelete = (hour: TestHourInSlot) => {
@@ -59,6 +63,7 @@ export default function Slot(props: Props): JSX.Element {
     onTestHoursChange(id, newTestHours);
   };
   const onTestHourChange = (testHour: TestHourInSlot, newHour: string) => {
+    console.log(testHours);
     const newTestHours: TestHourInSlot[] = testHours.map(
       (oldHour: TestHourInSlot) => {
         if (testHour.id === oldHour.id) {
