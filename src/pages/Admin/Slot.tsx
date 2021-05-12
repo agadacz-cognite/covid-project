@@ -63,7 +63,6 @@ export default function Slot(props: Props): JSX.Element {
     onTestHoursChange(id, newTestHours);
   };
   const onTestHourChange = (testHour: TestHourInSlot, newHour: string) => {
-    console.log(testHours);
     const newTestHours: TestHourInSlot[] = testHours.map(
       (oldHour: TestHourInSlot) => {
         if (testHour.id === oldHour.id) {
