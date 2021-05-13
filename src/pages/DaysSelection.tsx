@@ -21,6 +21,7 @@ import {
   translateHourIdToHour,
   ChosenHour,
   errorHandler,
+  Guideline,
   guidelines,
 } from '../shared';
 import { Flex, Card, Header } from '../components';
@@ -415,13 +416,24 @@ export default function DaysSelection(): JSX.Element {
               </a>
             </Title>
           }
-          style={{ maxWidth: '400px', margin: '8px' }}>
-          <StyledFlex column justify align>
-            <ul>
-              {guidelines.map((guideline: string) => (
-                <li key={uuid()}>{guideline}</li>
-              ))}
-            </ul>
+          style={{
+            width: 'auto',
+            height: 'auto',
+            maxWidth: '600px',
+            margin: '8px',
+          }}>
+          <StyledFlex column justify>
+            {guidelines.map((guideline: Guideline) => (
+              <span
+                key={uuid()}
+                style={{
+                  margin: '2px',
+                  textAlign: 'justify',
+                  fontWeight: guideline.important ? 'bold' : 'normal',
+                }}>
+                ● {guideline.text}
+              </span>
+            ))}
           </StyledFlex>
         </Card>
       </Flex>
