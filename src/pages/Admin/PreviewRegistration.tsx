@@ -154,10 +154,10 @@ const columns = (day: string) => [
     sorter: (a: any, b: any) => stringCompare(a?.hour, b?.hour),
   },
   {
-    title: 'Vaccinated',
+    title: () => <Tooltip title="Vaccinated?">💉</Tooltip>,
     key: 'vaccinated',
     dataIndex: 'vaccinated',
-    width: '100px',
+    width: '20px',
     render: (vaccinated: string) => (
       <span>{vaccinated === 'X' ? 'yes' : ''}</span>
     ),
