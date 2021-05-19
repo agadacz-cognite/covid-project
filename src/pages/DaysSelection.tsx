@@ -24,7 +24,7 @@ import {
   Guideline,
   guidelines,
 } from '../shared';
-import { Flex, Card, Header } from '../components';
+import { Flex, Card, Header, SlackLink } from '../components';
 
 dayjs.extend(relativeTime);
 
@@ -437,6 +437,7 @@ export default function DaysSelection(): JSX.Element {
           </StyledFlex>
         </Card>
       </Flex>
+      <SlackLink />
     </Flex>
   );
 }
