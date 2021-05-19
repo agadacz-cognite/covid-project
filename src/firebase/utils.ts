@@ -79,6 +79,7 @@ export const editActiveRegistration = (
  * @returns
  */
 export const registerUserForTest = async (
+  oldUserRegistrationData: RegisteredUser | undefined,
   userToRegister: RegisteredUser,
   activeRegistration: RegistrationData,
   // forgive me for I have sinned, but I dunno how to type that crap
@@ -89,6 +90,7 @@ export const registerUserForTest = async (
     return;
   }
   const userSlotsAreAvailable = await checkIfUsersSlotsAreAvailable(
+    oldUserRegistrationData,
     userToRegister,
     activeRegistration,
   );
@@ -203,6 +205,7 @@ export const removeUserRegistration = (
  * @returns
  */
 export const checkIfUsersSlotsAreAvailable = async (
+  oldUserRegistrationData: RegisteredUser | undefined,
   userToRegister: RegisteredUser,
   activeRegistration: RegistrationData,
 ): Promise<boolean> => {
@@ -263,8 +266,14 @@ export const checkIfUsersSlotsAreAvailable = async (
       const available = hour.takenPlaces < hour?.totalPlaces;
       if (available) {
         return true;
+      } else {
+        const isThatSlotTakenByThisUser = oldUserRegistrationData?.testHours.find(
+          (oldTestHour: ChosenHour) =>
+            oldTestHour.slotId === testHour.slotId &&
+            oldTestHour.hourId === testHour.hourId,
+        );
+        return isThatSlotTakenByThisUser ? true : false;
       }
-      return false;
     },
   );
   const userSlotsAreAvailable = userSlotsAreAvailableArray.reduce(
