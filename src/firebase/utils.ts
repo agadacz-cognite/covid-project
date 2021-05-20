@@ -12,6 +12,7 @@ import {
   activeRegistrationDevOrProd,
   sendEmailToUser,
   isDev,
+  translateSlotsToHuman,
 } from '../shared';
 import {
   newUserRegistrationTracker,
@@ -154,6 +155,10 @@ export const registerUserForTest = async (
     failedNewUserRegistrationTracker(userToRegister?.email, 'Place stolen');
     return;
   }
+  const translatedSlots = translateSlotsToHuman(
+    userToRegister.testHours,
+    activeRegistration,
+  );
 
   try {
     const registeredUsersRef = db.collection('registrations');
@@ -181,7 +186,7 @@ export const registerUserForTest = async (
             description: 'You successfully updated your selection!',
           });
           sendEmailToUser(userToRegister, activeRegistration);
-          editUserRegistrationTracker(userToRegister?.email);
+          editUserRegistrationTracker(userToRegister?.email, translatedSlots);
           history.push('/start');
           return;
         })
@@ -199,7 +204,7 @@ export const registerUserForTest = async (
             description: 'You successfully registered for a test!',
           });
           sendEmailToUser(userToRegister, activeRegistration);
-          newUserRegistrationTracker(userToRegister?.email);
+          newUserRegistrationTracker(userToRegister?.email, translatedSlots);
           history.push('/start');
           return;
         })

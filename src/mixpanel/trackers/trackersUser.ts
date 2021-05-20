@@ -1,11 +1,14 @@
 import { track } from '../';
 
 // new user registration
-export const newUserRegistrationTracker = (email: string): void =>
+export const newUserRegistrationTracker = (
+  email: string,
+  slots: { [key: string]: string },
+): void =>
   track({
     email,
     event: 'New registration',
-    eventOptions: { timestamp: Date.now() },
+    eventOptions: { timestamp: Date.now(), ...slots },
   });
 
 export const failedNewUserRegistrationTracker = (
@@ -19,11 +22,14 @@ export const failedNewUserRegistrationTracker = (
   });
 
 // user edit registration
-export const editUserRegistrationTracker = (email: string): void =>
+export const editUserRegistrationTracker = (
+  email: string,
+  slots: { [key: string]: string },
+): void =>
   track({
     email,
     event: 'Edit registration',
-    eventOptions: { timestamp: Date.now() },
+    eventOptions: { timestamp: Date.now(), ...slots },
   });
 
 export const failedEditUserRegistrationTracker = (

@@ -130,6 +130,23 @@ export const translateHourIdToHour = (
   return hourObj?.hour;
 };
 
+export const translateSlotsToHuman = (
+  userTestHours: ChosenHour[] = [],
+  activeRegistration: RegistrationData,
+): { [key: string]: string } => {
+  const mappedSlots: any = {};
+  userTestHours.forEach((chosenHour: ChosenHour, index: number) => {
+    const week = activeRegistration?.slots.find(
+      slot => slot.id === chosenHour.slotId,
+    );
+    const userHours = translateHourIdToHour(week?.testHours, chosenHour);
+    mappedSlots[`slot-${index}`] = `${week?.testDay ?? 'UNKNOWN'} - ${
+      userHours ?? 'UNKNOWN'
+    }`;
+  });
+  return mappedSlots;
+};
+
 /**
  * Does something
  * @param weekStart
