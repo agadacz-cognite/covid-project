@@ -148,7 +148,8 @@ export default function DaysSelection(): JSX.Element {
           const covidEvents = userTestHours.map((userTestHour: any) => ({
             summary: '💉‧͙⁺˚*･༓☾ COVID test ☽༓･*˚⁺‧͙ 💉',
             location: 'Oksenøyveien 10, Grand Hall',
-            description: '✨GUIDELINES✨\n\n' + guidelines.join('\n\n- '),
+            description:
+              '✨GUIDELINES✨\n\n' + guidelines.map(g => g.text).join('\n\n- '),
             start: {
               dateTime: userTestHour.start,
               timeZone: 'Europe/Oslo',
