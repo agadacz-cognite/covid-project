@@ -14,6 +14,7 @@ import HourSelection from './HourSelection';
 import { AppContext } from '../context';
 import { Loader, LinksBar } from '../components';
 import { isDev } from '../shared';
+import { useMixpanel } from '../mixpanel';
 
 const Wrapper = styled.div`
   width: 100%;
@@ -43,6 +44,7 @@ const Dev = styled.div`
 
 export default function App(): JSX.Element {
   const { loading, setGapiLoaded } = useContext(AppContext);
+  useMixpanel();
 
   useEffect(() => {
     const script = document.createElement('script');

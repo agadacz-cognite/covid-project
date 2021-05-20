@@ -12,10 +12,10 @@ import {
   usePreviousWeeks,
   usePreregisteredEmails,
 } from '../../context';
+import { closeActiveRegistration } from '../../firebase';
 import {
   getRegistrationsForExcel,
   savePreregistrationEmails,
-  closeActiveRegistration,
 } from '../../shared';
 
 const { Title } = Typography;

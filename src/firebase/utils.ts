@@ -13,6 +13,20 @@ import {
   sendEmailToUser,
   isDev,
 } from '../shared';
+import {
+  newUserRegistrationTracker,
+  failedNewUserRegistrationTracker,
+  editUserRegistrationTracker,
+  failedEditUserRegistrationTracker,
+  deleteUserRegistrationTracker,
+  failedDeleteUserRegistrationTracker,
+  newRegistrationTracker,
+  failedNewRegistrationTracker,
+  editRegistrationTracker,
+  failedEditRegistrationTracker,
+  closeRegistrationTracker,
+  failedCloseRegistrationTracker,
+} from '../mixpanel';
 
 /**
  * Create a new registration as admin
@@ -39,8 +53,12 @@ export const createActiveRegistration = (
         message: 'Yay!',
         description: 'You successfully opened a new registration!',
       });
+      newRegistrationTracker(registrationData.id);
     })
-    .catch(errorHandler);
+    .catch(error => {
+      errorHandler(error);
+      failedNewRegistrationTracker(registrationData.id, error);
+    });
 };
 
 /**
@@ -63,13 +81,46 @@ export const editActiveRegistration = (
     .collection('weeks')
     .doc(activeRegistrationId)
     .set(registrationData)
-    .then(() =>
+    .then(() => {
       notification.success({
         message: 'Yay!',
         description: 'You successfully edited active registration!',
       }),
-    )
-    .catch(errorHandler);
+        editRegistrationTracker(activeRegistrationId);
+    })
+    .catch(error => {
+      errorHandler(error);
+      failedEditRegistrationTracker(registrationData.id, error);
+    });
+};
+
+/**
+ * Closes the active registration.
+ * @returns
+ */
+export const closeActiveRegistration = (): Promise<void> => {
+  return new Promise(resolve => {
+    if (!db) {
+      resolve();
+      return;
+    }
+    db.collection('options')
+      .doc(activeRegistrationDevOrProd)
+      .delete()
+      .then(() => {
+        notification.success({
+          message: 'Yay!',
+          description: 'You successfully closed the registration!',
+        });
+        closeRegistrationTracker();
+        return resolve();
+      })
+      .catch(error => {
+        errorHandler(error);
+        failedCloseRegistrationTracker(error);
+        return resolve();
+      });
+  });
 };
 
 /**
@@ -100,6 +151,7 @@ export const registerUserForTest = async (
       description:
         'One of the hours you selected are no longer available. Please choose a different one.',
     });
+    failedNewUserRegistrationTracker(userToRegister.email, 'Place stolen');
     return;
   }
 
@@ -129,11 +181,13 @@ export const registerUserForTest = async (
             description: 'You successfully updated your selection!',
           });
           sendEmailToUser(userToRegister, activeRegistration);
+          editUserRegistrationTracker(userToRegister.email);
           history.push('/start');
           return;
         })
         .catch(error => {
           errorHandler(error);
+          failedEditUserRegistrationTracker(userToRegister.email, error);
           return;
         });
     } else {
@@ -145,16 +199,19 @@ export const registerUserForTest = async (
             description: 'You successfully registered for a test!',
           });
           sendEmailToUser(userToRegister, activeRegistration);
+          newUserRegistrationTracker(userToRegister.email);
           history.push('/start');
           return;
         })
         .catch(error => {
           errorHandler(error);
+          failedNewUserRegistrationTracker(userToRegister.email, error);
           return;
         });
     }
   } catch (error) {
     errorHandler(error);
+    failedNewUserRegistrationTracker(userToRegister.email, error);
     return;
   }
 };
@@ -183,16 +240,19 @@ export const removeUserRegistration = (
                 message: 'Yay!',
                 description: 'You successfully deleted your selection!',
               });
+              deleteUserRegistrationTracker(email);
               return resolve();
             })
             .catch(error => {
               errorHandler(error);
+              failedDeleteUserRegistrationTracker(email, error);
               return resolve();
             }),
         ),
       )
       .catch(error => {
         errorHandler(error);
+        failedDeleteUserRegistrationTracker(email, error);
         return resolve();
       });
   });

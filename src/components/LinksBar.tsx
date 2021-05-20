@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { GithubOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
+import { clickGithubLinkTracker } from '../mixpanel';
+import { AppContext } from '../context';
 
 const Bar = styled.div`
   position: absolute;
@@ -28,12 +30,16 @@ const Bar = styled.div`
 `;
 
 export const LinksBar = (): JSX.Element => {
+  const { user } = useContext(AppContext);
+  const onGithubClick = () => clickGithubLinkTracker(user.email);
+
   return (
     <Bar>
       <a
         href="https://github.com/agadacz-cognite/covid-project"
         target="_blank"
-        rel="noreferrer">
+        rel="noreferrer"
+        onClick={onGithubClick}>
         <GithubOutlined />
       </a>
     </Bar>

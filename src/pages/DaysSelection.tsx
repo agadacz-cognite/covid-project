@@ -15,6 +15,12 @@ import {
   useCanUserPreregister,
 } from '../context';
 import { removeUserRegistration } from '../firebase/utils';
+import {
+  clickGuidelinesTracker,
+  clickContactLinkTracker,
+  addCalendarEventTracker,
+  failedAddCalendarEventTracker,
+} from '../mixpanel';
 import { getUserTestHours } from '../shared';
 import {
   sendEmail,
@@ -70,6 +76,7 @@ export default function DaysSelection(): JSX.Element {
     usersRegistration?.weekId === activeRegistration?.id;
 
   const onAdminPageClick = () => history.push('/admin');
+  const onGuidelinesClick = () => clickGuidelinesTracker(user.email);
   const onProceed = () => {
     history.push('/choose');
   };
@@ -163,9 +170,11 @@ export default function DaysSelection(): JSX.Element {
                   message: 'Success',
                   description: 'Calendar event successfully created!',
                 });
+                addCalendarEventTracker(user.email);
               })
               .catch((error: any) => {
                 errorHandler(error);
+                failedAddCalendarEventTracker(user.email, error);
                 notification.warning({
                   message: 'Cannot create calendar event',
                   description: 'Im so sorry :c',
@@ -175,6 +184,7 @@ export default function DaysSelection(): JSX.Element {
         })
         .catch((error: any) => {
           errorHandler(error);
+          failedAddCalendarEventTracker(user.email, error);
         });
     }
   };
@@ -392,13 +402,19 @@ export default function DaysSelection(): JSX.Element {
             <ul style={{ margin: 0, padding: 0, listStyleType: 'none' }}>
               <li>
                 Technical problems with app?{' '}
-                <a href="mailto:anna.gadacz@cognite.com?subject=COVID Project issue, fix fast pls">
+                <a
+                  href="mailto:anna.gadacz@cognite.com?subject=COVID Project issue, fix fast pls"
+                  onClick={() => clickContactLinkTracker(user.email, 'Anna')}>
                   Contact Anna!
                 </a>
               </li>
               <li>
                 Question about testing itself?{' '}
-                <a href="mailto:madeleine.olstad@cognite.com?subject=Question about testing">
+                <a
+                  href="mailto:madeleine.olstad@cognite.com?subject=Question about testing"
+                  onClick={() =>
+                    clickContactLinkTracker(user.email, 'Madeleine')
+                  }>
                   Contact Madeleine!
                 </a>
               </li>
@@ -411,7 +427,8 @@ export default function DaysSelection(): JSX.Element {
               <a
                 href="https://docs.google.com/document/d/1e7H0yW2TqpwzqHT0znAUwlzUN5OS940MesE1o6uiwfI"
                 target="_blank"
-                rel="noreferrer">
+                rel="noreferrer"
+                onClick={onGuidelinesClick}>
                 Guidelines
               </a>
             </Title>
