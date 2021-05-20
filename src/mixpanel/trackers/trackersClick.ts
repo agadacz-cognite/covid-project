@@ -28,6 +28,13 @@ export const clickGithubLinkTracker = (email: string): void =>
     eventOptions: { timestamp: Date.now() },
   });
 
+export const clickMixpanelLinkTracker = (email: string): void =>
+  track({
+    email: email ?? 'UNKNOWN ENTITY',
+    event: 'Mixpanel link click',
+    eventOptions: { timestamp: Date.now() },
+  });
+
 // calendar event
 export const addCalendarEventTracker = (email: string): void =>
   track({

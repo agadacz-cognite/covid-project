@@ -1,7 +1,8 @@
 import React, { useContext } from 'react';
-import { GithubOutlined } from '@ant-design/icons';
+import { Tooltip } from 'antd';
+import { GithubOutlined, LineChartOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
-import { clickGithubLinkTracker } from '../mixpanel';
+import { clickGithubLinkTracker, clickMixpanelLinkTracker } from '../mixpanel';
 import { AppContext } from '../context';
 
 const Bar = styled.div`
@@ -32,16 +33,32 @@ const Bar = styled.div`
 export const LinksBar = (): JSX.Element => {
   const { user } = useContext(AppContext);
   const onGithubClick = () => clickGithubLinkTracker(user?.email);
+  const onMixpanelClick = () => clickMixpanelLinkTracker(user?.email);
+
+  const gitUrl = 'https://github.com/agadacz-cognite/covid-project';
+  const mixpanelUrl =
+    'https://eu.mixpanel.com/project/2375253/view/2919913/app/dashboards#id=1076659';
 
   return (
     <Bar>
-      <a
-        href="https://github.com/agadacz-cognite/covid-project"
-        target="_blank"
-        rel="noreferrer"
-        onClick={onGithubClick}>
-        <GithubOutlined />
-      </a>
+      <Tooltip title="Mixpanel" placement="left">
+        <a
+          href={mixpanelUrl}
+          target="_blank"
+          rel="noreferrer"
+          onClick={onMixpanelClick}>
+          <LineChartOutlined />
+        </a>
+      </Tooltip>
+      <Tooltip title="Github repository" placement="left">
+        <a
+          href={gitUrl}
+          target="_blank"
+          rel="noreferrer"
+          onClick={onGithubClick}>
+          <GithubOutlined />
+        </a>
+      </Tooltip>
     </Bar>
   );
 };
