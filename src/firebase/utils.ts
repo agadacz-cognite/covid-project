@@ -53,11 +53,11 @@ export const createActiveRegistration = (
         message: 'Yay!',
         description: 'You successfully opened a new registration!',
       });
-      newRegistrationTracker(registrationData.id);
+      newRegistrationTracker(registrationData?.id);
     })
     .catch(error => {
       errorHandler(error);
-      failedNewRegistrationTracker(registrationData.id, error);
+      failedNewRegistrationTracker(registrationData?.id, error);
     });
 };
 
@@ -90,7 +90,7 @@ export const editActiveRegistration = (
     })
     .catch(error => {
       errorHandler(error);
-      failedEditRegistrationTracker(registrationData.id, error);
+      failedEditRegistrationTracker(activeRegistrationId, error);
     });
 };
 
@@ -151,7 +151,7 @@ export const registerUserForTest = async (
       description:
         'One of the hours you selected are no longer available. Please choose a different one.',
     });
-    failedNewUserRegistrationTracker(userToRegister.email, 'Place stolen');
+    failedNewUserRegistrationTracker(userToRegister?.email, 'Place stolen');
     return;
   }
 
@@ -181,13 +181,13 @@ export const registerUserForTest = async (
             description: 'You successfully updated your selection!',
           });
           sendEmailToUser(userToRegister, activeRegistration);
-          editUserRegistrationTracker(userToRegister.email);
+          editUserRegistrationTracker(userToRegister?.email);
           history.push('/start');
           return;
         })
         .catch(error => {
           errorHandler(error);
-          failedEditUserRegistrationTracker(userToRegister.email, error);
+          failedEditUserRegistrationTracker(userToRegister?.email, error);
           return;
         });
     } else {
@@ -199,19 +199,19 @@ export const registerUserForTest = async (
             description: 'You successfully registered for a test!',
           });
           sendEmailToUser(userToRegister, activeRegistration);
-          newUserRegistrationTracker(userToRegister.email);
+          newUserRegistrationTracker(userToRegister?.email);
           history.push('/start');
           return;
         })
         .catch(error => {
           errorHandler(error);
-          failedNewUserRegistrationTracker(userToRegister.email, error);
+          failedNewUserRegistrationTracker(userToRegister?.email, error);
           return;
         });
     }
   } catch (error) {
     errorHandler(error);
-    failedNewUserRegistrationTracker(userToRegister.email, error);
+    failedNewUserRegistrationTracker(userToRegister?.email, error);
     return;
   }
 };

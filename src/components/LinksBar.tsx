@@ -31,7 +31,7 @@ const Bar = styled.div`
 
 export const LinksBar = (): JSX.Element => {
   const { user } = useContext(AppContext);
-  const onGithubClick = () => clickGithubLinkTracker(user.email);
+  const onGithubClick = () => clickGithubLinkTracker(user?.email);
 
   return (
     <Bar>
