@@ -106,7 +106,7 @@ export const sendEmailToUser = (
   const userFirstName =
     registeredUser.name?.split(' ')?.[0] ?? 'Unknown Person';
   const subject = `💉 You have registered to a COVID test! Week ${week}`;
-  const content = `Hello ${userFirstName}! You just registered for the COVID test for the week ${week}. Your testing dates: ${userHours}.`;
+  const content = `Hello ${userFirstName}! You just registered for the COVID test for the week ${week}. Dates when you can come to the office: ${userHours}.`;
 
   sendEmail({
     email: registeredUser.email,

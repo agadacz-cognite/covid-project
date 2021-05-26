@@ -5,7 +5,7 @@ export const defaultPlaces = 200;
 export const defaultHour = 'all day';
 export const defaultMaxPlaces = 1000;
 export const defaultNewHour = {
-  hour: '',
+  hour: defaultHour,
   places: defaultPlaces,
   id: uuid(),
 };
