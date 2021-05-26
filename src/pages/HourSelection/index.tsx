@@ -91,21 +91,18 @@ export default function HourSelection(): JSX.Element {
   const onBack = () => history.push('/start');
 
   return (
-    <Flex column style={{ margin: 'auto' }}>
+    <Flex column align style={{ margin: 'auto', maxWidth: '1250px' }}>
       <Flex row align justify style={{ flexWrap: 'wrap' }}>
         {chosenDays?.map((slot: SlotData, index: number) => (
           <Card
             key={`${slot.id}-${index}`}
             title={
-              <Flex align justify>
-                Available test hours on {slot.testDay}
+              <Flex align justify style={{ fontWeight: 'bold' }}>
+                {slot.testDay}
               </Flex>
             }
             style={{ margin: '8px', maxWidth: '500px' }}>
-            <p>
-              After taking a COVID test at {slot.testDay} on one of slots below,
-              you can go to the office at:
-            </p>
+            <p>After registering below, you can come to the office at:</p>
             <ul>
               {slot.officeDays.map((day: string) => (
                 <li key={`${slot.id}-${day}`}>{day}</li>
@@ -124,7 +121,12 @@ export default function HourSelection(): JSX.Element {
       </Flex>
       <Flex
         column
-        style={{ margin: '8px', padding: '8px', backgroundColor: 'white' }}>
+        style={{
+          margin: '8px',
+          padding: '8px',
+          backgroundColor: 'white',
+          width: '100%',
+        }}>
         <Input
           placeholder="Your manager's name and surname here..."
           value={managerName}

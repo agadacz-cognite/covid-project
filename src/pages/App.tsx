@@ -37,6 +37,7 @@ const Dev = styled.div`
   align-items: center;
   color: white;
   text-shadow: 0 0 10px red;
+  z-index: 1000;
   ::after {
     content: '--- DEV VERSION ---';
   }

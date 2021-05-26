@@ -1,6 +1,13 @@
 import React, { useContext, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Button, Typography, Spin, Popconfirm, notification } from 'antd';
+import {
+  Button,
+  Typography,
+  Spin,
+  Popconfirm,
+  notification,
+  Tooltip,
+} from 'antd';
 import { InfoCircleOutlined, CalendarOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import dayjs from 'dayjs';
@@ -353,12 +360,18 @@ export default function DaysSelection(): JSX.Element {
               );
             },
           )}
-          <Button
-            icon={<CalendarOutlined />}
-            onClick={onCreateCalendarEvent}
-            style={{ margin: '4px' }}>
-            Add to calendar
-          </Button>
+          <Tooltip
+            title={
+              'Adding events to calendar is disabled because an "all day" slot is chosen.'
+            }>
+            <Button
+              icon={<CalendarOutlined />}
+              onClick={onCreateCalendarEvent}
+              style={{ margin: '4px' }}
+              disabled>
+              Add to calendar
+            </Button>
+          </Tooltip>
         </PanelDone>
       );
     }

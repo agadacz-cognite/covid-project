@@ -7,6 +7,7 @@ const Wrapper = styled.span`
   background-color: #f0dfdf;
   margin: 8px;
   padding: 8px;
+  width: 100%;
   font-weight: bold;
   text-align: center;
 `;
