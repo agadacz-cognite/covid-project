@@ -1,5 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import ReactPlayer from 'react-player/youtube';
 import {
   Button,
   Typography,
@@ -360,10 +361,7 @@ export default function DaysSelection(): JSX.Element {
               );
             },
           )}
-          <Tooltip
-            title={
-              'Adding events to calendar is disabled because an "all day" slot is chosen.'
-            }>
+          <Tooltip title={'Adding events to calendar is temporarily disabled.'}>
             <Button
               icon={<CalendarOutlined />}
               onClick={onCreateCalendarEvent}
@@ -454,6 +452,10 @@ export default function DaysSelection(): JSX.Element {
             margin: '8px',
           }}>
           <StyledFlex column justify>
+            <ReactPlayer
+              url="https://www.youtube.com/watch?v=iv39g-J79W0"
+              width="100%"
+            />
             {guidelines.map((guideline: Guideline) => (
               <span
                 key={uuid()}
