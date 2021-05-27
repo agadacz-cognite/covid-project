@@ -26,6 +26,7 @@ export const track = ({ email, event, eventOptions = {} }: Track): void => {
     mixpanel.identify(email);
     mixpanel.track(event, {
       isDev,
+      email,
       ...eventOptions,
     });
   } catch (error) {

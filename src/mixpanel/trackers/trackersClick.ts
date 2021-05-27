@@ -52,3 +52,11 @@ export const failedAddCalendarEventTracker = (
     event: 'Add calendar event FAIL',
     eventOptions: { timestamp: Date.now(), failReason },
   });
+
+// video
+export const startVideoTracker = (email: string): void =>
+  track({
+    email: email ?? 'UNKNOWN ENTITY',
+    event: 'Start watching video',
+    eventOptions: { timestamp: Date.now() },
+  });

@@ -28,6 +28,7 @@ import {
   clickContactLinkTracker,
   addCalendarEventTracker,
   failedAddCalendarEventTracker,
+  startVideoTracker,
 } from '../mixpanel';
 import { getUserTestHours } from '../shared';
 import {
@@ -88,6 +89,7 @@ export default function DaysSelection(): JSX.Element {
   const onProceed = () => {
     history.push('/choose');
   };
+  const onVideoStart = () => startVideoTracker(user?.email);
   const onDelete = async () => {
     const weekId = usersRegistration?.weekId;
     const email = usersRegistration?.email;
@@ -452,10 +454,6 @@ export default function DaysSelection(): JSX.Element {
             margin: '8px',
           }}>
           <StyledFlex column justify>
-            <ReactPlayer
-              url="https://www.youtube.com/watch?v=iv39g-J79W0"
-              width="100%"
-            />
             {guidelines.map((guideline: Guideline) => (
               <span
                 key={uuid()}
@@ -467,6 +465,11 @@ export default function DaysSelection(): JSX.Element {
                 ● {guideline.text}
               </span>
             ))}
+            <ReactPlayer
+              url="https://www.youtube.com/watch?v=iv39g-J79W0"
+              width="100%"
+              onStart={onVideoStart}
+            />
           </StyledFlex>
         </Card>
       </Flex>
