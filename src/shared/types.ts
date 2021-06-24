@@ -51,7 +51,6 @@ export type RegisteredUser = {
   weekId: string;
   manager: string;
   registeredTimestamp: number;
-  vaccinated: boolean;
   testHours: ChosenHour[];
 };
 

@@ -153,14 +153,4 @@ const columns = (day: string) => [
     render: (hour: string) => <span>{hour}</span>,
     sorter: (a: any, b: any) => stringCompare(a?.hour, b?.hour),
   },
-  {
-    title: () => <Tooltip title="Vaccinated?">💉</Tooltip>,
-    key: 'vaccinated',
-    dataIndex: 'vaccinated',
-    width: '20px',
-    render: (vaccinated: string) => (
-      <span>{vaccinated === 'X' ? 'yes' : ''}</span>
-    ),
-    sorter: (a: any, b: any) => stringCompare(a?.vaccinated, b?.vaccinated),
-  },
 ];

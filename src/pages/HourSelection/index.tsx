@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Input, Button, Switch, notification } from 'antd';
+import { Input, Button, notification } from 'antd';
 import {
   AppContext,
   useBackIfNotLogged,
@@ -23,7 +23,6 @@ export default function HourSelection(): JSX.Element {
   const [managerName, setManagerName] = useState('');
   const [chosenDays, setChosenDays] = useState<SlotData[]>([]);
   const [testHours, setTestHours] = useState<ChosenHour[]>([]);
-  const [vaccinated, setVaccinated] = useState(false);
 
   useBackIfNotLogged();
   useActiveRegistration();
@@ -41,7 +40,6 @@ export default function HourSelection(): JSX.Element {
   useEffect(() => {
     if (usersRegistration?.testHours) {
       setTestHours(usersRegistration.testHours);
-      setVaccinated(usersRegistration.vaccinated);
       setManagerName(usersRegistration.manager);
     }
   }, []);
@@ -75,7 +73,6 @@ export default function HourSelection(): JSX.Element {
       name: user.displayName,
       weekId: activeRegistration.id,
       manager: managerName,
-      vaccinated,
       registeredTimestamp: Date.now(),
       testHours,
     };
@@ -132,15 +129,6 @@ export default function HourSelection(): JSX.Element {
           value={managerName}
           onChange={onManagerNameChange}
         />
-        <Flex row align style={{ margin: '8px' }}>
-          <p style={{ margin: '0 8px 0 0', padding: 0 }}>Are you vaccinated?</p>
-          <Switch
-            checkedChildren="Yes"
-            unCheckedChildren="No"
-            checked={vaccinated}
-            onChange={setVaccinated}
-          />
-        </Flex>
         <Button type="primary" onClick={onSubmit}>
           Submit
         </Button>

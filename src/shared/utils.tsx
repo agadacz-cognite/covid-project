@@ -113,7 +113,6 @@ export const getRegistrationsForThisWeek = async (
           manager: registeredUser?.manager ?? '<unknown>',
           hour: usersRegisteredHourFixed,
           email: registeredUser?.email ?? 'cogcovidtest@gmail.com',
-          vaccinated: registeredUser.vaccinated ? 'X' : '',
           registeredTooLate,
         };
         return userRegistrationData;
@@ -191,7 +190,7 @@ export const getRegistrationsForExcel = async (
           (userTestHour: ChosenHour) => userTestHour.slotId === slotId,
         );
         if (!userInThisSlot) {
-          return ['', '', '', '', '', ''];
+          return ['', '', '', '', ''];
         }
         const registeredHour = slotTestHours.find(
           (slotTestHour: TestHourInSlot) =>
@@ -207,7 +206,6 @@ export const getRegistrationsForExcel = async (
           registeredUser.name ?? registeredUser.email,
           registeredUser.manager,
           usersRegisteredHour,
-          registeredUser.vaccinated ? 'X' : '',
         ];
         return field;
       });
@@ -228,7 +226,6 @@ export const getRegistrationsForExcel = async (
       'Name',
       'Manager',
       'Hour',
-      'Vaccinated?',
       '',
     ]),
   ];
