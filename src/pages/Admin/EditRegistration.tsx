@@ -112,7 +112,7 @@ export default function EditRegistration(): JSX.Element {
     const newSlot: SlotData = {
       id: uuid(),
       testDay: 'Monday',
-      testHours: [defaultNewHour],
+      testHours: [{ ...defaultNewHour, id: uuid() }],
       officeDays: ['Monday'],
     };
     setSlots([...slots, newSlot]);
