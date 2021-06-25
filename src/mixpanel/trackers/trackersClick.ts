@@ -1,12 +1,5 @@
 import { track } from '../';
 
-export const clickGuidelinesTracker = (email: string): void =>
-  track({
-    email: email ?? 'UNKNOWN ENTITY',
-    event: 'Guidelines click',
-    eventOptions: { timestamp: Date.now() },
-  });
-
 export const clickSlackLinkTracker = (email: string): void =>
   track({
     email: email ?? 'UNKNOWN ENTITY',

@@ -1,6 +1,5 @@
 import React, { useContext, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import ReactPlayer from 'react-player/youtube';
 import {
   Button,
   Typography,
@@ -13,7 +12,6 @@ import { InfoCircleOutlined, CalendarOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import { v4 as uuid } from 'uuid';
 import {
   AppContext,
   useActiveRegistration,
@@ -24,11 +22,9 @@ import {
 } from '../context';
 import { removeUserRegistration } from '../firebase/utils';
 import {
-  clickGuidelinesTracker,
   clickContactLinkTracker,
   addCalendarEventTracker,
   failedAddCalendarEventTracker,
-  startVideoTracker,
 } from '../mixpanel';
 import { getUserTestHours } from '../shared';
 import {
@@ -36,8 +32,6 @@ import {
   translateHourIdToHour,
   ChosenHour,
   errorHandler,
-  Guideline,
-  guidelines,
 } from '../shared';
 import { Flex, Card, Header, SlackLink } from '../components';
 
@@ -85,11 +79,9 @@ export default function DaysSelection(): JSX.Element {
     usersRegistration?.weekId === activeRegistration?.id;
 
   const onAdminPageClick = () => history.push('/admin');
-  const onGuidelinesClick = () => clickGuidelinesTracker(user?.email);
   const onProceed = () => {
     history.push('/choose');
   };
-  const onVideoStart = () => startVideoTracker(user?.email);
   const onDelete = async () => {
     const weekId = usersRegistration?.weekId;
     const email = usersRegistration?.email;
@@ -158,8 +150,7 @@ export default function DaysSelection(): JSX.Element {
           const covidEvents = userTestHours.map((userTestHour: any) => ({
             summary: '💉‧͙⁺˚*･༓☾ COVID test ☽༓･*˚⁺‧͙ 💉',
             location: 'Oksenøyveien 10, Grand Hall',
-            description:
-              '✨GUIDELINES✨\n\n' + guidelines.map(g => g.text).join('\n\n- '),
+            description: 'Covid test',
             start: {
               dateTime: userTestHour.start,
               timeZone: 'Europe/Oslo',
@@ -435,43 +426,6 @@ export default function DaysSelection(): JSX.Element {
             </ul>
           </Card>
         </Flex>
-        <Card
-          title={
-            <Title level={4} style={{ margin: 0 }}>
-              <a
-                href="https://docs.google.com/document/d/1e7H0yW2TqpwzqHT0znAUwlzUN5OS940MesE1o6uiwfI"
-                target="_blank"
-                rel="noreferrer"
-                onClick={onGuidelinesClick}>
-                Guidelines
-              </a>
-            </Title>
-          }
-          style={{
-            width: 'auto',
-            height: 'auto',
-            maxWidth: '600px',
-            margin: '8px',
-          }}>
-          <StyledFlex column justify>
-            {guidelines.map((guideline: Guideline) => (
-              <span
-                key={uuid()}
-                style={{
-                  margin: '2px',
-                  textAlign: 'justify',
-                  fontWeight: guideline.important ? 'bold' : 'normal',
-                }}>
-                ● {guideline.text}
-              </span>
-            ))}
-            <ReactPlayer
-              url="https://www.youtube.com/watch?v=iv39g-J79W0"
-              width="100%"
-              onStart={onVideoStart}
-            />
-          </StyledFlex>
-        </Card>
       </Flex>
       <SlackLink />
     </Flex>
